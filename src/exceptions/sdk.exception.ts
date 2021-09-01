@@ -1,13 +1,13 @@
-import { ISDKException, ISDKError } from '..';
+import { ISDKException } from '..';
 
 export default class SDKException implements ISDKException {
     private _code: string = '';
 
-    private _title: string = '';
+    private _message: string = '';
 
-    constructor(code: string, title: string) {
+    constructor(code: string, message: string) {
       this._code = code;
-      this._title = title;
+      this._message = message;
     }
 
     get code(): string {
@@ -15,19 +15,6 @@ export default class SDKException implements ISDKException {
     }
 
     get message(): string {
-      return this._title;
-    }
-
-    get payload(): ISDKError {
-      const thisError: ISDKError = {
-        code: this._code,
-        title: this._title,
-      };
-
-      return thisError;
-    }
-
-    get title(): string {
-      return this._title;
+      return this._message;
     }
 }

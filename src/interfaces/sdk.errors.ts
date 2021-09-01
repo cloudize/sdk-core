@@ -10,11 +10,12 @@ export interface ISDKRequestError extends ISDKError {
 }
 
 export interface ISDKException {
+    code: string;
     message: string;
-    payload?: ISDKError | ISDKError[];
 }
 
 export interface ISDKRequestException {
+    code: string;
     message: string;
     payload?: ISDKRequestError | ISDKRequestError[];
     status: number;
