@@ -20,12 +20,12 @@ export default class ResourceObject implements IResourceObject {
 
     // eslint-disable-next-line class-methods-use-this,no-unused-vars
     protected LoadAttributes(value: any) {
-      throw new Error('Method not implemented.');
+      throw new Error('Method or Property not implemented.');
     }
 
     // eslint-disable-next-line class-methods-use-this,no-unused-vars
     protected LoadRelationships(value: any) {
-      throw new Error('Method not implemented.');
+      throw new Error('Method or Property not implemented.');
     }
 
     LoadData(value: any): IResourceObject {
@@ -53,12 +53,12 @@ export default class ResourceObject implements IResourceObject {
 
     // eslint-disable-next-line class-methods-use-this
     async Save() {
-      throw new Error('Method not implemented.');
+      throw new Error('Method or Property not implemented.');
     }
 
     // eslint-disable-next-line class-methods-use-this
     get type(): string {
-      throw new Error('Property not implemented.');
+      throw new Error('Method or Property not implemented.');
     }
 
     get id(): string {
@@ -71,7 +71,7 @@ export default class ResourceObject implements IResourceObject {
 
     // eslint-disable-next-line class-methods-use-this
     get attributes(): IResourceObjectAttributes {
-      throw new Error('Property not implemented.');
+      throw new Error('Method or Property not implemented.');
     }
 
     get uri(): ResourceObjectUri {

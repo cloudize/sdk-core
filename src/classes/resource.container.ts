@@ -13,6 +13,7 @@ import {
   ResourceSortOption,
   ResourcePathParams, SDKConfig, ResourceObjectClass, SDKException, SDKRequestException,
 } from '..';
+import {redactUndefinedValues} from "@apigames/json/lib/utils";
 
 export default class ResourceContainer implements IResourceContainer {
   protected _data: IResourceObject | IResourceObject[];
@@ -29,7 +30,7 @@ export default class ResourceContainer implements IResourceContainer {
 
   // eslint-disable-next-line class-methods-use-this
   get data(): IResourceObject | IResourceObject[] {
-    throw new Error('Property not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 
   get restClient(): IRestClient {
@@ -51,7 +52,7 @@ export default class ResourceContainer implements IResourceContainer {
 
   // eslint-disable-next-line class-methods-use-this
   protected EndpointPath(): string {
-    throw new Error('Property not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 
   protected ClearData() {
@@ -125,12 +126,12 @@ export default class ResourceContainer implements IResourceContainer {
 
   // eslint-disable-next-line class-methods-use-this
   Add(): IResourceObject {
-    throw new Error('Method not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Delete(resource: IResourceObject): Promise<void> {
-    throw new Error('Method not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -161,26 +162,26 @@ export default class ResourceContainer implements IResourceContainer {
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   IncludedObject(type: string, id: string): IResourceObject {
-    throw new Error('Method not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Filter(filter: ResourceFilterName, value: ResourceFilterValue): IResourceContainer {
-    throw new Error('Method not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Sort(option: ResourceSortOption): IResourceContainer {
-    throw new Error('Method not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Include(include: ResourceIncludeOption): IResourceContainer {
-    throw new Error('Method not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Page(pageNumber: number, pageSize: number): IResourceContainer {
-    throw new Error('Method not implemented.');
+    throw new Error('Method or Property not implemented.');
   }
 }

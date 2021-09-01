@@ -13,7 +13,7 @@ describe('The base ', () => {
         expect(resource.type).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Property not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -24,7 +24,7 @@ describe('The base ', () => {
         expect(resource.attributes).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Property not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -36,7 +36,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -48,7 +48,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
   });
@@ -76,7 +76,7 @@ describe('The base ', () => {
         expect(container.data).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Property not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -86,7 +86,7 @@ describe('The base ', () => {
         expect(container.uri).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Property not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -97,7 +97,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -108,7 +108,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -119,7 +119,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -130,7 +130,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -141,7 +141,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -153,7 +153,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -164,7 +164,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -175,7 +175,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Property not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
 
@@ -186,7 +186,7 @@ describe('The base ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error.message).toBe('Method not implemented.');
+        expect(error.message).toBe('Method or Property not implemented.');
       }
     });
   });
