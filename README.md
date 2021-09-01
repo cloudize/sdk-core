@@ -1,2 +1,2 @@
 # sdk-core
-API Games SDK Core
+API Games SDK Core Package
