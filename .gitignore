@@ -102,3 +102,11 @@ dist
 
 # TernJS port file
 .tern-port
+
+# NPM Tokens
+.npmrc
+
+# Webstorm config and coverage files
+.idea
+coverage/
+lib/
