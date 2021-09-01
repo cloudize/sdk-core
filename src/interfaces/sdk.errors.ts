@@ -4,7 +4,7 @@ export interface ISDKError {
 }
 
 export interface ISDKRequestError extends ISDKError {
-    status: string,
+    status: number,
     detail?: string,
     source?: any
 }
@@ -15,8 +15,6 @@ export interface ISDKException {
 }
 
 export interface ISDKRequestException {
-    code: string;
-    message: string;
-    payload?: ISDKRequestError | ISDKRequestError[];
     status: number;
+    items: ISDKRequestError[];
 }

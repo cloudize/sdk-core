@@ -1,65 +1,45 @@
-import { isDefined, isEmpty, isObject } from '@apigames/json';
-import { ISDKRequestError, ISDKRequestException } from '..';
+import { ISDKRequestException, SDKRequestError } from '..';
 
-export default class SDKRequestException implements ISDKRequestException {
-    private _code: string = '';
+export default class SDKRequestException extends Error implements ISDKRequestException {
+    private _errors: Array<SDKRequestError> = [];
 
-    private _title: string = '';
-
-    private _status: number = 400;
-
-    private _detail: string = '';
-
-    private _source: any = '';
-
-    constructor(code: string, title: string, status: number, detail?: string, source?: any) {
-      this._code = code;
-      this._title = title;
-      this._status = status;
-
-      if (isDefined(detail)) this._detail = detail;
-      if (isDefined(source)) this._source = source;
+    constructor() {
+      super();
+      this.name = 'SDKRequestException';
     }
 
-    get code(): string {
-      return this._code;
+    AddError(code: string, title: string, status: number, detail?: string, source?: any) {
+      this._errors.push(new SDKRequestError(code, title, status, detail, source));
     }
 
-    get detail(): string {
-      return this._detail;
+    get count(): number {
+      return this._errors.length;
     }
 
-    get message(): string {
-      return this._title;
-    }
-
-    get payload(): ISDKRequestError {
-      const thisError: ISDKRequestError = {
-        code: this._code,
-        title: this._title,
-        status: this._status.toString(),
-      };
-
-      if (this._detail) {
-        thisError.detail = this._detail;
-      }
-
-      if ((this._source) && (isObject(this._source) && (!isEmpty(this._source)))) {
-        thisError.source = this._source;
-      }
-
-      return thisError;
-    }
-
-    get source(): string {
-      return this._source;
+    get items(): Array<SDKRequestError> {
+      return this._errors;
     }
 
     get status(): number {
-      return this._status;
-    }
+      let thisStatus = 200;
 
-    get title(): string {
-      return this._title;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const error of this.items) {
+        if (error.status > thisStatus) {
+          thisStatus = error.status;
+        }
+      }
+
+      if ((thisStatus >= 200) && (thisStatus <= 299)) {
+        thisStatus = 200;
+      } else if ((thisStatus >= 300) && (thisStatus <= 399)) {
+        thisStatus = 300;
+      } else if ((thisStatus >= 400) && (thisStatus <= 499)) {
+        thisStatus = 400;
+      } else {
+        thisStatus = 500;
+      }
+
+      return thisStatus;
     }
 }

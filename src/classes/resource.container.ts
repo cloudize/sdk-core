@@ -1,5 +1,5 @@
 import {
-  hasProperty, isArray, isDefined, isObject, isString,
+  hasProperty, isArray, isDefined, isNumber, isObject, isString,
 } from '@apigames/json';
 import {
   IRestClient, RestClient, RestClientOptions, RestClientResponse,
@@ -11,7 +11,7 @@ import {
   ResourceFilterValue,
   ResourceIncludeOption,
   ResourceSortOption,
-  ResourcePathParams, SDKConfig, ResourceObjectClass, SDKException,
+  ResourcePathParams, SDKConfig, ResourceObjectClass, SDKException, SDKRequestException,
 } from '..';
 
 export default class ResourceContainer implements IResourceContainer {
@@ -81,7 +81,7 @@ export default class ResourceContainer implements IResourceContainer {
     throw new SDKException('INVALID-RESOURCE-TYPE', 'The resource being loaded doesn\'t have the required resource type.');
   }
 
-  protected DeserializeResponse(response: RestClientResponse) {
+  protected LoadResponse(response: RestClientResponse) {
     this.ClearData();
 
     if (hasProperty(response.data, 'data')) {
@@ -98,8 +98,29 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  protected DeserializeErrors(response: RestClientResponse) {
+  protected LoadErrors(response: RestClientResponse) {
     this.ClearData();
+
+    if (hasProperty(response.data, 'errors') && isArray(response.data.errors)) {
+      const requestException = new SDKRequestException();
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const error of response.data.errors) {
+        if (hasProperty(error, 'code') && isString(error.code)
+            && hasProperty(error, 'title') && isString(error.title)
+            && hasProperty(error, 'status') && isNumber(error.status)) {
+          let detail: string;
+          if (hasProperty(error, 'detail') && isString(error.detail)) detail = error.detail;
+
+          let source: any;
+          if (hasProperty(error, 'source')) source = error.source;
+
+          requestException.AddError(error.code, error.title, error.status, detail, source);
+        }
+      }
+
+      throw requestException;
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -130,10 +151,10 @@ export default class ResourceContainer implements IResourceContainer {
 
     switch (response.statusCode) {
       case 200:
-        this.DeserializeResponse(response);
+        this.LoadResponse(response);
         return true;
       default:
-        this.DeserializeErrors(response);
+        this.LoadErrors(response);
         return false;
     }
   }
