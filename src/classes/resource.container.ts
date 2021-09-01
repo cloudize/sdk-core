@@ -70,8 +70,12 @@ export default class ResourceContainer implements IResourceContainer {
 
   protected LoadResourceData(resourceData: any): IResourceObject {
     if (hasProperty(resourceData, 'type') && isString(resourceData.type)) {
-      const ResourceClass: ResourceObjectClass = SDKConfig().ResourceClass(resourceData.type);
-      return new ResourceClass(this).LoadData(resourceData);
+      if (hasProperty(resourceData, 'id') && isString(resourceData.id)) {
+        const ResourceClass: ResourceObjectClass = SDKConfig().ResourceClass(resourceData.type);
+        return new ResourceClass(this).LoadData(resourceData);
+      }
+
+      throw new SDKException('INVALID-RESOURCE-ID', 'The resource being loaded doesn\'t have the required resource id.');
     }
 
     throw new SDKException('INVALID-RESOURCE-TYPE', 'The resource being loaded doesn\'t have the required resource type.');
