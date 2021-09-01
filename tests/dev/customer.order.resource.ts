@@ -21,7 +21,7 @@ export interface IOrderAttributes extends IResourceObjectAttributes {
 export class Order extends ResourceObject {
   private _attributes: IOrderAttributes;
 
-  protected DeserializeAttributes(value: any) {
+  protected LoadAttributes(value: any) {
     this._attributes = value;
   }
 

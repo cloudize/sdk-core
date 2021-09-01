@@ -10,7 +10,7 @@ export interface IResourceObject {
     id?: ResourceObjectIdentifier;
     attributes: IResourceObjectAttributes
     uri: ResourceObjectUri;
-    Deserialize(value: any): IResourceObject;
+    LoadData(value: any): IResourceObject;
     Delete(): Promise<void>;
     Save(): Promise<void>;
 }

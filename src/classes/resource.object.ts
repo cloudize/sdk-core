@@ -19,25 +19,25 @@ export default class ResourceObject implements IResourceObject {
     }
 
     // eslint-disable-next-line class-methods-use-this,no-unused-vars
-    protected DeserializeAttributes(value: any) {
+    protected LoadAttributes(value: any) {
       throw new Error('Method not implemented.');
     }
 
     // eslint-disable-next-line class-methods-use-this,no-unused-vars
-    protected DeserializeRelationships(value: any) {
+    protected LoadRelationships(value: any) {
       throw new Error('Method not implemented.');
     }
 
-    Deserialize(value: any): IResourceObject {
+    LoadData(value: any): IResourceObject {
       if (!hasProperty(value, 'type') || (value.type !== this.type)) {
         throw new SDKException('INVALID-RESOURCE-MAPPING', 'The resource being loaded cannot be read into this object');
       }
 
       if (hasProperty(value, 'id')) this._id = value.id;
 
-      if (hasProperty(value, 'attributes')) this.DeserializeAttributes(value.attributes);
+      if (hasProperty(value, 'attributes')) this.LoadAttributes(value.attributes);
 
-      if (hasProperty(value, 'relationships')) this.DeserializeRelationships(value.relationships);
+      if (hasProperty(value, 'relationships')) this.LoadRelationships(value.relationships);
 
       if (hasProperty(value, 'links') && isObject(value.links) && hasProperty(value.links, 'self')
         && isString(value.links.self)) {

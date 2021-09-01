@@ -1,5 +1,5 @@
 import {
-  hasProperty, isArray, isDefined, isObject,
+  hasProperty, isArray, isDefined, isObject, isString,
 } from '@apigames/json';
 import {
   IRestClient, RestClient, RestClientOptions, RestClientResponse,
@@ -11,7 +11,7 @@ import {
   ResourceFilterValue,
   ResourceIncludeOption,
   ResourceSortOption,
-  ResourcePathParams, SDKConfig, ResourceObjectClass,
+  ResourcePathParams, SDKConfig, ResourceObjectClass, SDKException,
 } from '..';
 
 export default class ResourceContainer implements IResourceContainer {
@@ -68,9 +68,13 @@ export default class ResourceContainer implements IResourceContainer {
     return isArray(value);
   }
 
-  protected InitResourceObject(resourceData: any): IResourceObject {
-    const ResourceClass: ResourceObjectClass = SDKConfig().ResourceClass(resourceData.type);
-    return new ResourceClass(this).Deserialize(resourceData);
+  protected LoadResourceData(resourceData: any): IResourceObject {
+    if (hasProperty(resourceData, 'type') && isString(resourceData.type)) {
+      const ResourceClass: ResourceObjectClass = SDKConfig().ResourceClass(resourceData.type);
+      return new ResourceClass(this).LoadData(resourceData);
+    }
+
+    throw new SDKException('INVALID-RESOURCE-TYPE', 'The resource being loaded doesn\'t have the required resource type.');
   }
 
   protected DeserializeResponse(response: RestClientResponse) {
@@ -81,10 +85,10 @@ export default class ResourceContainer implements IResourceContainer {
         this._data = [];
         // eslint-disable-next-line no-restricted-syntax
         for (const resource of response.data.data) {
-          this._data.push(this.InitResourceObject(resource));
+          this._data.push(this.LoadResourceData(resource));
         }
       } else if (isObject(response.data.data)) {
-        this._data = this.InitResourceObject(response.data.data);
+        this._data = this.LoadResourceData(response.data.data);
       }
     }
   }
