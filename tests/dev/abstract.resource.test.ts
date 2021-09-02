@@ -39,18 +39,6 @@ describe('The base ', () => {
         expect(error.message).toBe('Method or Property not implemented.');
       }
     });
-
-    it('when the Save() method is called.', async () => {
-      try {
-        const container = new ResourceContainer();
-        const resource = new ResourceObject(container);
-        await resource.Save();
-        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
-      } catch (error) {
-        expect(error).toBeDefined();
-        expect(error.message).toBe('Method or Property not implemented.');
-      }
-    });
   });
 
   describe('ResourceObject should  ', () => {

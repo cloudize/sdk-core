@@ -103,6 +103,20 @@ export default class ResourceContainer implements IResourceContainer {
     return isArray(value);
   }
 
+  protected AddResource(obj: IResourceObject) {
+    if (isDefined(this.data)) {
+      if (this.isResourceObject(this.data)) {
+        const currentObj = this.data;
+        this._data = [currentObj];
+      }
+      if (this.isResourceList(this.data)) {
+        this.data.push(obj);
+      }
+    } else {
+      this._data = obj;
+    }
+  }
+
   protected LoadResourceData(resourceData: any): IResourceObject {
     if (hasProperty(resourceData, 'type') && isString(resourceData.type)) {
       if (hasProperty(resourceData, 'id') && isString(resourceData.id)) {

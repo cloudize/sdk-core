@@ -9,7 +9,7 @@ import {
   ResourceObject,
   SDKConfig,
 } from '../../src';
-import {ResourceFilterType} from "../../src/classes/resource.container";
+import { ResourceFilterType } from '../../src/classes/resource.container';
 
 // eslint-disable-next-line no-shadow
 export enum OrderFilter {
@@ -26,24 +26,31 @@ export enum OrderInclude {
   Customer = 'customer',
 }
 
-export interface IOrderAttributes extends IResourceObjectAttributes {
-  product: {
-    code: string;
-    name: string;
-    description: string[];
+export class OrderAttributes implements IResourceObjectAttributes {
+  product?: {
+    code?: string;
+    name?: string;
+    description?: string[];
   };
-  qty: number;
-  price: number;
+
+  qty?: number;
+
+  price?: number;
 }
 
 export class Order extends ResourceObject {
-  private _attributes: IOrderAttributes;
+  private _attributes: OrderAttributes;
+
+  constructor(container: IResourceContainer) {
+    super(container);
+    this._attributes = new OrderAttributes();
+  }
 
   protected LoadAttributes(value: any) {
     this._attributes = value;
   }
 
-  get attributes(): IOrderAttributes {
+  get attributes(): OrderAttributes {
     return this._attributes;
   }
 
@@ -72,7 +79,9 @@ export class CustomerOrders extends ResourceContainer {
   }
 
   Add(): Order {
-    return new Order(this);
+    const obj = new Order(this);
+    this.AddResource(obj);
+    return obj;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars

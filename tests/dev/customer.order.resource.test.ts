@@ -1,8 +1,8 @@
 import { MockRestClient, RestClientOptions } from '@apigames/rest-client';
 import {
   CustomerOrders,
-  IOrderAttributes,
   Order,
+  OrderAttributes,
   OrderFilter,
   OrderInclude,
   OrderSort,
@@ -228,7 +228,7 @@ describe('The customer orders resource ', () => {
 
       const queryOptions: RestClientOptions = {};
 
-      const orderAttributes: IOrderAttributes = {
+      const orderAttributes: OrderAttributes = {
         product: {
           code: 'WIN95',
           name: 'Windows 95',
@@ -480,7 +480,7 @@ describe('The customer orders resource ', () => {
         },
       };
 
-      const windows95Attributes: IOrderAttributes = {
+      const windows95Attributes: OrderAttributes = {
         product: {
           code: 'WIN95',
           name: 'Windows 95',
@@ -494,7 +494,7 @@ describe('The customer orders resource ', () => {
         price: 1.95,
       };
 
-      const windows98Attributes: IOrderAttributes = {
+      const windows98Attributes: OrderAttributes = {
         product: {
           code: 'WIN98',
           name: 'Windows 98',
@@ -747,6 +747,112 @@ describe('The customer orders resource ', () => {
         expect(customerOrders.data.length).toBe(1);
         expect(customerOrders.data[0].id).toBe('45801d5d-313e-4d40-be4f-c666b6f713c5');
       }
+    });
+  });
+
+  describe('container\'s Save() method ', () => {
+    it('should throw an error if the API returns an error during the operation.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Post');
+      mockClient.MockResolve({
+        statusCode: 400,
+        statusText: 'Conflict',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          errors: [
+            {
+              code: '409-CONFLICT',
+              title: 'A conflict occurred.',
+              status: 409,
+            },
+          ],
+          jsonapi: {
+            version: '1.0',
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const order = customerOrders.Add();
+      order.attributes.product = {
+        code: 'PRODUCT-CODE',
+        name: 'PRODUCT-NAME',
+      };
+      order.attributes.qty = 5;
+      order.attributes.price = 12.98;
+
+      try {
+        expect(order.id).toBeUndefined();
+        await order.Save();
+        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error).toBeInstanceOf(SDKRequestException);
+        expect(error.count).toBe(1);
+        expect(error.status).toBe(400);
+        expect(error.items[0].code).toBe('409-CONFLICT');
+        expect(error.items[0].title).toBe('A conflict occurred.');
+        expect(error.items[0].status).toBe(409);
+      }
+    });
+
+    it('should POST a new resource to the API and add it to the internal data structures.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Post');
+      mockClient.MockResolve({
+        statusCode: 201,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+          location: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const order = customerOrders.Add();
+      order.attributes.product = {
+        code: 'PRODUCT-CODE',
+        name: 'PRODUCT-NAME',
+      };
+      order.attributes.qty = 5;
+      order.attributes.price = 12.98;
+
+      expect(order.id).toBeUndefined();
+      await order.Save();
+
+      const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
+      const queryHeaders = {
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+      };
+      const queryOptions: RestClientOptions = {};
+      const queryPayload = {
+        data: {
+          type: 'Order',
+          attributes: {
+            product: {
+              code: 'PRODUCT-CODE',
+              name: 'PRODUCT-NAME',
+            },
+            qty: 5,
+            price: 12.98,
+          },
+        },
+      };
+
+      expect(mockClient.Post).toHaveBeenCalledTimes(1);
+      expect(mockClient.Post).toHaveBeenCalledWith(queryUri, queryPayload, queryHeaders, queryOptions);
+
+      expect(customerOrders.data).toBeDefined();
+      expect(customerOrders.data).toBeInstanceOf(Order);
+      expect(customerOrders.data).toBe(order);
+      expect(order.id).toBeDefined();
+      expect(order.id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
     });
   });
 
