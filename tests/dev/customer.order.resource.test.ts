@@ -751,6 +751,40 @@ describe('The customer orders resource ', () => {
   });
 
   describe('container\'s Save() method ', () => {
+    it('should throw an error if an unexpected error had occurred (eg Load Balancer throwing 503).', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Post');
+      mockClient.MockResolve({
+        statusCode: 503,
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const order = customerOrders.Add();
+      order.attributes.product = {
+        code: 'PRODUCT-CODE',
+        name: 'PRODUCT-NAME',
+      };
+      order.attributes.qty = 5;
+      order.attributes.price = 12.98;
+
+      try {
+        expect(order.id).toBeUndefined();
+        await order.Save();
+        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error).toBeInstanceOf(SDKRequestException);
+        expect(error.count).toBe(1);
+        expect(error.status).toBe(500);
+        expect(error.items[0].code).toBe('UNEXPECTED-ERROR');
+        expect(error.items[0].title).toBe('An unexpected error was received whilst processing the request.');
+        expect(error.items[0].status).toBe(503);
+      }
+    });
+
     it('should throw an error if the API returns an error during the operation.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Post');
@@ -798,6 +832,41 @@ describe('The customer orders resource ', () => {
         expect(error.items[0].code).toBe('409-CONFLICT');
         expect(error.items[0].title).toBe('A conflict occurred.');
         expect(error.items[0].status).toBe(409);
+      }
+    });
+
+    it('should throw an error if the POST operation does not return the resource location.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Post');
+      mockClient.MockResolve({
+        statusCode: 201,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const order = customerOrders.Add();
+      order.attributes.product = {
+        code: 'PRODUCT-CODE',
+        name: 'PRODUCT-NAME',
+      };
+      order.attributes.qty = 5;
+      order.attributes.price = 12.98;
+
+      expect(order.id).toBeUndefined();
+      try {
+        await order.Save();
+        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error).toBeInstanceOf(SDKRequestException);
+        expect(error.count).toBe(1);
+        expect(error.status).toBe(200);
+        expect(error.items[0].code).toBe('INVALID-LOCATION');
+        expect(error.items[0].title).toBe('The save operation was unable to retrieve the id of the resource from the API.');
+        expect(error.items[0].status).toBe(201);
       }
     });
 

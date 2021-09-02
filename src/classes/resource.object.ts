@@ -2,7 +2,6 @@ import {
   hasProperty, isArray, isDefined, isNumber, isObject, isString, isUndefined,
 } from '@apigames/json';
 import { RestClientOptions, RestClientResponse } from '@apigames/rest-client';
-import { redactUndefinedValues } from '@apigames/json/lib/utils';
 import {
   IResourceContainer,
   IResourceObject,
@@ -11,10 +10,18 @@ import {
   SDKException, SDKRequestException,
 } from '..';
 
+// eslint-disable-next-line no-shadow
+export enum ResourceObjectMode {
+    NewDocument,
+    ExistingDocument
+}
+
 export default class ResourceObject implements IResourceObject {
     private _container: IResourceContainer;
 
     private _id: string;
+
+    private _mode: ResourceObjectMode = ResourceObjectMode.NewDocument;
 
     private _uri: ResourceObjectUri;
 
@@ -48,6 +55,8 @@ export default class ResourceObject implements IResourceObject {
         this._uri = value.links.self;
       }
 
+      this._mode = ResourceObjectMode.ExistingDocument;
+
       return this;
     }
 
@@ -58,6 +67,7 @@ export default class ResourceObject implements IResourceObject {
         },
       };
 
+      if (isDefined(this.id)) payload.data.id = this.id;
       if (isDefined(this.attributes)) payload.data.attributes = this.attributes;
 
       return payload;
@@ -112,6 +122,7 @@ export default class ResourceObject implements IResourceObject {
             const headers: any = response.headers;
             const pathParts = headers.location.split('/');
             this.id = pathParts.pop();
+            this._mode = ResourceObjectMode.ExistingDocument;
           } else {
             const exception = new SDKRequestException();
             exception.AddError('INVALID-LOCATION', 'The save operation was unable to retrieve the id of the '
@@ -130,7 +141,7 @@ export default class ResourceObject implements IResourceObject {
 
     // eslint-disable-next-line class-methods-use-this
     async Save() {
-      if (isUndefined(this._id)) {
+      if (this._mode === ResourceObjectMode.NewDocument) {
         await this.InsertResource();
       } else {
         await this.UpdateResource();
