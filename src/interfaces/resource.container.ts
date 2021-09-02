@@ -1,5 +1,6 @@
 import { IRestClient } from '@apigames/rest-client';
 import { IResourceObject, ResourceObjectIdentifier, ResourceObjectType } from './resource.object';
+import {ResourceFilterType} from "../classes/resource.container";
 
 export type ResourceFilterName = string;
 export type ResourceFilterValue = string;
@@ -10,7 +11,7 @@ export interface IResourceContainer {
     data: IResourceObject | IResourceObject[];
     restClient: IRestClient;
     uri: string;
-    Filter(filter: ResourceFilterName, value: ResourceFilterValue): IResourceContainer;
+    Filter(filter: ResourceFilterName, selector: ResourceFilterType, value: ResourceFilterValue): IResourceContainer;
     Sort(option: ResourceSortOption): IResourceContainer;
     Include(include: ResourceIncludeOption): IResourceContainer;
     Page(pageNumber: number, pageSize: number): IResourceContainer;

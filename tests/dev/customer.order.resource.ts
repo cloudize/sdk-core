@@ -2,11 +2,29 @@
 import { IRestClient } from '@apigames/rest-client';
 import { isDefined } from '@apigames/json';
 import {
+  IResourceContainer,
   IResourceObjectAttributes,
   ResourceContainer,
+  ResourceFilterValue,
   ResourceObject,
   SDKConfig,
 } from '../../src';
+import {ResourceFilterType} from "../../src/classes/resource.container";
+
+// eslint-disable-next-line no-shadow
+export enum OrderFilter {
+  ProductCode = 'product.code',
+}
+
+// eslint-disable-next-line no-shadow
+export enum OrderSort {
+  OrderDate = 'orderDate',
+}
+
+// eslint-disable-next-line no-shadow
+export enum OrderInclude {
+  Customer = 'customer',
+}
 
 export interface IOrderAttributes extends IResourceObjectAttributes {
   product: {
@@ -55,6 +73,21 @@ export class CustomerOrders extends ResourceContainer {
 
   Add(): Order {
     return new Order(this);
+  }
+
+  // eslint-disable-next-line class-methods-use-this,no-unused-vars
+  Filter(filter: OrderFilter, selector: ResourceFilterType, value: ResourceFilterValue): IResourceContainer {
+    return super.Filter(OrderFilter.ProductCode, selector, value);
+  }
+
+  // eslint-disable-next-line class-methods-use-this,no-unused-vars
+  Sort(option: OrderSort): IResourceContainer {
+    return super.Sort(OrderSort.OrderDate);
+  }
+
+  // eslint-disable-next-line class-methods-use-this,no-unused-vars
+  Include(include: OrderInclude): IResourceContainer {
+    return super.Include(OrderInclude.Customer);
   }
 
   // eslint-disable-next-line class-methods-use-this

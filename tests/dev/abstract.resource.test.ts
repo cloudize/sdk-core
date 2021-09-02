@@ -90,50 +90,6 @@ describe('The base ', () => {
       }
     });
 
-    it('when the Filter() method is called.', () => {
-      try {
-        const container = new ResourceContainer();
-        container.Filter('name', 'value');
-        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
-      } catch (error) {
-        expect(error).toBeDefined();
-        expect(error.message).toBe('Method or Property not implemented.');
-      }
-    });
-
-    it('when the Sort() method is called.', () => {
-      try {
-        const container = new ResourceContainer();
-        container.Sort('option');
-        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
-      } catch (error) {
-        expect(error).toBeDefined();
-        expect(error.message).toBe('Method or Property not implemented.');
-      }
-    });
-
-    it('when the Include() method is called.', () => {
-      try {
-        const container = new ResourceContainer();
-        container.Include('option');
-        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
-      } catch (error) {
-        expect(error).toBeDefined();
-        expect(error.message).toBe('Method or Property not implemented.');
-      }
-    });
-
-    it('when the Page() method is called.', () => {
-      try {
-        const container = new ResourceContainer();
-        container.Page(25, 1);
-        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
-      } catch (error) {
-        expect(error).toBeDefined();
-        expect(error.message).toBe('Method or Property not implemented.');
-      }
-    });
-
     it('when the Add() method is called.', () => {
       try {
         const container = new ResourceContainer();

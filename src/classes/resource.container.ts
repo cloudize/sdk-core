@@ -1,9 +1,10 @@
 import {
-  hasProperty, isArray, isDefined, isNumber, isObject, isString,
+  hasProperty, isArray, isDefined, isEmpty, isNumber, isObject, isString,
 } from '@apigames/json';
 import {
   IRestClient, RestClient, RestClientOptions, RestClientResponse,
 } from '@apigames/rest-client';
+import { redactUndefinedValues } from '@apigames/json/lib/utils';
 import {
   IResourceContainer,
   IResourceObject,
@@ -13,10 +14,29 @@ import {
   ResourceSortOption,
   ResourcePathParams, SDKConfig, ResourceObjectClass, SDKException, SDKRequestException,
 } from '..';
-import {redactUndefinedValues} from "@apigames/json/lib/utils";
+
+type ResourceContainerQueryParams = {
+  includes: {
+    [index: string]: boolean;
+  };
+  filters: {
+    [index: string]: string;
+  };
+  sort: string;
+  pagination: {
+    page?: number,
+    size?: number,
+  };
+}
+
+export enum ResourceFilterType {
+  Equal = 'equal',
+}
 
 export default class ResourceContainer implements IResourceContainer {
   protected _data: IResourceObject | IResourceObject[];
+
+  private _queryParams: ResourceContainerQueryParams;
 
   private _restClient: IRestClient;
 
@@ -26,6 +46,12 @@ export default class ResourceContainer implements IResourceContainer {
     this._data = undefined;
     this._restClient = isDefined(restClient) ? restClient : new RestClient();
     this.pathParams = {};
+    this._queryParams = {
+      includes: {},
+      filters: {},
+      sort: undefined,
+      pagination: {},
+    };
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -135,8 +161,30 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  Find(): Promise<void> {
-    throw new Error('Method not implemented.');
+  async Find(): Promise<void> {
+    this.ClearData();
+    const queryUri: string = `${this.uri}`;
+    const queryHeaders = {
+      Accept: 'application/vnd.api+json',
+      'Content-Type': 'application/vnd.api+json',
+    };
+    const queryOptions: RestClientOptions = {
+      queryParams: this.GetQueryParams(),
+    };
+
+    this.ClearQueryParams();
+    redactUndefinedValues(queryOptions);
+
+    const response = await this._restClient.Get(queryUri, queryHeaders, queryOptions);
+
+    switch (response.statusCode) {
+      case 200:
+        this.LoadResponse(response);
+        break;
+      default:
+        this.LoadErrors(response);
+        break;
+    }
   }
 
   async Get(id: string): Promise<boolean> {
@@ -146,10 +194,14 @@ export default class ResourceContainer implements IResourceContainer {
       Accept: 'application/vnd.api+json',
       'Content-Type': 'application/vnd.api+json',
     };
-    const queryOptions: RestClientOptions = {};
+    const queryOptions: RestClientOptions = {
+      queryParams: this.GetQueryParams(),
+    };
+
+    this.ClearQueryParams();
+    redactUndefinedValues(queryOptions);
 
     const response = await this._restClient.Get(queryUri, queryHeaders, queryOptions);
-
     switch (response.statusCode) {
       case 200:
         this.LoadResponse(response);
@@ -160,28 +212,71 @@ export default class ResourceContainer implements IResourceContainer {
     }
   }
 
+  private ClearQueryParams() {
+    this._queryParams = {
+      includes: {},
+      filters: {},
+      sort: undefined,
+      pagination: {},
+    };
+  }
+
+  private GetQueryParams():any {
+    const queryParams: any = {};
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const filterName in this._queryParams.filters) {
+      if (hasProperty(this._queryParams.filters, filterName)) {
+        queryParams[`filter[${filterName}]`] = this._queryParams.filters[filterName];
+      }
+    }
+
+    const includeList: string[] = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const includeName in this._queryParams.includes) {
+      if (hasProperty(this._queryParams.includes, includeName)) {
+        includeList.push(includeName);
+      }
+    }
+    if (includeList.length > 0) queryParams.include = includeList.join(',');
+
+    if (hasProperty(this._queryParams.pagination, 'page')) queryParams['page[number]'] = this._queryParams.pagination.page;
+    if (hasProperty(this._queryParams.pagination, 'page')) queryParams['page[size]'] = this._queryParams.pagination.size;
+
+    if (isDefined(this._queryParams.sort)) queryParams.sort = this._queryParams.sort;
+
+    if (isEmpty(queryParams)) return undefined;
+
+    return queryParams;
+  }
+
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   IncludedObject(type: string, id: string): IResourceObject {
     throw new Error('Method or Property not implemented.');
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Filter(filter: ResourceFilterName, value: ResourceFilterValue): IResourceContainer {
-    throw new Error('Method or Property not implemented.');
+  Filter(filter: ResourceFilterName, selector: ResourceFilterType, value: ResourceFilterValue): IResourceContainer {
+    this._queryParams.filters[`${selector}:${filter}`] = value;
+    return this;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Sort(option: ResourceSortOption): IResourceContainer {
-    throw new Error('Method or Property not implemented.');
+    this._queryParams.sort = option;
+    return this;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Include(include: ResourceIncludeOption): IResourceContainer {
-    throw new Error('Method or Property not implemented.');
+    this._queryParams.includes[include] = true;
+    return this;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Page(pageNumber: number, pageSize: number): IResourceContainer {
-    throw new Error('Method or Property not implemented.');
+    this._queryParams.pagination.page = pageNumber;
+    this._queryParams.pagination.size = pageSize;
+    return this;
   }
 }
