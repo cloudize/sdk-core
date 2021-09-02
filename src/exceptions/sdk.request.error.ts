@@ -27,10 +27,6 @@ export default class SDKRequestError implements ISDKRequestError {
       return this._detail;
     }
 
-    get message(): string {
-      return this._title;
-    }
-
     get source(): string {
       return this._source;
     }

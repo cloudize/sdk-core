@@ -183,7 +183,6 @@ export default class ResourceContainer implements IResourceContainer {
         break;
       default:
         this.LoadErrors(response);
-        break;
     }
   }
 
@@ -208,7 +207,6 @@ export default class ResourceContainer implements IResourceContainer {
         return true;
       default:
         this.LoadErrors(response);
-        return false;
     }
   }
 

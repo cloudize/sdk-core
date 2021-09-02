@@ -1,4 +1,4 @@
-import {MockRestClient, RestClientOptions} from '@apigames/rest-client';
+import { MockRestClient, RestClientOptions } from '@apigames/rest-client';
 import {
   CustomerOrders,
   IOrderAttributes,
@@ -7,8 +7,8 @@ import {
   OrderInclude,
   OrderSort,
 } from './customer.order.resource';
-import {SDKException, SDKRequestException} from '../../src';
-import {ResourceFilterType} from "../../src/classes/resource.container";
+import { SDKException, SDKRequestException } from '../../src';
+import { ResourceFilterType } from '../../src/classes/resource.container';
 
 describe('The customer orders resource ', () => {
   describe('container\'s Add() method ', () => {
@@ -332,6 +332,12 @@ describe('The customer orders resource ', () => {
               code: '405-STILL-NOT-FOUND',
               title: 'The requested resource was still not found.',
               status: 405,
+              detail: 'After an extensive look around the database, nothing resembling the desired resource was found.',
+              source: {
+                database: {
+                  collections: 'all of them really',
+                },
+              },
             },
           ],
           jsonapi: {
@@ -358,6 +364,9 @@ describe('The customer orders resource ', () => {
         expect(error.items[1].code).toBe('405-STILL-NOT-FOUND');
         expect(error.items[1].title).toBe('The requested resource was still not found.');
         expect(error.items[1].status).toBe(405);
+        expect(error.items[1].detail).toBe('After an extensive look around the database, nothing resembling '
+          + 'the desired resource was found.');
+        expect(error.items[1].source).toEqual({ database: { collections: 'all of them really' } });
       }
     });
 
@@ -374,26 +383,48 @@ describe('The customer orders resource ', () => {
           jsonapi: {
             version: '1.0',
           },
-          data: {
-            type: 'Order',
-            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
-            attributes: {
-              product: {
-                code: 'WIN95',
-                name: 'Windows 95',
-                description: [
-                  'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
-                  'programs and device drivers while offering a more stable and better performing system. ',
-                  'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
-                ],
+          data: [
+            {
+              type: 'Order',
+              id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+              attributes: {
+                product: {
+                  code: 'WIN95',
+                  name: 'Windows 95',
+                  description: [
+                    'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                    'programs and device drivers while offering a more stable and better performing system. ',
+                    'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                  ],
+                },
+                qty: 1,
+                price: 1.95,
               },
-              qty: 1,
-              price: 1.99,
+              links: {
+                self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+              },
             },
-            links: {
-              self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            {
+              type: 'Order',
+              id: '45801d5d-313e-4d40-be4f-c666b6f713c5',
+              attributes: {
+                product: {
+                  code: 'WIN98',
+                  name: 'Windows 98',
+                  description: [
+                    'Windows 98 is an operating system developed by Microsoft as part of its Windows 9x family of ',
+                    'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
+                    'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
+                  ],
+                },
+                qty: 1,
+                price: 1.98,
+              },
+              links: {
+                self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5',
+              },
             },
-          },
+          ],
           links: {
             self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders',
           },
@@ -424,7 +455,7 @@ describe('The customer orders resource ', () => {
         },
       };
 
-      const orderAttributes: IOrderAttributes = {
+      const windows95Attributes: IOrderAttributes = {
         product: {
           code: 'WIN95',
           name: 'Windows 95',
@@ -435,18 +466,37 @@ describe('The customer orders resource ', () => {
           ],
         },
         qty: 1,
-        price: 1.99,
+        price: 1.95,
+      };
+
+      const windows98Attributes: IOrderAttributes = {
+        product: {
+          code: 'WIN98',
+          name: 'Windows 98',
+          description: [
+            'Windows 98 is an operating system developed by Microsoft as part of its Windows 9x family of ',
+            'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
+            'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
+          ],
+        },
+        qty: 1,
+        price: 1.98,
       };
 
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
       expect(mockClient.Get).toHaveBeenCalledWith(queryUri, queryHeaders, queryOptions);
       expect(customerOrders.data).toBeDefined();
-      expect(customerOrders.data).toBeInstanceOf(Order);
-      if (customerOrders.isResourceObject(customerOrders.data)) {
-        expect(customerOrders.data.type).toBe('Order');
-        expect(customerOrders.data.id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
-        expect(customerOrders.data.attributes).toEqual(orderAttributes);
-        expect(customerOrders.data.uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+      if (customerOrders.isResourceList(customerOrders.data)) {
+        expect(customerOrders.data[0]).toBeInstanceOf(Order);
+        expect(customerOrders.data[0].type).toBe('Order');
+        expect(customerOrders.data[0].id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+        expect(customerOrders.data[0].attributes).toEqual(windows95Attributes);
+        expect(customerOrders.data[0].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+        expect(customerOrders.data[1]).toBeInstanceOf(Order);
+        expect(customerOrders.data[1].type).toBe('Order');
+        expect(customerOrders.data[1].id).toBe('45801d5d-313e-4d40-be4f-c666b6f713c5');
+        expect(customerOrders.data[1].attributes).toEqual(windows98Attributes);
+        expect(customerOrders.data[1].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5');
       }
     });
   });
