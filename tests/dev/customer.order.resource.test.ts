@@ -102,6 +102,31 @@ describe('The customer orders resource ', () => {
       }
     });
 
+    it('should throw an unexpected error received from the API.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      mockClient.MockResolve({
+        statusCode: 503,
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      try {
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error).toBeInstanceOf(SDKRequestException);
+        expect(error.count).toBe(1);
+        expect(error.status).toBe(500);
+        expect(error.items[0].code).toBe('UNEXPECTED-ERROR');
+        expect(error.items[0].title).toBe('An unexpected error was received whilst processing the request.');
+        expect(error.items[0].status).toBe(503);
+      }
+    });
+
     it('should throw errors returned by the API.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
@@ -316,7 +341,7 @@ describe('The customer orders resource ', () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
-        statusCode: 404,
+        statusCode: 400,
         statusText: 'NOT FOUND',
         headers: {
           'Content-Type': 'application/vnd.api+json',
@@ -329,9 +354,9 @@ describe('The customer orders resource ', () => {
               status: 404,
             },
             {
-              code: '405-STILL-NOT-FOUND',
+              code: '404-STILL-NOT-FOUND',
               title: 'The requested resource was still not found.',
-              status: 405,
+              status: 404,
               detail: 'After an extensive look around the database, nothing resembling the desired resource was found.',
               source: {
                 database: {
@@ -361,9 +386,9 @@ describe('The customer orders resource ', () => {
         expect(error.items[0].code).toBe('404-NOT-FOUND');
         expect(error.items[0].title).toBe('The requested resource was not found.');
         expect(error.items[0].status).toBe(404);
-        expect(error.items[1].code).toBe('405-STILL-NOT-FOUND');
+        expect(error.items[1].code).toBe('404-STILL-NOT-FOUND');
         expect(error.items[1].title).toBe('The requested resource was still not found.');
-        expect(error.items[1].status).toBe(405);
+        expect(error.items[1].status).toBe(404);
         expect(error.items[1].detail).toBe('After an extensive look around the database, nothing resembling '
           + 'the desired resource was found.');
         expect(error.items[1].source).toEqual({ database: { collections: 'all of them really' } });
@@ -497,6 +522,230 @@ describe('The customer orders resource ', () => {
         expect(customerOrders.data[1].id).toBe('45801d5d-313e-4d40-be4f-c666b6f713c5');
         expect(customerOrders.data[1].attributes).toEqual(windows98Attributes);
         expect(customerOrders.data[1].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5');
+      }
+    });
+  });
+
+  describe('container\'s Delete() method ', () => {
+    it('should throw errors returned by the API.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      jest.spyOn(mockClient, 'Delete');
+
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                code: 'WIN95',
+                name: 'Windows 95',
+                description: [
+                  'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                  'programs and device drivers while offering a more stable and better performing system. ',
+                  'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                ],
+              },
+              qty: 1,
+              price: 1.99,
+            },
+            links: {
+              self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            },
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      });
+
+      mockClient.MockResolve({
+        statusCode: 404,
+        statusText: 'NOT FOUND',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          errors: [
+            {
+              code: '404-NOT-FOUND',
+              title: 'The requested resource was not found.',
+              status: 404,
+            },
+          ],
+          jsonapi: {
+            version: '1.0',
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      });
+
+      try {
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+        if (customerOrders.isResourceObject(customerOrders.data)) await customerOrders.Delete(customerOrders.data);
+        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error).toBeInstanceOf(SDKRequestException);
+        expect(error.count).toBe(1);
+        expect(error.status).toBe(400);
+        expect(error.items[0].code).toBe('404-NOT-FOUND');
+        expect(error.items[0].title).toBe('The requested resource was not found.');
+        expect(error.items[0].status).toBe(404);
+      }
+    });
+
+    it('should remove the single object from the container if the delete is successful.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      jest.spyOn(mockClient, 'Delete');
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                code: 'WIN95',
+                name: 'Windows 95',
+                description: [
+                  'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                  'programs and device drivers while offering a more stable and better performing system. ',
+                  'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                ],
+              },
+              qty: 1,
+              price: 1.99,
+            },
+            links: {
+              self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            },
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      });
+      mockClient.MockResolve({
+        statusCode: 204,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+
+      expect(customerOrders.data).toBeDefined();
+      expect(customerOrders.data).toBeInstanceOf(Order);
+
+      if (customerOrders.isResourceObject(customerOrders.data)) await customerOrders.Delete(customerOrders.data);
+
+      expect(customerOrders.data).toBeUndefined();
+    });
+
+    it('should remove the object from the object list in the container if the delete is successful.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      jest.spyOn(mockClient, 'Delete');
+
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          data: [
+            {
+              type: 'Order',
+              id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+              attributes: {
+                product: {
+                  code: 'WIN95',
+                  name: 'Windows 95',
+                  description: [
+                    'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                    'programs and device drivers while offering a more stable and better performing system. ',
+                    'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                  ],
+                },
+                qty: 1,
+                price: 1.95,
+              },
+              links: {
+                self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+              },
+            },
+            {
+              type: 'Order',
+              id: '45801d5d-313e-4d40-be4f-c666b6f713c5',
+              attributes: {
+                product: {
+                  code: 'WIN98',
+                  name: 'Windows 98',
+                  description: [
+                    'Windows 98 is an operating system developed by Microsoft as part of its Windows 9x family of ',
+                    'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
+                    'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
+                  ],
+                },
+                qty: 1,
+                price: 1.98,
+              },
+              links: {
+                self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5',
+              },
+            },
+          ],
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders',
+          },
+        },
+      });
+
+      mockClient.MockResolve({
+        statusCode: 204,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      await customerOrders.Find();
+
+      expect(customerOrders.data).toBeDefined();
+      if (customerOrders.isResourceList(customerOrders.data)) {
+        expect(customerOrders.data.length).toBe(2);
+        expect(customerOrders.data[0].id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+        if (customerOrders.isResourceList(customerOrders.data)) await customerOrders.data[0].Delete();
+        expect(customerOrders.data.length).toBe(1);
+        expect(customerOrders.data[0].id).toBe('45801d5d-313e-4d40-be4f-c666b6f713c5');
       }
     });
   });

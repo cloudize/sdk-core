@@ -29,8 +29,16 @@ type ResourceContainerQueryParams = {
   };
 }
 
+// eslint-disable-next-line no-shadow
 export enum ResourceFilterType {
   Equal = 'equal',
+  NotEqual = '!equal',
+  From = 'from',
+  To = 'to',
+  AutoComplete = 'autocomplete',
+  TextSearch = 'text',
+  NearLocation = 'near',
+  Exists = 'exists',
 }
 
 export default class ResourceContainer implements IResourceContainer {
@@ -147,6 +155,11 @@ export default class ResourceContainer implements IResourceContainer {
       }
 
       throw requestException;
+    } else {
+      const error = new SDKRequestException();
+      error.AddError('UNEXPECTED-ERROR', 'An unexpected error was received whilst processing the request.',
+        response.statusCode);
+      throw error;
     }
   }
 
@@ -155,9 +168,42 @@ export default class ResourceContainer implements IResourceContainer {
     throw new Error('Method or Property not implemented.');
   }
 
+  private RemoveResource(resource: IResourceObject) {
+    if (this.isResourceList(this.data)) {
+      this.data.forEach((item, index) => {
+        if (this.isResourceList(this.data) && (item.id === resource.id)) this.data.splice(index, 1);
+      });
+    } else if (this.isResourceObject(this.data) && this.data.id === resource.id) {
+      this._data = undefined;
+    }
+  }
+
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Delete(resource: IResourceObject): Promise<void> {
-    throw new Error('Method or Property not implemented.');
+  async Delete(resource: IResourceObject): Promise<void> {
+    if (isDefined(resource.id)) {
+      const queryUri: string = `${this.uri}/${resource.id}`;
+      const queryHeaders = {
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+      };
+      const queryOptions: RestClientOptions = {
+        queryParams: this.GetQueryParams(),
+      };
+
+      this.ClearQueryParams();
+      redactUndefinedValues(queryOptions);
+
+      const response = await this._restClient.Delete(queryUri, queryHeaders, queryOptions);
+      switch (response.statusCode) {
+        case 204:
+          this.RemoveResource(resource);
+          break;
+        default:
+          this.LoadErrors(response);
+      }
+    } else {
+      this.RemoveResource(resource);
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this
