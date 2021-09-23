@@ -6,6 +6,8 @@ export type SDKResourceMap = {
 }
 
 export class SDKConfiguration {
+  private _hostName: string;
+
   private _resourceMap: SDKResourceMap;
 
   constructor() {
@@ -18,6 +20,20 @@ export class SDKConfiguration {
 
   ResourceClass(type: string): ResourceObjectClass {
     return this._resourceMap[type];
+  }
+
+  FormatURL(path: string): string {
+    let url = this.hostName;
+    url = url.endsWith('/') ? url.slice(0, -1) : url;
+    return path.startsWith('/') ? `${url}${path}` : `${url}/${path}`;
+  }
+
+  get hostName(): string {
+    return this._hostName;
+  }
+
+  set hostName(value: string) {
+    this._hostName = value;
   }
 }
 
