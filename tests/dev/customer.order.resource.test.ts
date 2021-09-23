@@ -1,4 +1,11 @@
-import { MockRestClient, RestClientOptions } from '@apigames/rest-client';
+import {
+  CreateException,
+  Error400BadRequest,
+  Error404NotFound, Error409Conflict,
+  Error503ServiceUnavailable,
+  MockRestClient,
+  RestClientOptions,
+} from '@apigames/rest-client';
 import {
   CustomerOrders,
   Order,
@@ -7,7 +14,7 @@ import {
   OrderInclude,
   OrderSort,
 } from './customer.order.resource';
-import { SDKException, SDKRequestException } from '../../src';
+import { SDKException } from '../../src';
 import { ResourceFilterType } from '../../src/classes/resource.container';
 
 describe('The customer orders resource ', () => {
@@ -57,8 +64,8 @@ describe('The customer orders resource ', () => {
       } catch (error) {
         expect(error).toBeDefined();
         expect(error).toBeInstanceOf(SDKException);
-        expect(error.code).toBe('INVALID-RESOURCE-TYPE');
-        expect(error.message).toBe('The resource being loaded doesn\'t have the required resource type.');
+        expect((error as SDKException).code).toBe('INVALID-RESOURCE-TYPE');
+        expect((error as SDKException).message).toBe('The resource being loaded doesn\'t have the required resource type.');
       }
     });
 
@@ -97,20 +104,33 @@ describe('The customer orders resource ', () => {
       } catch (error) {
         expect(error).toBeDefined();
         expect(error).toBeInstanceOf(SDKException);
-        expect(error.code).toBe('INVALID-RESOURCE-ID');
-        expect(error.message).toBe('The resource being loaded doesn\'t have the required resource id.');
+        expect((error as SDKException).code).toBe('INVALID-RESOURCE-ID');
+        expect((error as SDKException).message).toBe('The resource being loaded doesn\'t have the required resource id.');
       }
     });
 
     it('should throw an unexpected error received from the API.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
-      mockClient.MockResolve({
+      mockClient.MockReject(CreateException({
         statusCode: 503,
         headers: {
           'Content-Type': 'application/vnd.api+json',
         },
-      });
+        data: {
+          jsonapi: { version: '1.0' },
+          errors: [
+            {
+              code: 'UNEXPECTED-ERROR',
+              title: 'An unexpected error was received whilst processing the request.',
+              status: '503',
+            },
+          ],
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      }));
 
       try {
         const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
@@ -118,45 +138,46 @@ describe('The customer orders resource ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error).toBeInstanceOf(SDKRequestException);
-        expect(error.count).toBe(1);
-        expect(error.status).toBe(500);
-        expect(error.items[0].code).toBe('UNEXPECTED-ERROR');
-        expect(error.items[0].title).toBe('An unexpected error was received whilst processing the request.');
-        expect(error.items[0].status).toBe(503);
+        expect(error).toBeInstanceOf(Error503ServiceUnavailable);
+        expect((error as Error503ServiceUnavailable).errorCount).toBe(1);
+        expect((error as Error503ServiceUnavailable).status).toBe(503);
+        expect((error as Error503ServiceUnavailable).errors[0].code).toBe('UNEXPECTED-ERROR');
+        expect((error as Error503ServiceUnavailable).errors[0].title)
+          .toBe('An unexpected error was received whilst processing the request.');
+        expect((error as Error503ServiceUnavailable).errors[0].status).toBe(503);
       }
     });
 
     it('should throw errors returned by the API.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
-      mockClient.MockResolve({
+      mockClient.MockReject(CreateException({
         statusCode: 404,
         statusText: 'NOT FOUND',
         headers: {
           'Content-Type': 'application/vnd.api+json',
         },
         data: {
+          jsonapi: {
+            version: '1.0',
+          },
           errors: [
             {
               code: '404-NOT-FOUND',
               title: 'The requested resource was not found.',
-              status: 404,
+              status: '404',
             },
             {
               code: '405-STILL-NOT-FOUND',
               title: 'The requested resource was still not found.',
-              status: 405,
+              status: '405',
             },
           ],
-          jsonapi: {
-            version: '1.0',
-          },
           links: {
             self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
           },
         },
-      });
+      }));
 
       try {
         const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
@@ -164,15 +185,15 @@ describe('The customer orders resource ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error).toBeInstanceOf(SDKRequestException);
-        expect(error.count).toBe(2);
-        expect(error.status).toBe(400);
-        expect(error.items[0].code).toBe('404-NOT-FOUND');
-        expect(error.items[0].title).toBe('The requested resource was not found.');
-        expect(error.items[0].status).toBe(404);
-        expect(error.items[1].code).toBe('405-STILL-NOT-FOUND');
-        expect(error.items[1].title).toBe('The requested resource was still not found.');
-        expect(error.items[1].status).toBe(405);
+        expect(error).toBeInstanceOf(Error404NotFound);
+        expect((error as Error404NotFound).errorCount).toBe(2);
+        expect((error as Error404NotFound).status).toBe(400);
+        expect((error as Error404NotFound).errors[0].code).toBe('404-NOT-FOUND');
+        expect((error as Error404NotFound).errors[0].title).toBe('The requested resource was not found.');
+        expect((error as Error404NotFound).errors[0].status).toBe(404);
+        expect((error as Error404NotFound).errors[1].code).toBe('405-STILL-NOT-FOUND');
+        expect((error as Error404NotFound).errors[1].title).toBe('The requested resource was still not found.');
+        expect((error as Error404NotFound).errors[1].status).toBe(405);
       }
     });
 
@@ -216,7 +237,7 @@ describe('The customer orders resource ', () => {
       });
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
-      const queryResult = await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+      await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
 
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/'
         + '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
@@ -242,7 +263,6 @@ describe('The customer orders resource ', () => {
         price: 1.99,
       };
 
-      expect(queryResult).toBe(true);
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
       expect(mockClient.Get).toHaveBeenCalledWith(queryUri, queryHeaders, queryOptions);
       expect(customerOrders.data).toBeDefined();
@@ -292,8 +312,8 @@ describe('The customer orders resource ', () => {
       } catch (error) {
         expect(error).toBeDefined();
         expect(error).toBeInstanceOf(SDKException);
-        expect(error.code).toBe('INVALID-RESOURCE-TYPE');
-        expect(error.message).toBe('The resource being loaded doesn\'t have the required resource type.');
+        expect((error as SDKException).code).toBe('INVALID-RESOURCE-TYPE');
+        expect((error as SDKException).message).toBe('The resource being loaded doesn\'t have the required resource type.');
       }
     });
 
@@ -332,31 +352,34 @@ describe('The customer orders resource ', () => {
       } catch (error) {
         expect(error).toBeDefined();
         expect(error).toBeInstanceOf(SDKException);
-        expect(error.code).toBe('INVALID-RESOURCE-ID');
-        expect(error.message).toBe('The resource being loaded doesn\'t have the required resource id.');
+        expect((error as SDKException).code).toBe('INVALID-RESOURCE-ID');
+        expect((error as SDKException).message).toBe('The resource being loaded doesn\'t have the required resource id.');
       }
     });
 
     it('should throw errors returned by the API.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
-      mockClient.MockResolve({
+      mockClient.MockReject(CreateException({
         statusCode: 400,
         statusText: 'NOT FOUND',
         headers: {
           'Content-Type': 'application/vnd.api+json',
         },
         data: {
+          jsonapi: {
+            version: '1.0',
+          },
           errors: [
             {
               code: '404-NOT-FOUND',
               title: 'The requested resource was not found.',
-              status: 404,
+              status: '404',
             },
             {
               code: '404-STILL-NOT-FOUND',
               title: 'The requested resource was still not found.',
-              status: 404,
+              status: '404',
               detail: 'After an extensive look around the database, nothing resembling the desired resource was found.',
               source: {
                 database: {
@@ -365,14 +388,11 @@ describe('The customer orders resource ', () => {
               },
             },
           ],
-          jsonapi: {
-            version: '1.0',
-          },
           links: {
             self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
           },
         },
-      });
+      }));
 
       try {
         const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
@@ -380,18 +400,19 @@ describe('The customer orders resource ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error).toBeInstanceOf(SDKRequestException);
-        expect(error.count).toBe(2);
-        expect(error.status).toBe(400);
-        expect(error.items[0].code).toBe('404-NOT-FOUND');
-        expect(error.items[0].title).toBe('The requested resource was not found.');
-        expect(error.items[0].status).toBe(404);
-        expect(error.items[1].code).toBe('404-STILL-NOT-FOUND');
-        expect(error.items[1].title).toBe('The requested resource was still not found.');
-        expect(error.items[1].status).toBe(404);
-        expect(error.items[1].detail).toBe('After an extensive look around the database, nothing resembling '
-          + 'the desired resource was found.');
-        expect(error.items[1].source).toEqual({ database: { collections: 'all of them really' } });
+        expect(error).toBeInstanceOf(Error400BadRequest);
+        expect((error as Error400BadRequest).errorCount).toBe(2);
+        expect((error as Error400BadRequest).status).toBe(400);
+        expect((error as Error400BadRequest).errors[0].code).toBe('404-NOT-FOUND');
+        expect((error as Error400BadRequest).errors[0].title).toBe('The requested resource was not found.');
+        expect((error as Error400BadRequest).errors[0].status).toBe(404);
+        expect((error as Error400BadRequest).errors[1].code).toBe('404-STILL-NOT-FOUND');
+        expect((error as Error400BadRequest).errors[1].title).toBe('The requested resource was still not found.');
+        expect((error as Error400BadRequest).errors[1].status).toBe(404);
+        expect((error as Error400BadRequest).errors[1].detail).toBe('After an extensive look around the '
+          + 'database, nothing resembling the desired resource was found.');
+        expect((error as Error400BadRequest).errors[1].source)
+          .toEqual({ database: { collections: 'all of them really' } });
       }
     });
 
@@ -568,28 +589,28 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      mockClient.MockResolve({
+      mockClient.MockReject(CreateException({
         statusCode: 404,
         statusText: 'NOT FOUND',
         headers: {
           'Content-Type': 'application/vnd.api+json',
         },
         data: {
+          jsonapi: {
+            version: '1.0',
+          },
           errors: [
             {
               code: '404-NOT-FOUND',
               title: 'The requested resource was not found.',
-              status: 404,
+              status: '404',
             },
           ],
-          jsonapi: {
-            version: '1.0',
-          },
           links: {
             self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
           },
         },
-      });
+      }));
 
       try {
         const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
@@ -598,12 +619,12 @@ describe('The customer orders resource ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error).toBeInstanceOf(SDKRequestException);
-        expect(error.count).toBe(1);
-        expect(error.status).toBe(400);
-        expect(error.items[0].code).toBe('404-NOT-FOUND');
-        expect(error.items[0].title).toBe('The requested resource was not found.');
-        expect(error.items[0].status).toBe(404);
+        expect(error).toBeInstanceOf(Error404NotFound);
+        expect((error as Error404NotFound).errorCount).toBe(1);
+        expect((error as Error404NotFound).status).toBe(404);
+        expect((error as Error404NotFound).errors[0].code).toBe('404-NOT-FOUND');
+        expect((error as Error404NotFound).errors[0].title).toBe('The requested resource was not found.');
+        expect((error as Error404NotFound).errors[0].status).toBe(404);
       }
     });
 
@@ -754,12 +775,12 @@ describe('The customer orders resource ', () => {
     it('should throw an error if an unexpected error had occurred (eg Load Balancer throwing 503).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Post');
-      mockClient.MockResolve({
+      mockClient.MockReject(CreateException({
         statusCode: 503,
         headers: {
           'Content-Type': 'application/vnd.api+json',
         },
-      });
+      }));
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
       const order = customerOrders.Add();
@@ -776,40 +797,35 @@ describe('The customer orders resource ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error).toBeInstanceOf(SDKRequestException);
-        expect(error.count).toBe(1);
-        expect(error.status).toBe(500);
-        expect(error.items[0].code).toBe('UNEXPECTED-ERROR');
-        expect(error.items[0].title).toBe('An unexpected error was received whilst processing the request.');
-        expect(error.items[0].status).toBe(503);
+        expect(error).toBeInstanceOf(Error503ServiceUnavailable);
       }
     });
 
     it('should throw an error if the API returns an error during the operation.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Post');
-      mockClient.MockResolve({
-        statusCode: 400,
+      mockClient.MockReject(CreateException({
+        statusCode: 409,
         statusText: 'Conflict',
         headers: {
           'Content-Type': 'application/vnd.api+json',
         },
         data: {
+          jsonapi: {
+            version: '1.0',
+          },
           errors: [
             {
               code: '409-CONFLICT',
               title: 'A conflict occurred.',
-              status: 409,
+              status: '409',
             },
           ],
-          jsonapi: {
-            version: '1.0',
-          },
           links: {
             self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
           },
         },
-      });
+      }));
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
       const order = customerOrders.Add();
@@ -826,12 +842,12 @@ describe('The customer orders resource ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error).toBeInstanceOf(SDKRequestException);
-        expect(error.count).toBe(1);
-        expect(error.status).toBe(400);
-        expect(error.items[0].code).toBe('409-CONFLICT');
-        expect(error.items[0].title).toBe('A conflict occurred.');
-        expect(error.items[0].status).toBe(409);
+        expect(error).toBeInstanceOf(Error409Conflict);
+        expect((error as Error409Conflict).errorCount).toBe(1);
+        expect((error as Error409Conflict).status).toBe(409);
+        expect((error as Error409Conflict).errors[0].code).toBe('409-CONFLICT');
+        expect((error as Error409Conflict).errors[0].title).toBe('A conflict occurred.');
+        expect((error as Error409Conflict).errors[0].status).toBe(409);
       }
     });
 
@@ -843,6 +859,7 @@ describe('The customer orders resource ', () => {
         statusText: 'OK',
         headers: {
           'Content-Type': 'application/vnd.api+json',
+          resourceId: '2ef963ae-f5ef-42d5-bee1-2b76e63b8f25',
         },
       });
 
@@ -861,12 +878,44 @@ describe('The customer orders resource ', () => {
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
-        expect(error).toBeInstanceOf(SDKRequestException);
-        expect(error.count).toBe(1);
-        expect(error.status).toBe(200);
-        expect(error.items[0].code).toBe('INVALID-LOCATION');
-        expect(error.items[0].title).toBe('The save operation was unable to retrieve the id of the resource from the API.');
-        expect(error.items[0].status).toBe(201);
+        expect(error).toBeInstanceOf(SDKException);
+        expect((error as SDKException).code).toBe('INVALID-LOCATION');
+        expect((error as SDKException).message).toBe('The save operation was unable to retrieve the location of '
+          + 'the resource created by the API.');
+      }
+    });
+
+    it('should throw an error if the POST operation does not return the resource id.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Post');
+      mockClient.MockResolve({
+        statusCode: 201,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+          Location: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/2ef963ae-f5ef-42d5-bee1-2b76e63b8f25',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const order = customerOrders.Add();
+      order.attributes.product = {
+        code: 'PRODUCT-CODE',
+        name: 'PRODUCT-NAME',
+      };
+      order.attributes.qty = 5;
+      order.attributes.price = 12.98;
+
+      expect(order.id).toBeUndefined();
+      try {
+        await order.Save();
+        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error).toBeInstanceOf(SDKException);
+        expect((error as SDKException).code).toBe('INVALID-RESOURCE-ID');
+        expect((error as SDKException).message).toBe('The save operation was unable to retrieve the identifier of '
+            + 'the resource created by the API.');
       }
     });
 
@@ -879,6 +928,7 @@ describe('The customer orders resource ', () => {
         headers: {
           'Content-Type': 'application/vnd.api+json',
           location: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          resourceId: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
         },
       });
 
@@ -922,6 +972,8 @@ describe('The customer orders resource ', () => {
       expect(customerOrders.data).toBe(order);
       expect(order.id).toBeDefined();
       expect(order.id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+      expect((order as Order).uri)
+        .toBe('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
     });
   });
 

@@ -1,4 +1,3 @@
 /* eslint-disable import/no-cycle */
+// eslint-disable-next-line import/prefer-default-export
 export { default as SDKException } from './sdk.exception';
-export { default as SDKRequestError } from './sdk.request.error';
-export { default as SDKRequestException } from './sdk.request.exception';

@@ -1,5 +1,5 @@
 import {
-  hasProperty, isArray, isDefined, isEmpty, isNumber, isObject, isString,
+  hasProperty, isArray, isDefined, isEmpty, isObject, isString,
 } from '@apigames/json';
 import {
   IRestClient, RestClient, RestClientOptions, RestClientResponse,
@@ -11,8 +11,11 @@ import {
   ResourceFilterName,
   ResourceFilterValue,
   ResourceIncludeOption,
+  ResourceObjectClass,
+  ResourcePathParams,
   ResourceSortOption,
-  ResourcePathParams, SDKConfig, ResourceObjectClass, SDKException, SDKRequestException,
+  SDKConfig,
+  SDKException,
 } from '..';
 
 type ResourceContainerQueryParams = {
@@ -85,15 +88,6 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  protected EndpointPath(): string {
-    throw new Error('Method or Property not implemented.');
-  }
-
-  protected ClearData() {
-    this._data = undefined;
-  }
-
-  // eslint-disable-next-line class-methods-use-this
   isResourceObject(value: any): value is IResourceObject {
     return isObject(value);
   }
@@ -103,7 +97,16 @@ export default class ResourceContainer implements IResourceContainer {
     return isArray(value);
   }
 
-  protected AddResource(obj: IResourceObject) {
+  // eslint-disable-next-line class-methods-use-this
+  protected EndpointPath(): string {
+    throw new Error('Method or Property not implemented.');
+  }
+
+  protected ClearData() {
+    this._data = undefined;
+  }
+
+  protected AddResourceToMemoryStructure(obj: IResourceObject) {
     if (isDefined(this.data)) {
       if (this.isResourceObject(this.data)) {
         const currentObj = this.data;
@@ -114,6 +117,16 @@ export default class ResourceContainer implements IResourceContainer {
       }
     } else {
       this._data = obj;
+    }
+  }
+
+  private RemoveResourceFromMemoryStructure(resource: IResourceObject) {
+    if (this.isResourceList(this.data)) {
+      this.data.forEach((item, index) => {
+        if (this.isResourceList(this.data) && (item.id === resource.id)) this.data.splice(index, 1);
+      });
+    } else if (this.isResourceObject(this.data) && this.data.id === resource.id) {
+      this._data = undefined;
     }
   }
 
@@ -138,58 +151,17 @@ export default class ResourceContainer implements IResourceContainer {
         this._data = [];
         // eslint-disable-next-line no-restricted-syntax
         for (const resource of response.data.data) {
-          this._data.push(this.LoadResourceData(resource));
+          this.AddResourceToMemoryStructure(this.LoadResourceData(resource));
         }
       } else if (isObject(response.data.data)) {
-        this._data = this.LoadResourceData(response.data.data);
+        this.AddResourceToMemoryStructure(this.LoadResourceData(response.data.data));
       }
-    }
-  }
-
-  // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  protected LoadErrors(response: RestClientResponse) {
-    this.ClearData();
-
-    if (hasProperty(response.data, 'errors') && isArray(response.data.errors)) {
-      const requestException = new SDKRequestException();
-
-      // eslint-disable-next-line no-restricted-syntax
-      for (const error of response.data.errors) {
-        if (hasProperty(error, 'code') && isString(error.code)
-            && hasProperty(error, 'title') && isString(error.title)
-            && hasProperty(error, 'status') && isNumber(error.status)) {
-          let detail: string;
-          if (hasProperty(error, 'detail') && isString(error.detail)) detail = error.detail;
-
-          let source: any;
-          if (hasProperty(error, 'source')) source = error.source;
-
-          requestException.AddError(error.code, error.title, error.status, detail, source);
-        }
-      }
-
-      throw requestException;
-    } else {
-      const error = new SDKRequestException();
-      error.AddError('UNEXPECTED-ERROR', 'An unexpected error was received whilst processing the request.',
-        response.statusCode);
-      throw error;
     }
   }
 
   // eslint-disable-next-line class-methods-use-this
   Add(): IResourceObject {
     throw new Error('Method or Property not implemented.');
-  }
-
-  private RemoveResource(resource: IResourceObject) {
-    if (this.isResourceList(this.data)) {
-      this.data.forEach((item, index) => {
-        if (this.isResourceList(this.data) && (item.id === resource.id)) this.data.splice(index, 1);
-      });
-    } else if (this.isResourceObject(this.data) && this.data.id === resource.id) {
-      this._data = undefined;
-    }
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
@@ -207,16 +179,10 @@ export default class ResourceContainer implements IResourceContainer {
       this.ClearQueryParams();
       redactUndefinedValues(queryOptions);
 
-      const response = await this._restClient.Delete(queryUri, queryHeaders, queryOptions);
-      switch (response.statusCode) {
-        case 204:
-          this.RemoveResource(resource);
-          break;
-        default:
-          this.LoadErrors(response);
-      }
+      await this._restClient.Delete(queryUri, queryHeaders, queryOptions);
+      this.RemoveResourceFromMemoryStructure(resource);
     } else {
-      this.RemoveResource(resource);
+      this.RemoveResourceFromMemoryStructure(resource);
     }
   }
 
@@ -235,18 +201,10 @@ export default class ResourceContainer implements IResourceContainer {
     this.ClearQueryParams();
     redactUndefinedValues(queryOptions);
 
-    const response = await this._restClient.Get(queryUri, queryHeaders, queryOptions);
-
-    switch (response.statusCode) {
-      case 200:
-        this.LoadResponse(response);
-        break;
-      default:
-        this.LoadErrors(response);
-    }
+    this.LoadResponse(await this._restClient.Get(queryUri, queryHeaders, queryOptions));
   }
 
-  async Get(id: string): Promise<boolean> {
+  async Get(id: string): Promise<void> {
     this.ClearData();
     const queryUri: string = `${this.uri}/${id}`;
     const queryHeaders = {
@@ -259,15 +217,7 @@ export default class ResourceContainer implements IResourceContainer {
 
     this.ClearQueryParams();
     redactUndefinedValues(queryOptions);
-
-    const response = await this._restClient.Get(queryUri, queryHeaders, queryOptions);
-    switch (response.statusCode) {
-      case 200:
-        this.LoadResponse(response);
-        return true;
-      default:
-        this.LoadErrors(response);
-    }
+    this.LoadResponse(await this._restClient.Get(queryUri, queryHeaders, queryOptions));
   }
 
   private ClearQueryParams() {

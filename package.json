@@ -7,10 +7,10 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "win:build": "(if exist lib rmdir /s /q lib) && tsc && jest && jest --config build.jest.config.js --coverage",
-    "unx:build": "rm -rf lib && tsc && jest && jest --config build.jest.config.js --coverage",
-    "win:publish": "(if exist lib rmdir /s /q lib) && tsc && jest && jest --config build.jest.config.js && npm publish",
-    "unx:publish": "rm -rf lib && tsc && jest && jest --config build.jest.config.js && npm publish",
+    "win:build": "(if exist lib rmdir /s /q lib) && tsc && jest && jest --coverage",
+    "unx:build": "rm -rf lib && tsc && jest && jest --coverage",
+    "win:publish": "(if exist lib rmdir /s /q lib) && tsc && jest && jest && npm publish",
+    "unx:publish": "rm -rf lib && tsc && jest && jest && npm publish",
     "win:upgrade-latest": "(if exist node_modules rmdir /s /q node_modules) && (if exist package-lock.json del /s /q package-lock.json) && ncu -u --target latest && npm install",
     "unx:upgrade-latest": "rm -rf node_modules && rm -f package-lock.json && ncu -u --target latest && npm install",
     "win:upgrade-minor": "(if exist node_modules rmdir /s /q node_modules) && (if exist package-lock.json del /s /q package-lock.json) && ncu -u --target minor && npm install",
@@ -19,23 +19,23 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@apigames/json": "1.0.55",
-    "@apigames/rest-client": "1.0.24"
+    "@apigames/json": "1.0.57",
+    "@apigames/rest-client": "1.0.30"
   },
   "devDependencies": {
     "@types/jest": "26.0.24",
-    "@types/node": "14.17.9",
-    "@typescript-eslint/eslint-plugin": "4.29.1",
-    "@typescript-eslint/parser": "4.29.1",
+    "@types/node": "14.17.15",
+    "@typescript-eslint/eslint-plugin": "4.31.0",
+    "@typescript-eslint/parser": "4.31.0",
     "eslint": "7.32.0",
     "eslint-config-airbnb": "18.2.1",
-    "eslint-plugin-import": "2.24.0",
+    "eslint-plugin-import": "2.24.2",
     "eslint-plugin-jsx-a11y": "6.4.1",
-    "eslint-plugin-react": "7.24.0",
+    "eslint-plugin-react": "7.25.1",
     "eslint-plugin-react-hooks": "4.2.0",
     "jest": "27.0.6",
     "ts-jest": "27.0.4",
-    "typescript": "4.3.5"
+    "typescript": "4.4.2"
   },
   "eslintConfig": {},
   "repository": {

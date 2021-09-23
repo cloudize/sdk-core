@@ -1,6 +1,6 @@
 import { IRestClient } from '@apigames/rest-client';
 import { IResourceObject, ResourceObjectIdentifier, ResourceObjectType } from './resource.object';
-import {ResourceFilterType} from "../classes/resource.container";
+import { ResourceFilterType } from '../classes/resource.container';
 
 export type ResourceFilterName = string;
 export type ResourceFilterValue = string;
@@ -18,6 +18,6 @@ export interface IResourceContainer {
     Add(): IResourceObject;
     Delete(resource: IResourceObject): Promise<void>;
     Find(): Promise<void>
-    Get(id: string): Promise<boolean>
+    Get(id: string): Promise<void>
     IncludedObject(type: ResourceObjectType, id: ResourceObjectIdentifier): IResourceObject;
 }

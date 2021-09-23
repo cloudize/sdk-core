@@ -1,13 +1,14 @@
 import {
-  hasProperty, isArray, isDefined, isNumber, isObject, isString, isUndefined,
+  hasProperty, isDefined, isObject, isString,
 } from '@apigames/json';
-import { RestClientOptions, RestClientResponse } from '@apigames/rest-client';
+import { RestClientOptions } from '@apigames/rest-client';
+import { RestClientResponseHeaders } from '@apigames/rest-client/lib/interfaces/rest.client';
 import {
   IResourceContainer,
   IResourceObject,
   IResourceObjectAttributes,
   ResourceObjectUri,
-  SDKException, SDKRequestException,
+  SDKException,
 } from '..';
 
 // eslint-disable-next-line no-shadow
@@ -41,7 +42,8 @@ export default class ResourceObject implements IResourceObject {
 
     LoadData(value: any): IResourceObject {
       if (!hasProperty(value, 'type') || (value.type !== this.type)) {
-        throw new SDKException('INVALID-RESOURCE-MAPPING', 'The resource being loaded cannot be read into this object');
+        throw new SDKException('INVALID-RESOURCE-MAPPING', 'The resource data being loaded cannot be '
+          + 'read into this object');
       }
 
       if (hasProperty(value, 'id')) this._id = value.id;
@@ -69,41 +71,56 @@ export default class ResourceObject implements IResourceObject {
 
       if (isDefined(this.id)) payload.data.id = this.id;
       if (isDefined(this.attributes)) payload.data.attributes = this.attributes;
+      // TODO if (isDefined(this.relationships)) payload.data.relationships = this.relationships;
 
       return payload;
     }
 
-    // eslint-disable-next-line class-methods-use-this,no-unused-vars
-    protected LoadErrors(response: RestClientResponse) {
-      if (hasProperty(response.data, 'errors') && isArray(response.data.errors)) {
-        const requestException = new SDKRequestException();
+    protected GetUpdatePayload(): any {
+      const payload: any = {
+        data: {
+          type: this.type,
+          id: this.id,
+        },
+      };
 
-        // eslint-disable-next-line no-restricted-syntax
-        for (const error of response.data.errors) {
-          if (hasProperty(error, 'code') && isString(error.code)
-            && hasProperty(error, 'title') && isString(error.title)
-            && hasProperty(error, 'status') && isNumber(error.status)) {
-            let detail: string;
-            if (hasProperty(error, 'detail') && isString(error.detail)) detail = error.detail;
+      // TODO THE PATCH PAYLOADS NEED TO BE CRAFTED PROPERTY
+      if (isDefined(this.attributes)) payload.data.attributes = this.attributes;
+      // TODO if (isDefined(this.relationships)) payload.data.relationships = this.relationships;
 
-            let source: any;
-            if (hasProperty(error, 'source')) source = error.source;
-
-            requestException.AddError(error.code, error.title, error.status, detail, source);
-          }
-        }
-
-        throw requestException;
-      } else {
-        const error = new SDKRequestException();
-        error.AddError('UNEXPECTED-ERROR', 'An unexpected error was received whilst processing the request.',
-          response.statusCode);
-        throw error;
-      }
+      return payload;
     }
 
     async Delete(): Promise<void> {
       await this._container.Delete(this);
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    private GetHeaderValue(headers: RestClientResponseHeaders, targetHeader: string): string {
+      let value: string;
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const headerName in headers) {
+        if (headerName.toLowerCase() === targetHeader.toLowerCase()) {
+          value = headers[headerName];
+        }
+      }
+
+      return value;
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    private HasHeader(headers: RestClientResponseHeaders, targetHeader: string): boolean {
+      let hasHeader = false;
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const headerName in headers) {
+        if (headerName.toLowerCase() === targetHeader.toLowerCase()) {
+          hasHeader = true;
+        }
+      }
+
+      return hasHeader;
     }
 
     private async InsertResource() {
@@ -116,27 +133,32 @@ export default class ResourceObject implements IResourceObject {
       const payload: any = this.GetInsertPayload();
 
       const response = await this._container.restClient.Post(queryUri, payload, queryHeaders, queryOptions);
-      switch (response.statusCode) {
-        case 201:
-          if (hasProperty(response.headers, 'location')) {
-            const headers: any = response.headers;
-            const pathParts = headers.location.split('/');
-            this.id = pathParts.pop();
-            this._mode = ResourceObjectMode.ExistingDocument;
-          } else {
-            const exception = new SDKRequestException();
-            exception.AddError('INVALID-LOCATION', 'The save operation was unable to retrieve the id of the '
-              + 'resource from the API.', 201);
-            throw exception;
-          }
-          break;
-        default:
-          this.LoadErrors(response);
+
+      if (!this.HasHeader(response.headers, 'location')) {
+        throw new SDKException('INVALID-LOCATION', 'The save operation was unable to retrieve the location '
+              + 'of the resource created by the API.');
       }
+
+      if (!this.HasHeader(response.headers, 'resourceId')) {
+        throw new SDKException('INVALID-RESOURCE-ID', 'The save operation was unable to retrieve the '
+          + 'identifier of the resource created by the API.');
+      }
+
+      this.id = this.GetHeaderValue(response.headers, 'resourceid');
+      this._uri = this.GetHeaderValue(response.headers, 'location');
+      this._mode = ResourceObjectMode.ExistingDocument;
     }
 
     private async UpdateResource() {
-      throw new Error('Method or Property not implemented.');
+      const queryUri: string = this.uri;
+      const queryHeaders = {
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+      };
+      const queryOptions: RestClientOptions = {};
+      const payload: any = this.GetUpdatePayload();
+
+      await this._container.restClient.Patch(queryUri, payload, queryHeaders, queryOptions);
     }
 
     // eslint-disable-next-line class-methods-use-this

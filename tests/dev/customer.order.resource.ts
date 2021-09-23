@@ -80,7 +80,7 @@ export class CustomerOrders extends ResourceContainer {
 
   Add(): Order {
     const obj = new Order(this);
-    this.AddResource(obj);
+    this.AddResourceToMemoryStructure(obj);
     return obj;
   }
 
