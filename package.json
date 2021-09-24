@@ -3,7 +3,7 @@
   "author": "API Games Limited",
   "description": "API Games SDK Core",
   "license": "UNLICENSED",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {

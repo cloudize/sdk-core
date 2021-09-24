@@ -56,7 +56,7 @@ export default class ResourceContainer implements IResourceContainer {
 
   private _queryParams: ResourceContainerQueryParams;
 
-  private _restClient: IRestClient;
+  private readonly _restClient: IRestClient;
 
   protected pathParams: ResourcePathParams;
 
@@ -183,7 +183,7 @@ export default class ResourceContainer implements IResourceContainer {
         queryParams: this.GetQueryParams(),
       };
 
-      this.ClearQueryParams();
+      this.InitParams();
       redactUndefinedValues(queryOptions);
 
       await this._restClient.Delete(queryUri, queryHeaders, queryOptions);
@@ -220,17 +220,19 @@ export default class ResourceContainer implements IResourceContainer {
     if (isDefinedAndNotNull(this._countQueryHash) && (this._countQueryHash === queryHash) && isDefinedAndNotNull(this._count)) {
       return this._count;
     }
+
     queryOptions.queryParams['meta-action'] = 'count';
     const response = await this._restClient.Get(queryUri, queryHeaders, queryOptions);
 
     if (hasProperty(response, 'data') && hasProperty(response.data, 'meta')
-        && hasProperty(response.data.meta, 'count') && isNumber(response.data.meta.count)) {
+      && hasProperty(response.data.meta, 'count') && isNumber(response.data.meta.count)) {
       this._count = response.data.meta.count;
       this._countQueryHash = queryHash;
       return this._count;
     }
+
     throw new SDKException('COUNT-FAILED', 'The request to count the number of resources related '
-            + 'to this query was unsuccessful.');
+          + 'to this query was unsuccessful.');
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -245,7 +247,7 @@ export default class ResourceContainer implements IResourceContainer {
       queryParams: this.GetQueryParams(),
     };
 
-    this.ClearQueryParams();
+    this.InitParams();
     redactUndefinedValues(queryOptions);
 
     this.LoadResponse(await this._restClient.Get(queryUri, queryHeaders, queryOptions));
@@ -262,12 +264,12 @@ export default class ResourceContainer implements IResourceContainer {
       queryParams: this.GetQueryParams(),
     };
 
-    this.ClearQueryParams();
+    this.InitParams();
     redactUndefinedValues(queryOptions);
     this.LoadResponse(await this._restClient.Get(queryUri, queryHeaders, queryOptions));
   }
 
-  private ClearQueryParams() {
+  private InitParams() {
     this._queryParams = {
       includes: {},
       filters: {},
