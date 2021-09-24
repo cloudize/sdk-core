@@ -338,12 +338,14 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   PageOffset(pageOffset: number, pageSize: number): IResourceContainer {
+    extractAndRedact(this._queryParams.pagination, 'page');
     this._queryParams.pagination.offset = pageOffset;
     this._queryParams.pagination.size = pageSize;
     return this;
   }
 
   PageNumber(pageNumber: number, pageSize: number): IResourceContainer {
+    extractAndRedact(this._queryParams.pagination, 'offset');
     this._queryParams.pagination.page = pageNumber;
     this._queryParams.pagination.size = pageSize;
     return this;
