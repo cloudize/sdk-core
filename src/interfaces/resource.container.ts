@@ -14,8 +14,10 @@ export interface IResourceContainer {
     Filter(filter: ResourceFilterName, selector: ResourceFilterType, value: ResourceFilterValue): IResourceContainer;
     Sort(option: ResourceSortOption): IResourceContainer;
     Include(include: ResourceIncludeOption): IResourceContainer;
-    Page(pageNumber: number, pageSize: number): IResourceContainer;
+    PageOffset(pageOffset: number, pageSize: number): IResourceContainer;
+    PageNumber(pageNumber: number, pageSize: number): IResourceContainer;
     Add(): IResourceObject;
+    Count(): Promise<number>
     Delete(resource: IResourceObject): Promise<void>;
     Find(): Promise<void>
     Get(id: string): Promise<void>

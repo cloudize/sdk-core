@@ -6,6 +6,7 @@ import {
   MockRestClient,
   RestClientOptions,
 } from '@apigames/rest-client';
+import { ResourceFilterType, SDKException } from '../../src';
 import {
   CustomerOrders,
   Order,
@@ -14,8 +15,6 @@ import {
   OrderInclude,
   OrderSort,
 } from './customer.order.resource';
-import { SDKException } from '../../src';
-import { ResourceFilterType } from '../../src/classes/resource.container';
 
 describe('The customer orders resource ', () => {
   describe('container\'s Add() method ', () => {
@@ -25,6 +24,141 @@ describe('The customer orders resource ', () => {
       expect(order).toBeDefined();
       expect(order).toBeInstanceOf(Order);
       expect(order.id).toBeUndefined();
+    });
+  });
+
+  describe('container\'s Count() method ', () => {
+    it('should throw an error if an invalid payload is received.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+        },
+      });
+
+      try {
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        await customerOrders.Count();
+        expect(true).toBe('Expected the object to throw an error, but none was thrown.');
+      } catch (error) {
+        expect(error).toBeDefined();
+        expect(error).toBeInstanceOf(SDKException);
+        expect((error as SDKException).code).toBe('COUNT-FAILED');
+        expect((error as SDKException).message).toBe('The request to count the number of resources related '
+            + 'to this query was unsuccessful.');
+      }
+    });
+
+    it('should return the document count returned by the API.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          meta: {
+            count: 100,
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders',
+          },
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const count = await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
+        .Sort(OrderSort.OrderDate)
+        .Include(OrderInclude.Customer)
+        .PageNumber(2, 10)
+        .Count();
+
+      const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
+
+      const queryHeaders = {
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+      };
+
+      const queryOptions: RestClientOptions = {
+        queryParams: {
+          'filter[equal:product.code]': 'abc',
+          'meta-action': 'count',
+        },
+      };
+
+      expect(mockClient.Get).toHaveBeenCalledTimes(1);
+      expect(mockClient.Get).toHaveBeenCalledWith(queryUri, queryHeaders, queryOptions);
+      expect(count).toBe(100);
+    });
+
+    it('should return the cached document count for subsequent queries.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          meta: {
+            count: 100,
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders',
+          },
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+
+      const firstCount = await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
+        .Sort(OrderSort.OrderDate)
+        .Include(OrderInclude.Customer)
+        .PageNumber(2, 10)
+        .Count();
+
+      const secondCount = await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
+        .Sort(OrderSort.OrderDate)
+        .Include(OrderInclude.Customer)
+        .PageNumber(2, 10)
+        .Count();
+
+      const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
+
+      const queryHeaders = {
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+      };
+
+      const queryOptions: RestClientOptions = {
+        queryParams: {
+          'filter[equal:product.code]': 'abc',
+          'meta-action': 'count',
+        },
+      };
+
+      expect(mockClient.Get).toHaveBeenCalledTimes(1);
+      expect(mockClient.Get).toHaveBeenCalledWith(queryUri, queryHeaders, queryOptions);
+      expect(firstCount).toBe(100);
+      expect(secondCount).toBe(100);
     });
   });
 
@@ -416,7 +550,7 @@ describe('The customer orders resource ', () => {
       }
     });
 
-    it('should clear the internal structures, get the resource and repopulate the internal data structures.', async () => {
+    it('should clear the internal structures, get the resource (by page number) and repopulate the internal data structures.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -481,7 +615,7 @@ describe('The customer orders resource ', () => {
       await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
-        .Page(2, 10)
+        .PageNumber(2, 10)
         .Find();
 
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
@@ -498,6 +632,136 @@ describe('The customer orders resource ', () => {
           include: 'customer',
           'page[number]': 2,
           'page[size]': 10,
+        },
+      };
+
+      const windows95Attributes: OrderAttributes = {
+        product: {
+          code: 'WIN95',
+          name: 'Windows 95',
+          description: [
+            'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+            'programs and device drivers while offering a more stable and better performing system. ',
+            'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+          ],
+        },
+        qty: 1,
+        price: 1.95,
+      };
+
+      const windows98Attributes: OrderAttributes = {
+        product: {
+          code: 'WIN98',
+          name: 'Windows 98',
+          description: [
+            'Windows 98 is an operating system developed by Microsoft as part of its Windows 9x family of ',
+            'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
+            'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
+          ],
+        },
+        qty: 1,
+        price: 1.98,
+      };
+
+      expect(mockClient.Get).toHaveBeenCalledTimes(1);
+      expect(mockClient.Get).toHaveBeenCalledWith(queryUri, queryHeaders, queryOptions);
+      expect(customerOrders.data).toBeDefined();
+      if (customerOrders.isResourceList(customerOrders.data)) {
+        expect(customerOrders.data[0]).toBeInstanceOf(Order);
+        expect(customerOrders.data[0].type).toBe('Order');
+        expect(customerOrders.data[0].id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+        expect(customerOrders.data[0].attributes).toEqual(windows95Attributes);
+        expect(customerOrders.data[0].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+        expect(customerOrders.data[1]).toBeInstanceOf(Order);
+        expect(customerOrders.data[1].type).toBe('Order');
+        expect(customerOrders.data[1].id).toBe('45801d5d-313e-4d40-be4f-c666b6f713c5');
+        expect(customerOrders.data[1].attributes).toEqual(windows98Attributes);
+        expect(customerOrders.data[1].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5');
+      }
+    });
+
+    it('should clear the internal structures, get the resource (by page offset) and repopulate the internal data structures.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          data: [
+            {
+              type: 'Order',
+              id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+              attributes: {
+                product: {
+                  code: 'WIN95',
+                  name: 'Windows 95',
+                  description: [
+                    'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                    'programs and device drivers while offering a more stable and better performing system. ',
+                    'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                  ],
+                },
+                qty: 1,
+                price: 1.95,
+              },
+              links: {
+                self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+              },
+            },
+            {
+              type: 'Order',
+              id: '45801d5d-313e-4d40-be4f-c666b6f713c5',
+              attributes: {
+                product: {
+                  code: 'WIN98',
+                  name: 'Windows 98',
+                  description: [
+                    'Windows 98 is an operating system developed by Microsoft as part of its Windows 9x family of ',
+                    'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
+                    'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
+                  ],
+                },
+                qty: 1,
+                price: 1.98,
+              },
+              links: {
+                self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5',
+              },
+            },
+          ],
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders',
+          },
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
+        .Sort(OrderSort.OrderDate)
+        .Include(OrderInclude.Customer)
+        .PageOffset(2, 20)
+        .Find();
+
+      const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
+
+      const queryHeaders = {
+        Accept: 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+      };
+
+      const queryOptions: RestClientOptions = {
+        queryParams: {
+          'filter[equal:product.code]': 'abc',
+          sort: 'orderDate',
+          include: 'customer',
+          'page[offset]': 2,
+          'page[size]': 20,
         },
       };
 

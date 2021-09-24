@@ -1,6 +1,6 @@
 import {
   extractAndRedact,
-  hasProperty, isArray, isDefined, isDefinedAndNotNull, isEmpty, isNumber, isObject, isString,
+  hasProperty, isArray, isDefined, isDefinedAndNotNull, isEmpty, isNumber, isObject, isString, isUndefinedOrNull,
 } from '@apigames/json';
 import {
   IRestClient, RestClient, RestClientOptions, RestClientResponse,
@@ -30,6 +30,7 @@ type ResourceContainerQueryParams = {
   };
   sort: string;
   pagination: {
+    offset?: number,
     page?: number,
     size?: number,
   };
@@ -203,10 +204,13 @@ export default class ResourceContainer implements IResourceContainer {
       queryParams: this.GetQueryParams(),
     };
 
-    extractAndRedact(queryOptions.queryParams, 'include');
-    extractAndRedact(queryOptions.queryParams, 'page[number]');
-    extractAndRedact(queryOptions.queryParams, 'page[size]');
-    extractAndRedact(queryOptions.queryParams, 'sort');
+    if (isDefinedAndNotNull(queryOptions.queryParams)) {
+      extractAndRedact(queryOptions.queryParams, 'include');
+      extractAndRedact(queryOptions.queryParams, 'page[number]');
+      extractAndRedact(queryOptions.queryParams, 'page[offset]');
+      extractAndRedact(queryOptions.queryParams, 'page[size]');
+      extractAndRedact(queryOptions.queryParams, 'sort');
+    }
 
     redactUndefinedValues(queryOptions);
 
@@ -221,7 +225,9 @@ export default class ResourceContainer implements IResourceContainer {
       return this._count;
     }
 
+    if (isUndefinedOrNull(queryOptions.queryParams)) queryOptions.queryParams = {};
     queryOptions.queryParams['meta-action'] = 'count';
+
     const response = await this._restClient.Get(queryUri, queryHeaders, queryOptions);
 
     if (hasProperty(response, 'data') && hasProperty(response.data, 'meta')
@@ -297,8 +303,9 @@ export default class ResourceContainer implements IResourceContainer {
     }
     if (includeList.length > 0) queryParams.include = includeList.join(',');
 
+    if (hasProperty(this._queryParams.pagination, 'offset')) queryParams['page[offset]'] = this._queryParams.pagination.offset;
     if (hasProperty(this._queryParams.pagination, 'page')) queryParams['page[number]'] = this._queryParams.pagination.page;
-    if (hasProperty(this._queryParams.pagination, 'page')) queryParams['page[size]'] = this._queryParams.pagination.size;
+    if (hasProperty(this._queryParams.pagination, 'size')) queryParams['page[size]'] = this._queryParams.pagination.size;
 
     if (isDefined(this._queryParams.sort)) queryParams.sort = this._queryParams.sort;
 
@@ -330,8 +337,13 @@ export default class ResourceContainer implements IResourceContainer {
     return this;
   }
 
-  // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Page(pageNumber: number, pageSize: number): IResourceContainer {
+  PageOffset(pageOffset: number, pageSize: number): IResourceContainer {
+    this._queryParams.pagination.offset = pageOffset;
+    this._queryParams.pagination.size = pageSize;
+    return this;
+  }
+
+  PageNumber(pageNumber: number, pageSize: number): IResourceContainer {
     this._queryParams.pagination.page = pageNumber;
     this._queryParams.pagination.size = pageSize;
     return this;
