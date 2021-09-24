@@ -3,7 +3,7 @@
   "author": "API Games Limited",
   "description": "API Games SDK Core",
   "license": "UNLICENSED",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "@apigames/json": "1.0.57",
-    "@apigames/rest-client": "1.0.30"
+    "@apigames/rest-client": "1.0.30",
+    "object-hash": "2.2.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.24",

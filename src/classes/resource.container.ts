@@ -1,5 +1,6 @@
 import {
-  hasProperty, isArray, isDefined, isEmpty, isObject, isString,
+  extractAndRedact,
+  hasProperty, isArray, isDefined, isDefinedAndNotNull, isEmpty, isNumber, isObject, isString,
 } from '@apigames/json';
 import {
   IRestClient, RestClient, RestClientOptions, RestClientResponse,
@@ -17,6 +18,8 @@ import {
   SDKConfig,
   SDKException,
 } from '..';
+
+const hash = require('object-hash');
 
 type ResourceContainerQueryParams = {
   includes: {
@@ -45,6 +48,10 @@ export enum ResourceFilterType {
 }
 
 export default class ResourceContainer implements IResourceContainer {
+  private _count: number;
+
+  private _countQueryHash: string;
+
   protected _data: IResourceObject | IResourceObject[];
 
   private _queryParams: ResourceContainerQueryParams;
@@ -184,6 +191,46 @@ export default class ResourceContainer implements IResourceContainer {
     } else {
       this.RemoveResourceFromMemoryStructure(resource);
     }
+  }
+
+  async Count(): Promise<number> {
+    const queryUri: string = `${this.uri}`;
+    const queryHeaders = {
+      Accept: 'application/vnd.api+json',
+      'Content-Type': 'application/vnd.api+json',
+    };
+    const queryOptions: RestClientOptions = {
+      queryParams: this.GetQueryParams(),
+    };
+
+    extractAndRedact(queryOptions.queryParams, 'include');
+    extractAndRedact(queryOptions.queryParams, 'page[number]');
+    extractAndRedact(queryOptions.queryParams, 'page[size]');
+    extractAndRedact(queryOptions.queryParams, 'sort');
+
+    redactUndefinedValues(queryOptions);
+
+    const queryParams = {
+      uri: queryUri,
+      headers: queryHeaders,
+      queryOptions,
+    };
+
+    const queryHash = hash(queryParams);
+    if (isDefinedAndNotNull(this._countQueryHash) && (this._countQueryHash === queryHash) && isDefinedAndNotNull(this._count)) {
+      return this._count;
+    }
+    queryOptions.queryParams['meta-action'] = 'count';
+    const response = await this._restClient.Get(queryUri, queryHeaders, queryOptions);
+
+    if (hasProperty(response, 'data') && hasProperty(response.data, 'meta')
+        && hasProperty(response.data.meta, 'count') && isNumber(response.data.meta.count)) {
+      this._count = response.data.meta.count;
+      this._countQueryHash = queryHash;
+      return this._count;
+    }
+    throw new SDKException('COUNT-FAILED', 'The request to count the number of resources related '
+            + 'to this query was unsuccessful.');
   }
 
   // eslint-disable-next-line class-methods-use-this
