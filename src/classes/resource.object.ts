@@ -40,6 +40,16 @@ export default class ResourceObject implements IResourceObject {
       throw new Error('Method or Property not implemented.');
     }
 
+    // eslint-disable-next-line class-methods-use-this,no-unused-vars
+    protected UpdateAttributes(value: any) {
+      throw new Error('Method or Property not implemented.');
+    }
+
+    // eslint-disable-next-line class-methods-use-this,no-unused-vars
+    protected UpdateRelationships(value: any) {
+      throw new Error('Method or Property not implemented.');
+    }
+
     LoadData(value: any): IResourceObject {
       if (!hasProperty(value, 'type') || (value.type !== this.type)) {
         throw new SDKException('INVALID-RESOURCE-MAPPING', 'The resource data being loaded cannot be '
@@ -139,12 +149,12 @@ export default class ResourceObject implements IResourceObject {
               + 'of the resource created by the API.');
       }
 
-      if (!this.HasHeader(response.headers, 'resourceId')) {
+      if (!this.HasHeader(response.headers, 'x-api-resource-id')) {
         throw new SDKException('INVALID-RESOURCE-ID', 'The save operation was unable to retrieve the '
           + 'identifier of the resource created by the API.');
       }
 
-      this.id = this.GetHeaderValue(response.headers, 'resourceid');
+      this.id = this.GetHeaderValue(response.headers, 'x-api-resource-id');
       this._uri = this.GetHeaderValue(response.headers, 'location');
       this._mode = ResourceObjectMode.ExistingDocument;
     }

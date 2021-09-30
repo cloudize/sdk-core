@@ -1123,7 +1123,7 @@ describe('The customer orders resource ', () => {
         statusText: 'OK',
         headers: {
           'Content-Type': 'application/vnd.api+json',
-          resourceId: '2ef963ae-f5ef-42d5-bee1-2b76e63b8f25',
+          'x-api-resource-id': '2ef963ae-f5ef-42d5-bee1-2b76e63b8f25',
         },
       });
 
@@ -1192,7 +1192,7 @@ describe('The customer orders resource ', () => {
         headers: {
           'Content-Type': 'application/vnd.api+json',
           location: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
-          resourceId: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          'x-api-resource-id': '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
         },
       });
 
