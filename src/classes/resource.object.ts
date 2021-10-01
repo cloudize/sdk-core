@@ -144,18 +144,18 @@ export default class ResourceObject implements IResourceObject {
 
       const response = await this._container.restClient.Post(queryUri, payload, queryHeaders, queryOptions);
 
-      if (hasProperty(response, 'data') && hasProperty(response.data, 'data')
-          && isObject(response.data.data) && hasProperty(response.data.data, 'id')
-          && isString(response.data.data.id) && hasProperty(response.data.data, 'links')
-          && isObject(response.data.data.links) && hasProperty(response.data.data.links, 'self')
-          && isString(response.data.data.links.self)) {
-        this.id = response.data.data.id;
-        this._uri = response.data.data.links.self;
-      } else {
-        throw new SDKException('SAVE-FAILED', 'The save operation was unable to retrieve the identifier '
+      if (!this.HasHeader(response.headers, 'location')) {
+        throw new SDKException('INVALID-LOCATION', 'The save operation was unable to retrieve the location '
               + 'of the resource created by the API.');
       }
 
+      if (!this.HasHeader(response.headers, 'x-api-resource-id')) {
+        throw new SDKException('INVALID-RESOURCE-ID', 'The save operation was unable to retrieve the '
+          + 'identifier of the resource created by the API.');
+      }
+
+      this.id = this.GetHeaderValue(response.headers, 'x-api-resource-id');
+      this._uri = this.GetHeaderValue(response.headers, 'location');
       this._mode = ResourceObjectMode.ExistingDocument;
     }
 

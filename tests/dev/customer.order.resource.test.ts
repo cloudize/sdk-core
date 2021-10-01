@@ -1123,7 +1123,7 @@ describe('The customer orders resource ', () => {
         statusText: 'OK',
         headers: {
           'Content-Type': 'application/vnd.api+json',
-          'x-api-resource-id': '9a383573-801f-4466-80b2-96f4fb93c384',
+          'x-api-resource-id': '2ef963ae-f5ef-42d5-bee1-2b76e63b8f25',
         },
       });
 
@@ -1143,9 +1143,9 @@ describe('The customer orders resource ', () => {
       } catch (error) {
         expect(error).toBeDefined();
         expect(error).toBeInstanceOf(SDKException);
-        expect((error as SDKException).code).toBe('SAVE-FAILED');
-        expect((error as SDKException).message).toBe('The save operation was unable to retrieve the identifier '
-            + 'of the resource created by the API.');
+        expect((error as SDKException).code).toBe('INVALID-LOCATION');
+        expect((error as SDKException).message).toBe('The save operation was unable to retrieve the location of '
+          + 'the resource created by the API.');
       }
     });
 
@@ -1177,9 +1177,9 @@ describe('The customer orders resource ', () => {
       } catch (error) {
         expect(error).toBeDefined();
         expect(error).toBeInstanceOf(SDKException);
-        expect((error as SDKException).code).toBe('SAVE-FAILED');
-        expect((error as SDKException).message).toBe('The save operation was unable to retrieve the identifier '
-            + 'of the resource created by the API.');
+        expect((error as SDKException).code).toBe('INVALID-RESOURCE-ID');
+        expect((error as SDKException).message).toBe('The save operation was unable to retrieve the identifier of '
+            + 'the resource created by the API.');
       }
     });
 
@@ -1194,14 +1194,6 @@ describe('The customer orders resource ', () => {
           location: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
           'x-api-resource-id': '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
         },
-        data: {
-          data: {
-            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
-            links: {
-              self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
-            },
-          },
-        }
       });
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
