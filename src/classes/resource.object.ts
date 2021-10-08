@@ -7,6 +7,7 @@ import {
   IResourceContainer,
   IResourceObject,
   IResourceObjectAttributes,
+  IResourceObjectRelationships,
   ResourceObjectUri,
   SDKException,
 } from '..';
@@ -81,7 +82,7 @@ export default class ResourceObject implements IResourceObject {
 
       if (isDefined(this.id)) payload.data.id = this.id;
       if (isDefined(this.attributes)) payload.data.attributes = this.attributes;
-      // TODO if (isDefined(this.relationships)) payload.data.relationships = this.relationships;
+      if (isDefined(this.relationships)) payload.data.relationships = this.relationships;
 
       return payload;
     }
@@ -94,9 +95,8 @@ export default class ResourceObject implements IResourceObject {
         },
       };
 
-      // TODO THE PATCH PAYLOADS NEED TO BE CRAFTED PROPERTY
       if (isDefined(this.attributes)) payload.data.attributes = this.attributes;
-      // TODO if (isDefined(this.relationships)) payload.data.relationships = this.relationships;
+      if (isDefined(this.relationships)) payload.data.relationships = this.relationships;
 
       return payload;
     }
@@ -195,6 +195,11 @@ export default class ResourceObject implements IResourceObject {
 
     // eslint-disable-next-line class-methods-use-this
     get attributes(): IResourceObjectAttributes {
+      throw new Error('Method or Property not implemented.');
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    get relationships(): IResourceObjectRelationships {
       throw new Error('Method or Property not implemented.');
     }
 

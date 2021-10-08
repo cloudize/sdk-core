@@ -4,6 +4,8 @@ export {
   ISDKException,
   ISDKRequestException,
 } from './sdk.errors';
+
+// eslint-disable-next-line import/no-cycle
 export {
   IResourceContainer,
   ResourceFilterName,
@@ -11,4 +13,13 @@ export {
   ResourceSortOption,
   ResourceIncludeOption,
 } from './resource.container';
-export { IResourceObject, IResourceObjectAttributes, ResourceObjectUri } from './resource.object';
+
+export {
+  IResourceObject,
+  IResourceObjectAttributes,
+  IResourceObjectRelationships,
+  ResourceObjectRelationshipLinkObject,
+  ResourceObjectRelationship,
+  ResourceObjectRelationships,
+  ResourceObjectUri,
+} from './resource.object';

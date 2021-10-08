@@ -4,9 +4,11 @@ import { isDefined } from '@apigames/json';
 import {
   IResourceContainer,
   IResourceObjectAttributes,
+  IResourceObjectRelationships,
   ResourceContainer,
   ResourceFilterValue,
   ResourceObject,
+  ResourceObjectRelationship,
   SDKConfig,
 } from '../../src';
 import { ResourceFilterType } from '../../src/classes/resource.container';
@@ -38,20 +40,35 @@ export class OrderAttributes implements IResourceObjectAttributes {
   price?: number;
 }
 
+export class OrderRelationships implements IResourceObjectRelationships {
+  customer?: ResourceObjectRelationship;
+}
+
 export class Order extends ResourceObject {
   private _attributes: OrderAttributes;
+
+  private _relationships: OrderRelationships;
 
   constructor(container: IResourceContainer) {
     super(container);
     this._attributes = new OrderAttributes();
+    this._relationships = new OrderRelationships();
   }
 
   protected LoadAttributes(value: any) {
     this._attributes = value;
   }
 
+  protected LoadRelationships(value: any) {
+    this._relationships = value;
+  }
+
   get attributes(): OrderAttributes {
     return this._attributes;
+  }
+
+  get relationships(): OrderRelationships {
+    return this._relationships;
   }
 
   // eslint-disable-next-line class-methods-use-this
