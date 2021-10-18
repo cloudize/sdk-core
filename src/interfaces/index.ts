@@ -18,9 +18,10 @@ export {
   IResourceObject,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
-  ResourceObjectAttributes,
+  ResourceObjectAttributeBase,
   ResourceObjectRelationshipLinkObject,
   ResourceObjectRelationship,
   ResourceObjectRelationships,
   ResourceObjectUri,
+  ResourceObjectRelationshipBase,
 } from './resource.object';

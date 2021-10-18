@@ -1,4 +1,6 @@
-import { isDefined } from '@apigames/json';
+import {
+  hasProperty, isDefined, isObject, isString,
+} from '@apigames/json';
 
 export type ResourceObjectType = string;
 export type ResourceObjectIdentifier = string;
@@ -26,9 +28,27 @@ export interface IResourceObjectRelationships {
 
 export type ResourceObjectUri = string;
 
-export class ResourceObjectAttributes {
+export class ResourceObjectAttributeBase {
   protected static LoadDateTime(value: string): Date {
     if (isDefined(value)) return new Date(value);
+    return undefined;
+  }
+}
+
+export class ResourceObjectRelationshipBase {
+  protected static LoadRelationshipObject(value: any): ResourceObjectRelationship {
+    if (isDefined(value) && (hasProperty(value, 'data') && isObject(value.data)
+        && hasProperty(value.data, 'type') && isString(value.data.type)
+        && hasProperty(value.data, 'id') && isString(value.data.id)
+    )) {
+      return {
+        data: {
+          type: value.data.type,
+          id: value.data.id,
+        },
+      };
+    }
+
     return undefined;
   }
 }

@@ -9,8 +9,9 @@ import {
   ResourceFilterType,
   ResourceFilterValue,
   ResourceObject,
-  ResourceObjectAttributes,
+  ResourceObjectAttributeBase,
   ResourceObjectRelationship,
+  ResourceObjectRelationshipBase,
   SDKConfig,
 } from '../../src';
 
@@ -29,7 +30,7 @@ export enum OrderInclude {
   Customer = 'customer',
 }
 
-export class OrderProductUsageDetailsHome extends ResourceObjectAttributes implements IResourceObjectAttributes {
+export class OrderProductUsageDetailsHome extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
   family?: string;
 
   LoadData(data: any): void {
@@ -37,7 +38,7 @@ export class OrderProductUsageDetailsHome extends ResourceObjectAttributes imple
   }
 }
 
-export class OrderProductUsageDetailsWork extends ResourceObjectAttributes implements IResourceObjectAttributes {
+export class OrderProductUsageDetailsWork extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
   companyName?: string;
 
   LoadData(data: any): void {
@@ -45,7 +46,7 @@ export class OrderProductUsageDetailsWork extends ResourceObjectAttributes imple
   }
 }
 
-export class OrderProductFeature extends ResourceObjectAttributes implements IResourceObjectAttributes {
+export class OrderProductFeature extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
   name?: string;
 
   userRating?: number;
@@ -56,7 +57,7 @@ export class OrderProductFeature extends ResourceObjectAttributes implements IRe
   }
 }
 
-export class OrderAttributes extends ResourceObjectAttributes implements IResourceObjectAttributes {
+export class OrderAttributes extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
   product?: {
     code?: string;
     name?: string;
@@ -137,16 +138,11 @@ export class OrderAttributes extends ResourceObjectAttributes implements IResour
   }
 }
 
-export class OrderRelationships implements IResourceObjectRelationships {
+export class OrderRelationships extends ResourceObjectRelationshipBase implements IResourceObjectRelationships {
   customer?: ResourceObjectRelationship;
 
   LoadData(data: any): void {
-    this.customer = {
-      data: {
-        type: data.customer?.data?.type,
-        id: data.customer?.data?.id,
-      },
-    };
+    this.customer = OrderRelationships.LoadRelationshipObject(data.customer);
   }
 }
 
