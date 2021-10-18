@@ -1,7 +1,8 @@
 import {
   CreateException,
   Error400BadRequest,
-  Error404NotFound, Error409Conflict,
+  Error404NotFound,
+  Error409Conflict,
   Error503ServiceUnavailable,
   MockRestClient,
   RestClientOptions,
@@ -10,9 +11,9 @@ import { ResourceFilterType, SDKException } from '../../src';
 import {
   CustomerOrders,
   Order,
-  OrderAttributes,
   OrderFilter,
-  OrderInclude, OrderRelationships,
+  OrderInclude,
+  OrderProductFeature,
   OrderSort,
 } from './customer.order.resource';
 
@@ -331,7 +332,7 @@ describe('The customer orders resource ', () => {
       }
     });
 
-    it('should clear the internal structures, get the resource and repopulate the internal data structures.', async () => {
+    it('should clear the internal structures, get the resource and repopulate the internal data structures (ignoring extra fields).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -356,9 +357,20 @@ describe('The customer orders resource ', () => {
                   'programs and device drivers while offering a more stable and better performing system. ',
                   'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
                 ],
+                features: [
+                  {
+                    name: 'Out of the box performance',
+                    userRating: 7.1,
+                  },
+                  {
+                    name: 'Ease of use',
+                    userRating: 8.7,
+                  },
+                ],
               },
               qty: 1,
               price: 1.99,
+              extraField: 'value',
             },
             relationships: {
               customer: {
@@ -391,7 +403,7 @@ describe('The customer orders resource ', () => {
 
       const queryOptions: RestClientOptions = {};
 
-      const orderAttributes: OrderAttributes = {
+      const orderAttributes = {
         product: {
           code: 'WIN95',
           name: 'Windows 95',
@@ -400,12 +412,22 @@ describe('The customer orders resource ', () => {
             'programs and device drivers while offering a more stable and better performing system. ',
             'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
           ],
+          features: [
+            {
+              name: 'Out of the box performance',
+              userRating: 7.1,
+            },
+            {
+              name: 'Ease of use',
+              userRating: 8.7,
+            },
+          ],
         },
         qty: 1,
         price: 1.99,
       };
 
-      const orderRelationships: OrderRelationships = {
+      const orderRelationships = {
         customer: {
           data: {
             type: 'Customer',
@@ -568,7 +590,7 @@ describe('The customer orders resource ', () => {
       }
     });
 
-    it('should clear the internal structures, get the resource (by page number) and repopulate the internal data structures.', async () => {
+    it('should clear the internal structures, get the resource (by page number) and repopulate the internal data structures (ignoring extra fields).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -597,6 +619,7 @@ describe('The customer orders resource ', () => {
                 },
                 qty: 1,
                 price: 1.95,
+                extraField: 'value',
               },
               relationships: {
                 customer: {
@@ -622,9 +645,20 @@ describe('The customer orders resource ', () => {
                     'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
                     'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
                   ],
+                  features: [
+                    {
+                      name: 'Out of the box performance',
+                      userRating: 2.4,
+                    },
+                    {
+                      name: 'Ease of use',
+                      userRating: 5.1,
+                    },
+                  ],
                 },
                 qty: 1,
                 price: 1.98,
+                extraField: 'value',
               },
               relationships: {
                 customer: {
@@ -669,7 +703,7 @@ describe('The customer orders resource ', () => {
         },
       };
 
-      const windows95Attributes: OrderAttributes = {
+      const windows95Attributes = {
         product: {
           code: 'WIN95',
           name: 'Windows 95',
@@ -678,12 +712,13 @@ describe('The customer orders resource ', () => {
             'programs and device drivers while offering a more stable and better performing system. ',
             'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
           ],
+          features: [] as OrderProductFeature[],
         },
         qty: 1,
         price: 1.95,
       };
 
-      const windows98Attributes: OrderAttributes = {
+      const windows98Attributes = {
         product: {
           code: 'WIN98',
           name: 'Windows 98',
@@ -692,12 +727,22 @@ describe('The customer orders resource ', () => {
             'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
             'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
           ],
+          features: [
+            {
+              name: 'Out of the box performance',
+              userRating: 2.4,
+            },
+            {
+              name: 'Ease of use',
+              userRating: 5.1,
+            },
+          ],
         },
         qty: 1,
         price: 1.98,
       };
 
-      const orderRelationships: OrderRelationships = {
+      const orderRelationships = {
         customer: {
           data: {
             type: 'Customer',
@@ -752,7 +797,6 @@ describe('The customer orders resource ', () => {
                     'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
                   ],
                 },
-                qty: 1,
                 price: 1.95,
               },
               relationships: {
@@ -826,7 +870,7 @@ describe('The customer orders resource ', () => {
         },
       };
 
-      const windows95Attributes: OrderAttributes = {
+      const windows95Attributes = {
         product: {
           code: 'WIN95',
           name: 'Windows 95',
@@ -835,12 +879,12 @@ describe('The customer orders resource ', () => {
             'programs and device drivers while offering a more stable and better performing system. ',
             'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
           ],
+          features: [] as OrderProductFeature[],
         },
-        qty: 1,
         price: 1.95,
       };
 
-      const windows98Attributes: OrderAttributes = {
+      const windows98Attributes = {
         product: {
           code: 'WIN98',
           name: 'Windows 98',
@@ -849,12 +893,13 @@ describe('The customer orders resource ', () => {
             'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
             'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
           ],
+          features: [] as OrderProductFeature[],
         },
-        qty: 1,
         price: 1.98,
+        qty: 1,
       };
 
-      const orderRelationships: OrderRelationships = {
+      const orderRelationships = {
         customer: {
           data: {
             type: 'Customer',

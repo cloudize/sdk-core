@@ -18,6 +18,7 @@ export {
   IResourceObject,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
+  ResourceObjectAttributes,
   ResourceObjectRelationshipLinkObject,
   ResourceObjectRelationship,
   ResourceObjectRelationships,

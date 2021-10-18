@@ -1,17 +1,18 @@
 // eslint-disable-next-line max-classes-per-file
 import { IRestClient } from '@apigames/rest-client';
-import { isDefined } from '@apigames/json';
+import { hasProperty, isArray, isDefined } from '@apigames/json';
 import {
   IResourceContainer,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
   ResourceContainer,
+  ResourceFilterType,
   ResourceFilterValue,
   ResourceObject,
+  ResourceObjectAttributes,
   ResourceObjectRelationship,
   SDKConfig,
 } from '../../src';
-import { ResourceFilterType } from '../../src/classes/resource.container';
 
 // eslint-disable-next-line no-shadow
 export enum OrderFilter {
@@ -28,47 +29,166 @@ export enum OrderInclude {
   Customer = 'customer',
 }
 
-export class OrderAttributes implements IResourceObjectAttributes {
+export class OrderProductUsageDetailsHome extends ResourceObjectAttributes implements IResourceObjectAttributes {
+  family?: string;
+
+  LoadData(data: any): void {
+    this.family = data.family;
+  }
+}
+
+export class OrderProductUsageDetailsWork extends ResourceObjectAttributes implements IResourceObjectAttributes {
+  companyName?: string;
+
+  LoadData(data: any): void {
+    this.companyName = data.companyName;
+  }
+}
+
+export class OrderProductFeature extends ResourceObjectAttributes implements IResourceObjectAttributes {
+  name?: string;
+
+  userRating?: number;
+
+  LoadData(data: any): void {
+    this.name = data.name;
+    this.userRating = data.userRating;
+  }
+}
+
+export class OrderAttributes extends ResourceObjectAttributes implements IResourceObjectAttributes {
   product?: {
     code?: string;
     name?: string;
     description?: string[];
+    releaseDate?: Date,
+    usageDetails?: OrderProductUsageDetailsHome | OrderProductUsageDetailsWork,
+    features?: OrderProductFeature[]
   };
 
   qty?: number;
 
   price?: number;
+
+  private static LoadProductDescription(data: any): string[] {
+    const values: string[] = [];
+
+    if (isArray(data)) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const value of data) {
+        values.push(value);
+      }
+    }
+
+    return values;
+  }
+
+  private static isOrderProductUsageDetailsHome(data: any): data is OrderProductUsageDetailsHome {
+    return isDefined(data) && (hasProperty(data, 'family'));
+  }
+
+  private static isOrderProductUsageDetailsWork(data: any): data is OrderProductUsageDetailsHome {
+    return isDefined(data) && (hasProperty(data, 'companyName'));
+  }
+
+  private static LoadProductUsageDetails(data: any): OrderProductUsageDetailsHome | OrderProductUsageDetailsWork {
+    if (OrderAttributes.isOrderProductUsageDetailsHome(data)) {
+      const productUsageDetails = new OrderProductUsageDetailsHome();
+      productUsageDetails.LoadData(data);
+      return productUsageDetails;
+    }
+
+    if (OrderAttributes.isOrderProductUsageDetailsWork(data)) {
+      const productUsageDetails = new OrderProductUsageDetailsWork();
+      productUsageDetails.LoadData(data);
+      return productUsageDetails;
+    }
+
+    return undefined;
+  }
+
+  private static LoadProductFeatures(data: any): OrderProductFeature[] {
+    const values: OrderProductFeature[] = [];
+
+    if (isArray(data)) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const value of data) {
+        const productFeature = new OrderProductFeature();
+        productFeature.LoadData(value);
+        values.push(productFeature);
+      }
+    }
+
+    return values;
+  }
+
+  LoadData(data: any): void {
+    this.product = {
+      code: data.product?.code,
+      name: data.product?.name,
+      description: OrderAttributes.LoadProductDescription(data.product?.description),
+      releaseDate: OrderAttributes.LoadDateTime(data.product?.releaseDate),
+      usageDetails: OrderAttributes.LoadProductUsageDetails(data.product?.usageDetails),
+      features: OrderAttributes.LoadProductFeatures(data.product?.features),
+    };
+
+    this.qty = data.qty;
+    this.price = data.price;
+  }
 }
 
 export class OrderRelationships implements IResourceObjectRelationships {
   customer?: ResourceObjectRelationship;
+
+  LoadData(data: any): void {
+    this.customer = {
+      data: {
+        type: data.customer?.data?.type,
+        id: data.customer?.data?.id,
+      },
+    };
+  }
 }
 
 export class Order extends ResourceObject {
-  private _attributes: OrderAttributes;
+  private current: {
+    attributes: OrderAttributes;
+    relationships: OrderRelationships;
+  };
 
-  private _relationships: OrderRelationships;
+  private shadow: {
+    attributes: OrderAttributes;
+    relationships: OrderRelationships;
+  };
 
   constructor(container: IResourceContainer) {
     super(container);
-    this._attributes = new OrderAttributes();
-    this._relationships = new OrderRelationships();
+    this.current = {
+      attributes: new OrderAttributes(),
+      relationships: new OrderRelationships(),
+    };
+    this.shadow = {
+      attributes: new OrderAttributes(),
+      relationships: new OrderRelationships(),
+    };
   }
 
-  protected LoadAttributes(value: any) {
-    this._attributes = value;
+  protected LoadAttributes(data: any) {
+    this.current.attributes.LoadData(data);
+    this.shadow.attributes.LoadData(data);
   }
 
-  protected LoadRelationships(value: any) {
-    this._relationships = value;
+  protected LoadRelationships(data: any) {
+    this.current.relationships.LoadData(data);
+    this.shadow.relationships.LoadData(data);
   }
 
   get attributes(): OrderAttributes {
-    return this._attributes;
+    return this.current.attributes;
   }
 
   get relationships(): OrderRelationships {
-    return this._relationships;
+    return this.current.relationships;
   }
 
   // eslint-disable-next-line class-methods-use-this
