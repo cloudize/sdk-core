@@ -7,6 +7,7 @@ import {
   MockRestClient,
   RestClientOptions,
 } from '@apigames/rest-client';
+import dateUtils from 'date-and-time';
 import { ResourceFilterType, SDKException } from '../../src';
 import {
   CustomerOrders,
@@ -645,6 +646,11 @@ describe('The customer orders resource ', () => {
                     'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
                     'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
                   ],
+                  releaseDate: '1995-04-28T02:19:39.182+0200',
+                  releaseLocation: {
+                    longitude: -124.283728,
+                    latitude: 25.298189,
+                  },
                   features: [
                     {
                       name: 'Out of the box performance',
@@ -727,6 +733,11 @@ describe('The customer orders resource ', () => {
             'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
             'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
           ],
+          releaseDate: dateUtils.parse('1995-04-28T00:19:39.182', 'YYYY-MM-DDTHH:mm:ss.SSS', true),
+          releaseLocation: {
+            longitude: -124.283728,
+            latitude: 25.298189,
+          },
           features: [
             {
               name: 'Out of the box performance',

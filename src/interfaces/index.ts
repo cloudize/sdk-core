@@ -18,6 +18,7 @@ export {
   IResourceObject,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
+  GeospatialPoint,
   ResourceObjectAttributeBase,
   ResourceObjectRelationshipLinkObject,
   ResourceObjectRelationship,

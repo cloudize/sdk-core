@@ -5,6 +5,7 @@ import {
   IResourceContainer,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
+  GeospatialPoint,
   ResourceContainer,
   ResourceFilterType,
   ResourceFilterValue,
@@ -63,6 +64,7 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
     name?: string;
     description?: string[];
     releaseDate?: Date,
+    releaseLocation?: GeospatialPoint,
     usageDetails?: OrderProductUsageDetailsHome | OrderProductUsageDetailsWork,
     features?: OrderProductFeature[]
   };
@@ -129,6 +131,7 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
       name: data.product?.name,
       description: OrderAttributes.LoadProductDescription(data.product?.description),
       releaseDate: OrderAttributes.LoadDateTime(data.product?.releaseDate),
+      releaseLocation: OrderAttributes.LoadGeospatialPoint(data.product?.releaseLocation),
       usageDetails: OrderAttributes.LoadProductUsageDetails(data.product?.usageDetails),
       features: OrderAttributes.LoadProductFeatures(data.product?.features),
     };

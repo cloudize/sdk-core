@@ -1,5 +1,5 @@
 import {
-  hasProperty, isDefined, isObject, isString,
+    hasProperty, isDefined, isNumber, isObject, isString,
 } from '@apigames/json';
 
 export type ResourceObjectType = string;
@@ -33,6 +33,30 @@ export class ResourceObjectAttributeBase {
     if (isDefined(value)) return new Date(value);
     return undefined;
   }
+
+  // eslint-disable-next-line no-use-before-define
+  protected static LoadGeospatialPoint(value: any): GeospatialPoint {
+    if (isDefined(value) && hasProperty(value, 'longitude') && isNumber(value.longitude)
+      && hasProperty(value, 'latitude') && isNumber(value.latitude)) {
+      // eslint-disable-next-line no-use-before-define
+      const geospatialPoint = new GeospatialPoint();
+      geospatialPoint.LoadData(value);
+      return geospatialPoint;
+    }
+
+    return undefined;
+  }
+}
+
+export class GeospatialPoint extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
+    longitude: number;
+
+    latitude: number;
+
+    LoadData(data: any) {
+      this.longitude = data.longitude;
+      this.latitude = data.latitude;
+    }
 }
 
 export class ResourceObjectRelationshipBase {
