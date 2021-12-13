@@ -3,7 +3,7 @@
   "author": "API Games Limited",
   "description": "API Games SDK Core",
   "license": "UNLICENSED",
-  "version": "22.1.0-dev.1",
+  "version": "22.1.0-dev.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -23,8 +23,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@apigames/json": "22.1.0-dev.1",
-    "@apigames/rest-client": "22.1.0-dev.1",
+    "@apigames/json": "22.1.0-dev.2",
+    "@apigames/rest-client": "22.1.0-dev.2",
     "object-hash": "2.2.0"
   },
   "devDependencies": {
@@ -42,7 +42,7 @@
     "eslint-plugin-react-hooks": "4.3.0",
     "jest": "27.0.6",
     "ts-jest": "27.0.4",
-    "typescript": "4.5.2"
+    "typescript": "4.5.3"
   },
   "eslintConfig": {},
   "repository": {
