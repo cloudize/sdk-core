@@ -21,7 +21,7 @@
         }
       }
     ],
-    "linebreak-style": ["error", "windows"],
+    "linebreak-style": ["error", "unix"],
     "max-len": [2, {"code": 128, "tabWidth": 2, "ignoreUrls": true}],
     "no-underscore-dangle": [2, { "allowAfterThis": true }],
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }]

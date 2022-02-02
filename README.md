@@ -1,18 +1,22 @@
-API Games SDK Core Package
-==========================
+# API Games SDK Core Package
+
+![](https://img.shields.io/badge/build-passing-brightgreen)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/bfcc501797104db99608b1fe49e4c8fb)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=apigames-private/sdk-core&amp;utm_campaign=Badge_Grade)
+
+![](https://img.shields.io/badge/license-UNLICENSED-blue)
 
 This package includes the core capabilites required by SDKs built to access the API Games Platform.
 
-### Download & Installation
+## Download & Installation
 
 ```shell 
 $ npm i @apigames/sdk-core
 ```
 
-### Authors or Acknowledgments
+## Authors or Acknowledgments
 
 *   API Games Limited
 
-### License
+## License
 
-Copyright (c) 2021 API Games Limited.  All rights reserved.
+Copyright (c) 2022 API Games Limited.  All rights reserved.
