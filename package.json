@@ -1,9 +1,13 @@
 {
   "name": "@apigames/sdk-core",
-  "author": "API Games Limited",
+  "author": {
+    "name" : "API Games Limited",
+    "email" : "hello@api.games",
+    "url" : "https://api.games"
+  },
   "description": "API Games SDK Core",
-  "license": "UNLICENSED",
-  "version": "22.1.0-dev.3",
+  "license": "MIT",
+  "version": "22.1.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -23,15 +27,15 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@apigames/json": "22.1.0-dev.9",
-    "@apigames/rest-client": "22.1.0-dev.9",
+    "@apigames/json": "22.1.0",
+    "@apigames/rest-client": "22.1.0",
     "object-hash": "2.2.0"
   },
   "devDependencies": {
     "date-and-time": "^2.1.0",
     "@types/date-and-time": "^0.13.0",
     "@types/jest": "27.4.0",
-    "@types/node": "17.0.14",
+    "@types/node": "14.18.10",
     "@typescript-eslint/eslint-plugin": "5.10.2",
     "@typescript-eslint/parser": "5.10.2",
     "eslint": "8.8.0",
@@ -47,10 +51,10 @@
   "eslintConfig": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/apigames-private/sdk-core.git"
+    "url": "git+https://github.com/apigames-public/sdk-core.git"
   },
   "bugs": {
-    "url": "https://github.com/apigames-private/sdk-core/issues"
+    "url": "https://github.com/apigames-public/sdk-core/issues"
   },
-  "homepage": "https://github.com/apigames-private/sdk-core#readme"
+  "homepage": "https://github.com/apigames-public/sdk-core#readme"
 }
