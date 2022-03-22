@@ -172,6 +172,11 @@ export class Order extends ResourceObject {
     };
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  protected EndpointContentType(): string {
+    return 'application/vnd.api+json';
+  }
+
   protected LoadAttributes(data: any) {
     this.current.attributes.LoadData(data);
     this.shadow.attributes.LoadData(data);
@@ -238,6 +243,11 @@ export class CustomerOrders extends ResourceContainer {
   // eslint-disable-next-line class-methods-use-this
   protected EndpointPath(): string {
     return 'https://api.example.com/customers/{customerId}/orders';
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  protected EndpointContentType(): string {
+    return 'application/vnd.api+json';
   }
 }
 

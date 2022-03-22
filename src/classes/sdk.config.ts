@@ -6,6 +6,10 @@ export type SDKResourceMap = {
 }
 
 export class SDKConfiguration {
+  private _accessToken: string;
+
+  private _apiKey: string;
+
   private _hostName: string;
 
   private _resourceMap: SDKResourceMap;
@@ -26,6 +30,22 @@ export class SDKConfiguration {
     let url = this.hostName;
     url = url.endsWith('/') ? url.slice(0, -1) : url;
     return path.startsWith('/') ? `${url}${path}` : `${url}/${path}`;
+  }
+
+  get accessToken(): string {
+    return this._accessToken;
+  }
+
+  set accessToken(value: string) {
+    this._accessToken = value;
+  }
+
+  get apiKey(): string {
+    return this._apiKey;
+  }
+
+  set apiKey(value: string) {
+    this._apiKey = value;
   }
 
   get hostName(): string {

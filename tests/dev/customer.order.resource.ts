@@ -194,6 +194,11 @@ export class Order extends ResourceObject {
   get type(): string {
     return 'Order';
   }
+
+  // eslint-disable-next-line class-methods-use-this
+  protected EndpointContentType(): string {
+    return 'application/vnd.api+json';
+  }
 }
 
 export class CustomerOrders extends ResourceContainer {
@@ -238,6 +243,11 @@ export class CustomerOrders extends ResourceContainer {
   // eslint-disable-next-line class-methods-use-this
   protected EndpointPath(): string {
     return 'https://api.example.com/customers/{customerId}/orders';
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  protected EndpointContentType(): string {
+    return 'application/vnd.api+json';
   }
 }
 

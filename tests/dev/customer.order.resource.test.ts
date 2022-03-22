@@ -92,7 +92,6 @@ describe('The customer orders resource ', () => {
 
       const queryHeaders = {
         Accept: 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {
@@ -147,7 +146,6 @@ describe('The customer orders resource ', () => {
 
       const queryHeaders = {
         Accept: 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {
@@ -399,7 +397,6 @@ describe('The customer orders resource ', () => {
 
       const queryHeaders = {
         Accept: 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {};
@@ -696,7 +693,6 @@ describe('The customer orders resource ', () => {
 
       const queryHeaders = {
         Accept: 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {
@@ -868,7 +864,6 @@ describe('The customer orders resource ', () => {
 
       const queryHeaders = {
         Accept: 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {

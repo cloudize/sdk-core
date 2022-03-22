@@ -1,11 +1,19 @@
 import {
   extractAndRedact,
-  hasProperty, isArray, isDefined, isDefinedAndNotNull, isEmpty, isNumber, isObject, isString, isUndefinedOrNull,
+  hasProperty,
+  isArray,
+  isDefined,
+  isDefinedAndNotNull,
+  isEmpty,
+  isNumber,
+  isObject,
+  isString,
+  isUndefinedOrNull,
+  redactUndefinedValues,
 } from '@apigames/json';
 import {
   IRestClient, RestClient, RestClientOptions, RestClientResponse,
 } from '@apigames/rest-client';
-import { redactUndefinedValues } from '@apigames/json/lib/utils';
 import {
   IResourceContainer,
   IResourceObject,
@@ -106,6 +114,11 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   // eslint-disable-next-line class-methods-use-this
+  protected EndpointContentType(): string {
+    throw new Error('Method or Property not implemented.');
+  }
+
+  // eslint-disable-next-line class-methods-use-this
   protected EndpointPath(): string {
     throw new Error('Method or Property not implemented.');
   }
@@ -176,10 +189,7 @@ export default class ResourceContainer implements IResourceContainer {
   async Delete(resource: IResourceObject): Promise<void> {
     if (isDefined(resource.id)) {
       const queryUri: string = `${this.uri}/${resource.id}`;
-      const queryHeaders = {
-        Accept: 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
-      };
+      const queryHeaders = this.GetHeaders('DELETE');
       const queryOptions: RestClientOptions = {
         queryParams: this.GetQueryParams(),
       };
@@ -196,10 +206,7 @@ export default class ResourceContainer implements IResourceContainer {
 
   async Count(): Promise<number> {
     const queryUri: string = `${this.uri}`;
-    const queryHeaders = {
-      Accept: 'application/vnd.api+json',
-      'Content-Type': 'application/vnd.api+json',
-    };
+    const queryHeaders = this.GetHeaders('COUNT');
     const queryOptions: RestClientOptions = {
       queryParams: this.GetQueryParams(),
     };
@@ -245,10 +252,7 @@ export default class ResourceContainer implements IResourceContainer {
   async Find(): Promise<void> {
     this.ClearData();
     const queryUri: string = `${this.uri}`;
-    const queryHeaders = {
-      Accept: 'application/vnd.api+json',
-      'Content-Type': 'application/vnd.api+json',
-    };
+    const queryHeaders = this.GetHeaders('FIND');
     const queryOptions: RestClientOptions = {
       queryParams: this.GetQueryParams(),
     };
@@ -262,10 +266,7 @@ export default class ResourceContainer implements IResourceContainer {
   async Get(id: string): Promise<void> {
     this.ClearData();
     const queryUri: string = `${this.uri}/${id}`;
-    const queryHeaders = {
-      Accept: 'application/vnd.api+json',
-      'Content-Type': 'application/vnd.api+json',
-    };
+    const queryHeaders = this.GetHeaders('GET');
     const queryOptions: RestClientOptions = {
       queryParams: this.GetQueryParams(),
     };
@@ -284,7 +285,33 @@ export default class ResourceContainer implements IResourceContainer {
     };
   }
 
-  private GetQueryParams():any {
+  private GetHeaders(action: string): any {
+    const headers: any = {};
+
+    switch (action) {
+      case 'GET':
+      case 'COUNT':
+      case 'FIND':
+        headers.Accept = this.EndpointContentType();
+        break;
+      default:
+        headers.Accept = this.EndpointContentType();
+        headers['Content-Type'] = this.EndpointContentType();
+        break;
+    }
+
+    if (isDefined(SDKConfig().apiKey)) {
+      headers['x-api-key'] = SDKConfig().apiKey;
+    }
+
+    if (isDefined(SDKConfig().accessToken)) {
+      headers.Authorization = `Bearer ${SDKConfig().accessToken}`;
+    }
+
+    return headers;
+  }
+
+  private GetQueryParams(): object {
     const queryParams: any = {};
 
     // eslint-disable-next-line no-restricted-syntax
