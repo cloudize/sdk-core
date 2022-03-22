@@ -1,4 +1,5 @@
 #!/bin/bash
+
 find src -name "*.js" -type f -exec dos2unix {} \;
 find src -name "*.jsx" -type f -exec dos2unix {} \;
 find src -name "*.ts" -type f -exec dos2unix {} \;
