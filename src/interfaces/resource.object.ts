@@ -1,6 +1,11 @@
+// eslint-disable-next-line max-classes-per-file
 import {
-    hasProperty, isDefined, isNumber, isObject, isString,
+  hasProperty, isDefined, isNumber, isObject, isString,
 } from '@apigames/json';
+import {
+  LoadDateTime as LoadDateTimeHelper,
+  LoadGeospatialPoint as LoadGeospatialPointHelper,
+} from '../helpers';
 
 export type ResourceObjectType = string;
 export type ResourceObjectIdentifier = string;
@@ -30,12 +35,12 @@ export type ResourceObjectUri = string;
 
 export class ResourceObjectAttributeBase {
   protected static LoadDateTime(value: string): Date {
-    if (isDefined(value)) return new Date(value);
-    return undefined;
+    return LoadDateTimeHelper(value);
   }
 
   // eslint-disable-next-line no-use-before-define
   protected static LoadGeospatialPoint(value: any): GeospatialPoint {
+    return LoadGeospatialPointHelper(value);
     if (isDefined(value) && hasProperty(value, 'longitude') && isNumber(value.longitude)
       && hasProperty(value, 'latitude') && isNumber(value.latitude)) {
       // eslint-disable-next-line no-use-before-define
@@ -49,14 +54,14 @@ export class ResourceObjectAttributeBase {
 }
 
 export class GeospatialPoint extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
-    longitude: number;
+  longitude: number;
 
-    latitude: number;
+  latitude: number;
 
-    LoadData(data: any) {
-      this.longitude = data.longitude;
-      this.latitude = data.latitude;
-    }
+  LoadData(data: any) {
+    this.longitude = data.longitude;
+    this.latitude = data.latitude;
+  }
 }
 
 export class ResourceObjectRelationshipBase {

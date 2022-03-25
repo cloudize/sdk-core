@@ -13,7 +13,7 @@
   ],
   "description": "API Games SDK Core",
   "license": "MIT",
-  "version": "22.1.2",
+  "version": "22.1.3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
