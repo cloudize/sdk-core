@@ -5,19 +5,20 @@
 
 # Config Files
 .eslintrc
-build.jest.config.js
-jest.config.js
+*jest.config.js
 tsconfig.json
-
-# Tests
-tests
 
 # Coverage Reports
 coverage
 
+# Scripts
+*.sh
+
+# Source Files
+src
+
+# Tests
+tests
+
 # Webstorm Configs
 .idea
-
-# Build Source Files
-src
-tests
