@@ -41,15 +41,6 @@ export class ResourceObjectAttributeBase {
   // eslint-disable-next-line no-use-before-define
   protected static LoadGeospatialPoint(value: any): GeospatialPoint {
     return LoadGeospatialPointHelper(value);
-    if (isDefined(value) && hasProperty(value, 'longitude') && isNumber(value.longitude)
-      && hasProperty(value, 'latitude') && isNumber(value.latitude)) {
-      // eslint-disable-next-line no-use-before-define
-      const geospatialPoint = new GeospatialPoint();
-      geospatialPoint.LoadData(value);
-      return geospatialPoint;
-    }
-
-    return undefined;
   }
 }
 
@@ -91,4 +82,6 @@ export interface IResourceObject {
     LoadData(value: any): IResourceObject;
     Delete(): Promise<void>;
     Save(): Promise<void>;
+    UpdateAttributes(value: any): void;
+    UpdateRelationships(value: any): void;
 }

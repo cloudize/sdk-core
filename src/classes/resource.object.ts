@@ -46,12 +46,12 @@ export default class ResourceObject implements IResourceObject {
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  protected UpdateAttributes(value: any) {
+  public UpdateAttributes(value: any) {
     throw new Error('Method or Property not implemented.');
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  protected UpdateRelationships(value: any) {
+  public UpdateRelationships(value: any) {
     throw new Error('Method or Property not implemented.');
   }
 
