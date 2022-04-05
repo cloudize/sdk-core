@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import {
-  hasProperty, isDefined, isNumber, isObject, isString,
+  hasProperty, isDefined, isObject, isString,
 } from '@apigames/json';
 import {
   LoadDateTime as LoadDateTimeHelper,

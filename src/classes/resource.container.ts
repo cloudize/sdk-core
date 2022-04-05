@@ -276,7 +276,7 @@ export default class ResourceContainer implements IResourceContainer {
     this.LoadResponse(await this._restClient.Get(queryUri, queryHeaders, queryOptions));
   }
 
-  private InitParams() {
+  public InitParams() {
     this._queryParams = {
       includes: {},
       filters: {},

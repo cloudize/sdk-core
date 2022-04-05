@@ -182,12 +182,28 @@ export class Order extends ResourceObject {
     this.shadow.relationships.LoadData(data);
   }
 
+  public GeneratePatchAttributesPayload(shadow: any, data: any): any {
+    return super.GeneratePatchAttributesPayload(shadow, data);
+  }
+
+  public GeneratePatchRelationshipsPayload(shadow: any, data: any): any {
+    return super.GeneratePatchRelationshipsPayload(shadow, data);
+  }
+
   get attributes(): OrderAttributes {
     return this.current.attributes;
   }
 
   get relationships(): OrderRelationships {
     return this.current.relationships;
+  }
+
+  get shadowAttributes(): OrderAttributes {
+    return this.shadow.attributes;
+  }
+
+  get shadowRelationships(): OrderRelationships {
+    return this.shadow.relationships;
   }
 
   // eslint-disable-next-line class-methods-use-this

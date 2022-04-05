@@ -1,5 +1,6 @@
 import {
-  hasProperty, isDefined, isObject, isString,
+  areEqual,
+  hasProperty, isArray, isDefined, isNumber, isObject, isString, isUndefined, redactUndefinedValues,
 } from '@apigames/json';
 import { RestClientOptions, RestClientResponseHeaders } from '@apigames/rest-client';
 import {
@@ -91,6 +92,72 @@ export default class ResourceObject implements IResourceObject {
     return payload;
   }
 
+  protected GeneratePatchAttributesPayload(shadow: any, data: any): any {
+    if (areEqual(shadow, data)) return undefined;
+    if (isUndefined(data) && isUndefined(shadow)) return undefined;
+
+    if (isArray(data)) return data;
+
+    if (isObject(data)) {
+      if ((Object.keys(data).length === 2)
+          && (hasProperty(data, 'latitude') && isNumber(data.latitude))
+          && (hasProperty(data, 'longitude') && isNumber(data.longitude))) {
+        return data;
+      }
+
+      const payload: any = {};
+      // eslint-disable-next-line no-restricted-syntax
+      for (const fieldName in data) {
+        if (hasProperty(data, fieldName)) {
+          if (isDefined(shadow)) payload[fieldName] = this.GeneratePatchAttributesPayload(shadow[fieldName], data[fieldName]);
+          else payload[fieldName] = this.GeneratePatchAttributesPayload(undefined, data[fieldName]);
+        }
+      }
+
+      if (isDefined(shadow) && isObject(shadow)) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const fieldName in shadow) {
+          if (hasProperty(shadow, fieldName)) {
+            if (isUndefined(data[fieldName])) payload[fieldName] = null;
+          }
+        }
+      }
+
+      return payload;
+    }
+
+    return data;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  protected GeneratePatchRelationshipsPayload(shadow: any, data: any): any {
+    if (areEqual(shadow, data)) return undefined;
+    if (isUndefined(data) && isUndefined(shadow)) return undefined;
+
+    if (isObject(data)) {
+      const payload: any = {};
+      // eslint-disable-next-line no-restricted-syntax
+      for (const fieldName in data) {
+        if (hasProperty(data, fieldName)) {
+          if (isUndefined(shadow) || !areEqual(shadow[fieldName], data[fieldName])) payload[fieldName] = data[fieldName];
+        }
+      }
+
+      if (isDefined(shadow) && isObject(shadow)) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const fieldName in shadow) {
+          if (hasProperty(shadow, fieldName)) {
+            if (isUndefined(data[fieldName])) payload[fieldName] = null;
+          }
+        }
+      }
+
+      return payload;
+    }
+
+    return data;
+  }
+
   protected GetUpdatePayload(): any {
     const payload: any = {
       data: {
@@ -99,9 +166,15 @@ export default class ResourceObject implements IResourceObject {
       },
     };
 
-    if (isDefined(this.attributes)) payload.data.attributes = this.attributes;
-    if (isDefined(this.relationships)) payload.data.relationships = this.relationships;
+    if (isDefined(this.attributes)) {
+      payload.data.attributes = this.GeneratePatchAttributesPayload(this.shadowAttributes, this.attributes);
+    }
 
+    if (isDefined(this.relationships)) {
+      payload.data.relationships = this.GeneratePatchRelationshipsPayload(this.shadowRelationships, this.relationships);
+    }
+
+    redactUndefinedValues(payload);
     return payload;
   }
 
@@ -215,6 +288,16 @@ export default class ResourceObject implements IResourceObject {
 
   // eslint-disable-next-line class-methods-use-this
   get relationships(): IResourceObjectRelationships {
+    throw new Error('Method or Property not implemented.');
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  protected get shadowAttributes(): IResourceObjectAttributes {
+    throw new Error('Method or Property not implemented.');
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  protected get shadowRelationships(): IResourceObjectRelationships {
     throw new Error('Method or Property not implemented.');
   }
 

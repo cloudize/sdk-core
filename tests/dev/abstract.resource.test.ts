@@ -1,4 +1,5 @@
 import { MockRestClient, RestClient } from '@apigames/rest-client';
+import { redactUndefinedValues } from '@apigames/json';
 import {
   ResourceContainer, ResourceObject,
 } from '../../src';
@@ -44,7 +45,7 @@ describe('The base ', () => {
     });
   });
 
-  describe('ResourceObject should  ', () => {
+  describe('ResourceObject should', () => {
     it('allow the id property to be set and queried.', () => {
       const container = new ResourceContainer();
       const resource = new ResourceObject(container);
@@ -57,6 +58,412 @@ describe('The base ', () => {
       const container = new ResourceContainer();
       const resource = new ResourceObject(container);
       expect(resource.uri).toBeUndefined();
+    });
+
+    describe('correctly calculates the patch attributes payload', () => {
+      it('when both the shadow object and the current value are undefined', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+        const payload = resource.GeneratePatchAttributesPayload(undefined, undefined);
+        expect(payload).toBeUndefined();
+      });
+
+      it('when the shadow object does not exist, but the current value does', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+        const payload = resource.GeneratePatchAttributesPayload(undefined, { name: 'value' });
+        expect(payload).toEqual({ name: 'value' });
+      });
+
+      it('when the shadow object exists, but the current value does not', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+        const payload = resource.GeneratePatchAttributesPayload({ name: 'value' }, undefined);
+        expect(payload).toBeUndefined();
+      });
+
+      it('when the shadow object and the current object are equal', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+        const payload = resource.GeneratePatchAttributesPayload({ name: 'value' }, { name: 'value' });
+        expect(payload).toBeUndefined();
+      });
+
+      it('when a simple object contains one value that has changed', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+        const payload = resource.GeneratePatchAttributesPayload({ name: 'value', count: 2 }, { name: 'value', count: 3 });
+        expect(payload).toEqual({ count: 3 });
+      });
+
+      it('when a complex object contains multiple values that have changed', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+        const shadow: any = {
+          name: 'value',
+          count: 99,
+          active: true,
+          address: {
+            line1: 'test1',
+            line2: 'test3',
+            line3: 'test4',
+            city: 'Auckland',
+            country: {
+              code: 'NZ',
+              name: 'New Zealand',
+            },
+            location: {
+              latitude: -36.1292323,
+              longitude: 174.12891829,
+            },
+            altLocation: {
+              latitude: -36.1292323,
+              longitude: 174.12891829,
+            },
+          },
+          items: [1, 2, 3],
+        };
+
+        const current = {
+          count: 99,
+          active: false,
+          address: {
+            line1: 'test1',
+            line2: 'test3',
+            line3: 'test4',
+            city: 'Sydney',
+            country: {
+              code: 'AU',
+              name: 'Australia',
+            },
+            location: {
+              latitude: -34.1292323,
+              longitude: 174.12891829,
+            },
+          },
+          items: [1, 3],
+        };
+
+        const payload = resource.GeneratePatchAttributesPayload(shadow, current);
+        redactUndefinedValues(payload);
+        expect(payload).toEqual({
+          name: null,
+          active: false,
+          address: {
+            city: 'Sydney',
+            country: {
+              code: 'AU',
+              name: 'Australia',
+            },
+            location: {
+              latitude: -34.1292323,
+              longitude: 174.12891829,
+            },
+            altLocation: null,
+          },
+          items: [1, 3],
+        });
+      });
+    });
+
+    describe('correctly calculates the patch relationships payload', () => {
+      it('when both the shadow relationships and the current relationships are undefined', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+        const payload = resource.GeneratePatchRelationshipsPayload(undefined, undefined);
+        expect(payload).toBeUndefined();
+      });
+
+      it('when the shadow relationships does not exist, but the current relationships does', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+
+        const current = {
+          target: {
+            data: {
+              type: 'target',
+              id: 'abc',
+            },
+          },
+        };
+
+        const payload = resource.GeneratePatchRelationshipsPayload(undefined, current);
+
+        expect(payload).toEqual({
+          target: {
+            data: {
+              type: 'target',
+              id: 'abc',
+            },
+          },
+        });
+      });
+
+      it('when the shadow relationships exists, but the current relationships does not', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+
+        const shadow = {
+          target: {
+            data: {
+              type: 'target',
+              id: 'abc',
+            },
+          },
+        };
+
+        const payload = resource.GeneratePatchRelationshipsPayload(shadow, undefined);
+        expect(payload).toBeUndefined();
+      });
+
+      it('when the shadow relationships and the current relationships are equal', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+
+        const shadow = {
+          target: {
+            data: {
+              type: 'target',
+              id: 'abc',
+            },
+          },
+        };
+
+        const current = {
+          target: {
+            data: {
+              type: 'target',
+              id: 'abc',
+            },
+          },
+        };
+
+        const payload = resource.GeneratePatchRelationshipsPayload(shadow, current);
+        expect(payload).toBeUndefined();
+      });
+
+      it('when a single to one relationship has changed', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+
+        const shadow = {
+          target1: {
+            data: {
+              type: 'target',
+              id: 'abc1',
+            },
+          },
+          target2: {
+            data: {
+              type: 'target',
+              id: 'abc2',
+            },
+          },
+          target3: {
+            data: {
+              type: 'target',
+              id: 'abc3',
+            },
+          },
+        };
+
+        const current = {
+          target1: {
+            data: {
+              type: 'target',
+              id: 'abc1',
+            },
+          },
+          target2: {
+            data: {
+              type: 'target',
+              id: 'abc22',
+            },
+          },
+          target3: {
+            data: {
+              type: 'target',
+              id: 'abc3',
+            },
+          },
+        };
+
+        const payload = resource.GeneratePatchRelationshipsPayload(shadow, current);
+        expect(payload).toEqual({
+          target2: {
+            data: {
+              type: 'target',
+              id: 'abc22',
+            },
+          },
+        });
+      });
+
+      it('when a single to many relationship has changed', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+
+        const shadow = {
+          target1: {
+            data: [
+              {
+                type: 'target',
+                id: 'abc1',
+              },
+              {
+                type: 'target',
+                id: 'abc2',
+              },
+              {
+                type: 'target',
+                id: 'abc3',
+              },
+            ],
+          },
+          target2: {
+            data: {
+              type: 'target',
+              id: 'abc2',
+            },
+          },
+          target3: {
+            data: {
+              type: 'target',
+              id: 'abc3',
+            },
+          },
+        };
+
+        const current = {
+          target1: {
+            data: [
+              {
+                type: 'target',
+                id: 'abc3',
+              },
+            ],
+          },
+          target2: {
+            data: {
+              type: 'target',
+              id: 'abc2',
+            },
+          },
+          target3: {
+            data: {
+              type: 'target',
+              id: 'abc3',
+            },
+          },
+        };
+
+        const payload = resource.GeneratePatchRelationshipsPayload(shadow, current);
+        expect(payload).toEqual({
+          target1: {
+            data: [
+              {
+                type: 'target',
+                id: 'abc3',
+              },
+            ],
+          },
+        });
+      });
+
+      it('when a complex set of relationship changes have been made', () => {
+        const container = new ResourceContainer();
+        const resource = new Order(container);
+        const shadow = {
+          target1: {
+            data: [
+              {
+                type: 'target',
+                id: 'abc1',
+              },
+              {
+                type: 'target',
+                id: 'abc2',
+              },
+              {
+                type: 'target',
+                id: 'abc3',
+              },
+            ],
+          },
+          target2: {
+            data: {
+              type: 'target',
+              id: 'abc2',
+            },
+          },
+          target3: {
+            data: {
+              type: 'target',
+              id: 'abc3',
+            },
+          },
+          target4: {
+            data: {
+              type: 'target',
+              id: 'abc4',
+            },
+          },
+        };
+
+        const current = {
+          target1: {
+            data: [
+              {
+                type: 'target',
+                id: 'abc4',
+              },
+            ],
+          },
+          target2: {
+            data: {
+              type: 'target',
+              id: 'abc22',
+            },
+          },
+          target3: {
+            data: {
+              type: 'target2',
+              id: 'abc3',
+            },
+          },
+          target4: {
+            data: {
+              type: 'target',
+              id: 'abc4',
+            },
+          },
+        };
+
+        const payload = resource.GeneratePatchRelationshipsPayload(shadow, current);
+        redactUndefinedValues(payload);
+        expect(payload).toEqual({
+          target1: {
+            data: [
+              {
+                type: 'target',
+                id: 'abc4',
+              },
+            ],
+          },
+          target2: {
+            data: {
+              type: 'target',
+              id: 'abc22',
+            },
+          },
+          target3: {
+            data: {
+              type: 'target2',
+              id: 'abc3',
+            },
+          },
+        });
+      });
     });
   });
 
