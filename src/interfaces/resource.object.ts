@@ -69,6 +69,11 @@ export class ResourceObjectRelationshipBase {
 
     return undefined;
   }
+
+  // eslint-disable-next-line no-unused-vars
+  static RelationshipType(relationshipName: string): string {
+    throw new Error('Method or Property not implemented.');
+  }
 }
 
 export interface IResourceObject {
