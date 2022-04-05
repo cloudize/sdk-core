@@ -11,8 +11,9 @@ import {
   ResourceFilterValue,
   ResourceObject,
   ResourceObjectAttributeBase,
-  ResourceObjectRelationship,
   ResourceObjectRelationshipBase,
+  ResourceObjectRelationshipKey,
+  ResourceObjectRelationshipKeys,
   SDKConfig,
 } from '../../src';
 
@@ -142,10 +143,40 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
 }
 
 export class OrderRelationships extends ResourceObjectRelationshipBase implements IResourceObjectRelationships {
-  customer?: ResourceObjectRelationship;
+  customer?: ResourceObjectRelationshipKey;
+
+  target?: ResourceObjectRelationshipKey;
+
+  target1?: ResourceObjectRelationshipKey | ResourceObjectRelationshipKeys;
+
+  target2?: ResourceObjectRelationshipKey | ResourceObjectRelationshipKeys;
+
+  target3?: ResourceObjectRelationshipKey | ResourceObjectRelationshipKeys;
 
   LoadData(data: any): void {
-    this.customer = OrderRelationships.LoadRelationshipObject(data.customer);
+    this.customer = OrderRelationships.LoadRelationshipKey(
+      OrderRelationships.RelationshipType('customer'),
+      data.customer,
+    );
+  }
+
+  static RelationshipType(relationshipName: string): string {
+    switch (relationshipName) {
+      case 'customer':
+        return 'Customer';
+      case 'target':
+        return 'Target';
+      case 'target1':
+        return 'Target1';
+      case 'target2':
+        return 'Target2';
+      case 'target3':
+        return 'Target3';
+      case 'target4':
+        return 'Target4';
+      default:
+        return 'UNKNOWN-RESOURCE-TYPE';
+    }
   }
 }
 
@@ -182,12 +213,17 @@ export class Order extends ResourceObject {
     this.shadow.relationships.LoadData(data);
   }
 
-  public GeneratePatchAttributesPayload(shadow: any, data: any): any {
-    return super.GeneratePatchAttributesPayload(shadow, data);
+  // eslint-disable-next-line class-methods-use-this
+  protected RelationshipType(relationshipName: string): string {
+    return OrderRelationships.RelationshipType(relationshipName);
   }
 
-  public GeneratePatchRelationshipsPayload(shadow: any, data: any): any {
-    return super.GeneratePatchRelationshipsPayload(shadow, data);
+  public SerializeAttributesPayload(shadow: any, data: any): any {
+    return super.SerializeAttributesPayload(shadow, data);
+  }
+
+  public SerializeRelationshipsPayload(shadow: any, data: any): any {
+    return super.SerializeRelationshipsPayload(shadow, data);
   }
 
   get attributes(): OrderAttributes {

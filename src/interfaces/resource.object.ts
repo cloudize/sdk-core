@@ -27,6 +27,10 @@ export type ResourceObjectRelationships = {
     data: ResourceObjectRelationshipLinkObject[];
 };
 
+export type ResourceObjectRelationshipKey = string;
+
+export type ResourceObjectRelationshipKeys = ResourceObjectRelationshipKey[];
+
 export interface IResourceObjectRelationships {
     LoadData(data: any): void;
 }
@@ -56,18 +60,12 @@ export class GeospatialPoint extends ResourceObjectAttributeBase implements IRes
 }
 
 export class ResourceObjectRelationshipBase {
-  protected static LoadRelationshipObject(value: any): ResourceObjectRelationship {
+  protected static LoadRelationshipKey(expectedType: string, value: any): ResourceObjectRelationshipKey {
     if (isDefined(value) && (hasProperty(value, 'data') && isObject(value.data)
         && hasProperty(value.data, 'type') && isString(value.data.type)
+        && (value.data.type === expectedType)
         && hasProperty(value.data, 'id') && isString(value.data.id)
-    )) {
-      return {
-        data: {
-          type: value.data.type,
-          id: value.data.id,
-        },
-      };
-    }
+    )) return value.data.id;
 
     return undefined;
   }

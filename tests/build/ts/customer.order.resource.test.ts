@@ -331,7 +331,8 @@ describe('The customer orders resource ', () => {
       }
     });
 
-    it('should clear the internal structures, get the resource and repopulate the internal data structures (ignoring extra fields).', async () => {
+    it('should clear the internal structures, get the resource and repopulate the internal data structures '
+        + '(ignoring extra fields).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -393,7 +394,7 @@ describe('The customer orders resource ', () => {
       await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
 
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/'
-        + '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
+          + '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
 
       const queryHeaders = {
         Accept: 'application/vnd.api+json',
@@ -426,12 +427,7 @@ describe('The customer orders resource ', () => {
       };
 
       const orderRelationships = {
-        customer: {
-          data: {
-            type: 'Customer',
-            id: 'customer-id',
-          },
-        },
+        customer: 'customer-id',
       };
 
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
@@ -582,13 +578,14 @@ describe('The customer orders resource ', () => {
         expect((error as Error400BadRequest).errors[1].title).toBe('The requested resource was still not found.');
         expect((error as Error400BadRequest).errors[1].status).toBe(404);
         expect((error as Error400BadRequest).errors[1].detail).toBe('After an extensive look around the '
-          + 'database, nothing resembling the desired resource was found.');
+            + 'database, nothing resembling the desired resource was found.');
         expect((error as Error400BadRequest).errors[1].source)
           .toEqual({ database: { collections: 'all of them really' } });
       }
     });
 
-    it('should clear the internal structures, get the resource (by page number) and repopulate the internal data structures (ignoring extra fields).', async () => {
+    it('should clear the internal structures, get the resource (by page number) and repopulate the internal data '
+        + 'structures (ignoring extra fields).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -750,12 +747,7 @@ describe('The customer orders resource ', () => {
       };
 
       const orderRelationships = {
-        customer: {
-          data: {
-            type: 'Customer',
-            id: 'customer-id',
-          },
-        },
+        customer: 'customer-id',
       };
 
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
@@ -777,7 +769,8 @@ describe('The customer orders resource ', () => {
       }
     });
 
-    it('should clear the internal structures, get the resource (by page offset) and repopulate the internal data structures.', async () => {
+    it('should clear the internal structures, get the resource (by page offset) and repopulate the internal data '
+        + 'structures.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -906,12 +899,7 @@ describe('The customer orders resource ', () => {
       };
 
       const orderRelationships = {
-        customer: {
-          data: {
-            type: 'Customer',
-            id: 'customer-id',
-          },
-        },
+        customer: 'customer-id',
       };
 
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
@@ -1209,12 +1197,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       try {
         expect(order.id).toBeUndefined();
@@ -1260,12 +1243,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       try {
         expect(order.id).toBeUndefined();
@@ -1302,12 +1280,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       expect(order.id).toBeUndefined();
       try {
@@ -1318,7 +1291,7 @@ describe('The customer orders resource ', () => {
         expect(error).toBeInstanceOf(SDKException);
         expect((error as SDKException).code).toBe('INVALID-LOCATION');
         expect((error as SDKException).message).toBe('The save operation was unable to retrieve the location of '
-          + 'the resource created by the API.');
+            + 'the resource created by the API.');
       }
     });
 
@@ -1342,12 +1315,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       expect(order.id).toBeUndefined();
       try {
@@ -1383,12 +1351,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       expect(order.id).toBeUndefined();
       await order.Save();

@@ -64,35 +64,35 @@ describe('The base ', () => {
       it('when both the shadow object and the current value are undefined', () => {
         const container = new ResourceContainer();
         const resource = new Order(container);
-        const payload = resource.GeneratePatchAttributesPayload(undefined, undefined);
+        const payload = resource.SerializeAttributesPayload(undefined, undefined);
         expect(payload).toBeUndefined();
       });
 
       it('when the shadow object does not exist, but the current value does', () => {
         const container = new ResourceContainer();
         const resource = new Order(container);
-        const payload = resource.GeneratePatchAttributesPayload(undefined, { name: 'value' });
+        const payload = resource.SerializeAttributesPayload(undefined, { name: 'value' });
         expect(payload).toEqual({ name: 'value' });
       });
 
       it('when the shadow object exists, but the current value does not', () => {
         const container = new ResourceContainer();
         const resource = new Order(container);
-        const payload = resource.GeneratePatchAttributesPayload({ name: 'value' }, undefined);
+        const payload = resource.SerializeAttributesPayload({ name: 'value' }, undefined);
         expect(payload).toBeUndefined();
       });
 
       it('when the shadow object and the current object are equal', () => {
         const container = new ResourceContainer();
         const resource = new Order(container);
-        const payload = resource.GeneratePatchAttributesPayload({ name: 'value' }, { name: 'value' });
+        const payload = resource.SerializeAttributesPayload({ name: 'value' }, { name: 'value' });
         expect(payload).toBeUndefined();
       });
 
       it('when a simple object contains one value that has changed', () => {
         const container = new ResourceContainer();
         const resource = new Order(container);
-        const payload = resource.GeneratePatchAttributesPayload({ name: 'value', count: 2 }, { name: 'value', count: 3 });
+        const payload = resource.SerializeAttributesPayload({ name: 'value', count: 2 }, { name: 'value', count: 3 });
         expect(payload).toEqual({ count: 3 });
       });
 
@@ -144,7 +144,7 @@ describe('The base ', () => {
           items: [1, 3],
         };
 
-        const payload = resource.GeneratePatchAttributesPayload(shadow, current);
+        const payload = resource.SerializeAttributesPayload(shadow, current);
         redactUndefinedValues(payload);
         expect(payload).toEqual({
           name: null,
@@ -170,7 +170,7 @@ describe('The base ', () => {
       it('when both the shadow relationships and the current relationships are undefined', () => {
         const container = new ResourceContainer();
         const resource = new Order(container);
-        const payload = resource.GeneratePatchRelationshipsPayload(undefined, undefined);
+        const payload = resource.SerializeRelationshipsPayload(undefined, undefined);
         expect(payload).toBeUndefined();
       });
 
@@ -179,20 +179,15 @@ describe('The base ', () => {
         const resource = new Order(container);
 
         const current = {
-          target: {
-            data: {
-              type: 'target',
-              id: 'abc',
-            },
-          },
+          target: 'abc',
         };
 
-        const payload = resource.GeneratePatchRelationshipsPayload(undefined, current);
+        const payload = resource.SerializeRelationshipsPayload(undefined, current);
 
         expect(payload).toEqual({
           target: {
             data: {
-              type: 'target',
+              type: 'Target',
               id: 'abc',
             },
           },
@@ -204,15 +199,10 @@ describe('The base ', () => {
         const resource = new Order(container);
 
         const shadow = {
-          target: {
-            data: {
-              type: 'target',
-              id: 'abc',
-            },
-          },
+          target: 'abc',
         };
 
-        const payload = resource.GeneratePatchRelationshipsPayload(shadow, undefined);
+        const payload = resource.SerializeRelationshipsPayload(shadow, undefined);
         expect(payload).toBeUndefined();
       });
 
@@ -221,24 +211,14 @@ describe('The base ', () => {
         const resource = new Order(container);
 
         const shadow = {
-          target: {
-            data: {
-              type: 'target',
-              id: 'abc',
-            },
-          },
+          target: 'abc',
         };
 
         const current = {
-          target: {
-            data: {
-              type: 'target',
-              id: 'abc',
-            },
-          },
+          target: 'abc',
         };
 
-        const payload = resource.GeneratePatchRelationshipsPayload(shadow, current);
+        const payload = resource.SerializeRelationshipsPayload(shadow, current);
         expect(payload).toBeUndefined();
       });
 
@@ -247,52 +227,22 @@ describe('The base ', () => {
         const resource = new Order(container);
 
         const shadow = {
-          target1: {
-            data: {
-              type: 'target',
-              id: 'abc1',
-            },
-          },
-          target2: {
-            data: {
-              type: 'target',
-              id: 'abc2',
-            },
-          },
-          target3: {
-            data: {
-              type: 'target',
-              id: 'abc3',
-            },
-          },
+          target1: 'abc1',
+          target2: 'abc2',
+          target3: 'abc3',
         };
 
         const current = {
-          target1: {
-            data: {
-              type: 'target',
-              id: 'abc1',
-            },
-          },
-          target2: {
-            data: {
-              type: 'target',
-              id: 'abc22',
-            },
-          },
-          target3: {
-            data: {
-              type: 'target',
-              id: 'abc3',
-            },
-          },
+          target1: 'abc1',
+          target2: 'abc22',
+          target3: 'abc3',
         };
 
-        const payload = resource.GeneratePatchRelationshipsPayload(shadow, current);
+        const payload = resource.SerializeRelationshipsPayload(shadow, current);
         expect(payload).toEqual({
           target2: {
             data: {
-              type: 'target',
+              type: 'Target2',
               id: 'abc22',
             },
           },
@@ -304,65 +254,23 @@ describe('The base ', () => {
         const resource = new Order(container);
 
         const shadow = {
-          target1: {
-            data: [
-              {
-                type: 'target',
-                id: 'abc1',
-              },
-              {
-                type: 'target',
-                id: 'abc2',
-              },
-              {
-                type: 'target',
-                id: 'abc3',
-              },
-            ],
-          },
-          target2: {
-            data: {
-              type: 'target',
-              id: 'abc2',
-            },
-          },
-          target3: {
-            data: {
-              type: 'target',
-              id: 'abc3',
-            },
-          },
+          target1: ['abc1', 'abc2', 'abc3'],
+          target2: 'abc2',
+          target3: 'abc3',
         };
 
         const current = {
-          target1: {
-            data: [
-              {
-                type: 'target',
-                id: 'abc3',
-              },
-            ],
-          },
-          target2: {
-            data: {
-              type: 'target',
-              id: 'abc2',
-            },
-          },
-          target3: {
-            data: {
-              type: 'target',
-              id: 'abc3',
-            },
-          },
+          target1: ['abc3'],
+          target2: 'abc2',
+          target3: 'abc3',
         };
 
-        const payload = resource.GeneratePatchRelationshipsPayload(shadow, current);
+        const payload = resource.SerializeRelationshipsPayload(shadow, current);
         expect(payload).toEqual({
           target1: {
             data: [
               {
-                type: 'target',
+                type: 'Target1',
                 id: 'abc3',
               },
             ],
@@ -374,92 +282,34 @@ describe('The base ', () => {
         const container = new ResourceContainer();
         const resource = new Order(container);
         const shadow = {
-          target1: {
-            data: [
-              {
-                type: 'target',
-                id: 'abc1',
-              },
-              {
-                type: 'target',
-                id: 'abc2',
-              },
-              {
-                type: 'target',
-                id: 'abc3',
-              },
-            ],
-          },
-          target2: {
-            data: {
-              type: 'target',
-              id: 'abc2',
-            },
-          },
-          target3: {
-            data: {
-              type: 'target',
-              id: 'abc3',
-            },
-          },
-          target4: {
-            data: {
-              type: 'target',
-              id: 'abc4',
-            },
-          },
+          target1: ['abc1', 'abc2', 'abc3'],
+          target2: 'abc2',
+          target3: 'abc3',
+          target4: 'abc4',
         };
 
         const current = {
-          target1: {
-            data: [
-              {
-                type: 'target',
-                id: 'abc4',
-              },
-            ],
-          },
-          target2: {
-            data: {
-              type: 'target',
-              id: 'abc22',
-            },
-          },
-          target3: {
-            data: {
-              type: 'target2',
-              id: 'abc3',
-            },
-          },
-          target4: {
-            data: {
-              type: 'target',
-              id: 'abc4',
-            },
-          },
+          target1: ['abc4'],
+          target2: 'abc22',
+          target3: 'abc3',
+          target4: 'abc4',
         };
 
-        const payload = resource.GeneratePatchRelationshipsPayload(shadow, current);
+        const payload = resource.SerializeRelationshipsPayload(shadow, current);
         redactUndefinedValues(payload);
         expect(payload).toEqual({
           target1: {
             data: [
               {
-                type: 'target',
+                type: 'Target1',
                 id: 'abc4',
               },
             ],
           },
           target2: {
             data: {
-              type: 'target',
+              type: 'Target2',
               id: 'abc22',
-            },
-          },
-          target3: {
-            data: {
-              type: 'target2',
-              id: 'abc3',
             },
           },
         });

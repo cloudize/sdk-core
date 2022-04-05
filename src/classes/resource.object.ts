@@ -1,6 +1,6 @@
 import {
   areEqual,
-  hasProperty, isArray, isDefined, isNumber, isObject, isString, isUndefined, redactUndefinedValues,
+  hasProperty, isArray, isArrayOfStrings, isDefined, isNumber, isObject, isString, isUndefined, redactUndefinedValues,
 } from '@apigames/json';
 import { RestClientOptions, RestClientResponseHeaders } from '@apigames/rest-client';
 import {
@@ -47,6 +47,11 @@ export default class ResourceObject implements IResourceObject {
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
+  protected RelationshipType(relationshipName: string): string {
+    throw new Error('Method or Property not implemented.');
+  }
+
+  // eslint-disable-next-line class-methods-use-this,no-unused-vars
   public UpdateAttributes(value: any) {
     throw new Error('Method or Property not implemented.');
   }
@@ -78,21 +83,7 @@ export default class ResourceObject implements IResourceObject {
     return this;
   }
 
-  protected GetInsertPayload(): any {
-    const payload: any = {
-      data: {
-        type: this.type,
-      },
-    };
-
-    if (isDefined(this.id)) payload.data.id = this.id;
-    if (isDefined(this.attributes)) payload.data.attributes = this.attributes;
-    if (isDefined(this.relationships)) payload.data.relationships = this.relationships;
-
-    return payload;
-  }
-
-  protected GeneratePatchAttributesPayload(shadow: any, data: any): any {
+  protected SerializeAttributesPayload(shadow: any, data: any): any {
     if (areEqual(shadow, data)) return undefined;
     if (isUndefined(data) && isUndefined(shadow)) return undefined;
 
@@ -109,8 +100,8 @@ export default class ResourceObject implements IResourceObject {
       // eslint-disable-next-line no-restricted-syntax
       for (const fieldName in data) {
         if (hasProperty(data, fieldName)) {
-          if (isDefined(shadow)) payload[fieldName] = this.GeneratePatchAttributesPayload(shadow[fieldName], data[fieldName]);
-          else payload[fieldName] = this.GeneratePatchAttributesPayload(undefined, data[fieldName]);
+          if (isDefined(shadow)) payload[fieldName] = this.SerializeAttributesPayload(shadow[fieldName], data[fieldName]);
+          else payload[fieldName] = this.SerializeAttributesPayload(undefined, data[fieldName]);
         }
       }
 
@@ -130,7 +121,7 @@ export default class ResourceObject implements IResourceObject {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  protected GeneratePatchRelationshipsPayload(shadow: any, data: any): any {
+  protected SerializeRelationshipsPayload(shadow: any, data: any): any {
     if (areEqual(shadow, data)) return undefined;
     if (isUndefined(data) && isUndefined(shadow)) return undefined;
 
@@ -139,7 +130,30 @@ export default class ResourceObject implements IResourceObject {
       // eslint-disable-next-line no-restricted-syntax
       for (const fieldName in data) {
         if (hasProperty(data, fieldName)) {
-          if (isUndefined(shadow) || !areEqual(shadow[fieldName], data[fieldName])) payload[fieldName] = data[fieldName];
+          if (isArrayOfStrings(data[fieldName])) {
+            payload[fieldName] = {
+              data: [],
+            };
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const key of data[fieldName]) {
+              payload[fieldName].data.push(
+                {
+                  type: this.RelationshipType(fieldName),
+                  id: key,
+                },
+              );
+            }
+          } else if (isString(data[fieldName])) {
+            if (isUndefined(shadow) || !areEqual(shadow[fieldName], data[fieldName])) {
+              payload[fieldName] = {
+                data: {
+                  type: this.RelationshipType(fieldName),
+                  id: data[fieldName],
+                },
+              };
+            }
+          }
         }
       }
 
@@ -158,6 +172,27 @@ export default class ResourceObject implements IResourceObject {
     return data;
   }
 
+  protected GetInsertPayload(): any {
+    const payload: any = {
+      data: {
+        type: this.type,
+      },
+    };
+
+    if (isDefined(this.id)) payload.data.id = this.id;
+
+    if (isDefined(this.attributes)) {
+      payload.data.attributes = this.SerializeAttributesPayload(this.shadowAttributes, this.attributes);
+    }
+
+    if (isDefined(this.relationships)) {
+      payload.data.relationships = this.SerializeRelationshipsPayload(this.shadowRelationships, this.relationships);
+    }
+
+    redactUndefinedValues(payload);
+    return payload;
+  }
+
   protected GetUpdatePayload(): any {
     const payload: any = {
       data: {
@@ -167,11 +202,11 @@ export default class ResourceObject implements IResourceObject {
     };
 
     if (isDefined(this.attributes)) {
-      payload.data.attributes = this.GeneratePatchAttributesPayload(this.shadowAttributes, this.attributes);
+      payload.data.attributes = this.SerializeAttributesPayload(this.shadowAttributes, this.attributes);
     }
 
     if (isDefined(this.relationships)) {
-      payload.data.relationships = this.GeneratePatchRelationshipsPayload(this.shadowRelationships, this.relationships);
+      payload.data.relationships = this.SerializeRelationshipsPayload(this.shadowRelationships, this.relationships);
     }
 
     redactUndefinedValues(payload);
@@ -254,7 +289,7 @@ export default class ResourceObject implements IResourceObject {
     const queryUri: string = this.uri;
     const queryHeaders = this.GetHeaders();
     const queryOptions: RestClientOptions = {};
-    const payload: any = this.GetUpdatePayload();
+    const payload: any = this.GetInsertPayload();
 
     await this._container.restClient.Patch(queryUri, payload, queryHeaders, queryOptions);
   }

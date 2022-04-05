@@ -23,6 +23,8 @@ export {
   ResourceObjectRelationshipLinkObject,
   ResourceObjectRelationship,
   ResourceObjectRelationships,
+  ResourceObjectRelationshipKey,
+  ResourceObjectRelationshipKeys,
   ResourceObjectUri,
   ResourceObjectRelationshipBase,
 } from './resource.object';

@@ -331,7 +331,8 @@ describe('The customer orders resource ', () => {
       }
     });
 
-    it('should clear the internal structures, get the resource and repopulate the internal data structures (ignoring extra fields).', async () => {
+    it('should clear the internal structures, get the resource and repopulate the internal data structures '
+        + '(ignoring extra fields).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -426,12 +427,7 @@ describe('The customer orders resource ', () => {
       };
 
       const orderRelationships = {
-        customer: {
-          data: {
-            type: 'Customer',
-            id: 'customer-id',
-          },
-        },
+        customer: 'customer-id',
       };
 
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
@@ -588,7 +584,8 @@ describe('The customer orders resource ', () => {
       }
     });
 
-    it('should clear the internal structures, get the resource (by page number) and repopulate the internal data structures (ignoring extra fields).', async () => {
+    it('should clear the internal structures, get the resource (by page number) and repopulate the internal data '
+        + 'structures (ignoring extra fields).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -750,12 +747,7 @@ describe('The customer orders resource ', () => {
       };
 
       const orderRelationships = {
-        customer: {
-          data: {
-            type: 'Customer',
-            id: 'customer-id',
-          },
-        },
+        customer: 'customer-id',
       };
 
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
@@ -777,7 +769,8 @@ describe('The customer orders resource ', () => {
       }
     });
 
-    it('should clear the internal structures, get the resource (by page offset) and repopulate the internal data structures.', async () => {
+    it('should clear the internal structures, get the resource (by page offset) and repopulate the internal data '
+        + 'structures.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -906,12 +899,7 @@ describe('The customer orders resource ', () => {
       };
 
       const orderRelationships = {
-        customer: {
-          data: {
-            type: 'Customer',
-            id: 'customer-id',
-          },
-        },
+        customer: 'customer-id',
       };
 
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
@@ -1209,12 +1197,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       try {
         expect(order.id).toBeUndefined();
@@ -1260,12 +1243,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       try {
         expect(order.id).toBeUndefined();
@@ -1302,12 +1280,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       expect(order.id).toBeUndefined();
       try {
@@ -1342,12 +1315,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       expect(order.id).toBeUndefined();
       try {
@@ -1383,12 +1351,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = {
-        data: {
-          type: 'Customer',
-          id: 'customer-id',
-        },
-      };
+      order.relationships.customer = 'customer-id';
 
       expect(order.id).toBeUndefined();
       await order.Save();
