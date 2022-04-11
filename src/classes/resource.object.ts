@@ -301,6 +301,14 @@ export default class ResourceObject implements IResourceObject {
     } else {
       await this.UpdateResource();
     }
+
+    if (isDefined(this.attributes)) {
+      this.shadowAttributes.LoadData(this.attributes);
+    }
+
+    if (isDefined(this.relationships)) {
+      this.shadowRelationships.LoadData(this.relationships);
+    }
   }
 
   // eslint-disable-next-line class-methods-use-this

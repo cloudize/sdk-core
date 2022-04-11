@@ -139,6 +139,8 @@ export default class ResourceContainer implements IResourceContainer {
     } else {
       this._data = obj;
     }
+
+    this._countQueryHash = undefined;
   }
 
   private RemoveResourceFromMemoryStructure(resource: IResourceObject) {
@@ -149,6 +151,8 @@ export default class ResourceContainer implements IResourceContainer {
     } else if (this.isResourceObject(this.data) && this.data.id === resource.id) {
       this._data = undefined;
     }
+
+    this._countQueryHash = undefined;
   }
 
   protected LoadResourceData(resourceData: any): IResourceObject {
