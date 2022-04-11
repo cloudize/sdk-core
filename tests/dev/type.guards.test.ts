@@ -1,6 +1,5 @@
-import { isResourceContainer, isResourceObject } from '../../src';
+import { isResourceContainer, isResourceObject, ResourceObjectMode } from '../../src';
 import { CustomerOrders, Order } from './customer.order.resource';
-import { ResourceObjectMode } from '../../src/classes/resource.object';
 
 describe('The resource object type guard ', () => {
   it('should return false for an undefined value', () => {

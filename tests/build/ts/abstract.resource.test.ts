@@ -1,10 +1,9 @@
 import { MockRestClient, RestClient } from '@apigames/rest-client';
 import { redactUndefinedValues } from '@apigames/json';
 import {
-  ResourceContainer, ResourceObject,
+  ResourceContainer, ResourceObject, ResourceObjectMode,
 } from '../../../lib';
 import { Order } from './customer.order.resource';
-import { ResourceObjectMode } from '../../../lib/classes/resource.object';
 
 describe('The base ', () => {
   describe('ResourceObject should throw ', () => {

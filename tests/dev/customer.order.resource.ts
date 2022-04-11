@@ -14,13 +14,13 @@ import {
   ResourceObject,
   ResourceObjectAttributeBase,
   ResourceObjectAttributesLoadType,
+  ResourceObjectMode,
   ResourceObjectRelationshipBase,
   ResourceObjectRelationshipKey,
   ResourceObjectRelationshipKeys,
   ResourceObjectRelationshipsLoadType,
   SDKConfig,
 } from '../../src';
-import { ResourceObjectMode } from '../../src/classes/resource.object';
 
 // eslint-disable-next-line no-shadow
 export enum OrderFilter {
