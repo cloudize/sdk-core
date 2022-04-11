@@ -4,13 +4,14 @@ import {
   ResourceContainer, ResourceObject,
 } from '../../../lib';
 import { Order } from './customer.order.resource';
+import { ResourceObjectMode } from '../../../lib/classes/resource.object';
 
 describe('The base ', () => {
   describe('ResourceObject should throw ', () => {
     it('when the type property is queried.', () => {
       try {
         const container = new ResourceContainer();
-        const resource = new ResourceObject(container);
+        const resource = new ResourceObject(container, ResourceObjectMode.NewDocument);
         expect(resource.type).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
@@ -22,7 +23,7 @@ describe('The base ', () => {
     it('when the attributes property is queried.', () => {
       try {
         const container = new ResourceContainer();
-        const resource = new ResourceObject(container);
+        const resource = new ResourceObject(container, ResourceObjectMode.NewDocument);
         expect(resource.attributes).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
         expect(error).toBeDefined();
@@ -34,7 +35,7 @@ describe('The base ', () => {
     it('when the Delete() method is called.', async () => {
       try {
         const container = new ResourceContainer();
-        const resource = new ResourceObject(container);
+        const resource = new ResourceObject(container, ResourceObjectMode.NewDocument);
         await resource.Delete();
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -48,7 +49,7 @@ describe('The base ', () => {
   describe('ResourceObject should', () => {
     it('allow the id property to be set and queried.', () => {
       const container = new ResourceContainer();
-      const resource = new ResourceObject(container);
+      const resource = new ResourceObject(container, ResourceObjectMode.NewDocument);
       expect(resource.id).toBeUndefined();
       resource.id = 'abcdef1234';
       expect(resource.id).toBe('abcdef1234');
@@ -56,49 +57,49 @@ describe('The base ', () => {
 
     it('return an undefined uri if the object has not been deserialized from a valid resource object.', () => {
       const container = new ResourceContainer();
-      const resource = new ResourceObject(container);
+      const resource = new ResourceObject(container, ResourceObjectMode.NewDocument);
       expect(resource.uri).toBeUndefined();
     });
 
     describe('correctly calculates the patch attributes payload', () => {
       it('when both the shadow object and the current value are undefined', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const payload = resource.SerializeAttributesPayload(undefined, undefined);
         expect(payload).toBeUndefined();
       });
 
       it('when the shadow object does not exist, but the current value does', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const payload = resource.SerializeAttributesPayload(undefined, { name: 'value' });
         expect(payload).toEqual({ name: 'value' });
       });
 
       it('when the shadow object exists, but the current value does not', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const payload = resource.SerializeAttributesPayload({ name: 'value' }, undefined);
         expect(payload).toBeUndefined();
       });
 
       it('when the shadow object and the current object are equal', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const payload = resource.SerializeAttributesPayload({ name: 'value' }, { name: 'value' });
         expect(payload).toBeUndefined();
       });
 
       it('when a simple object contains one value that has changed', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const payload = resource.SerializeAttributesPayload({ name: 'value', count: 2 }, { name: 'value', count: 3 });
         expect(payload).toEqual({ count: 3 });
       });
 
       it('when a complex object contains multiple values that have changed', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const shadow: any = {
           name: 'value',
           count: 99,
@@ -169,14 +170,14 @@ describe('The base ', () => {
     describe('correctly calculates the patch relationships payload', () => {
       it('when both the shadow relationships and the current relationships are undefined', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const payload = resource.SerializeRelationshipsPayload(undefined, undefined);
         expect(payload).toBeUndefined();
       });
 
       it('when the shadow relationships does not exist, but the current relationships does', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const current = {
           target: 'abc',
@@ -196,7 +197,7 @@ describe('The base ', () => {
 
       it('when the shadow relationships exists, but the current relationships does not', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const shadow = {
           target: 'abc',
@@ -208,7 +209,7 @@ describe('The base ', () => {
 
       it('when the shadow relationships and the current relationships are equal', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const shadow = {
           target: 'abc',
@@ -224,7 +225,7 @@ describe('The base ', () => {
 
       it('when a single to one relationship has changed', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const shadow = {
           target1: 'abc1',
@@ -251,7 +252,7 @@ describe('The base ', () => {
 
       it('when a single to many relationship has changed', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const shadow = {
           target1: ['abc1', 'abc2', 'abc3'],
@@ -280,7 +281,7 @@ describe('The base ', () => {
 
       it('when a complex set of relationship changes have been made', () => {
         const container = new ResourceContainer();
-        const resource = new Order(container);
+        const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const shadow = {
           target1: ['abc1', 'abc2', 'abc3'],
           target2: 'abc2',
@@ -355,7 +356,7 @@ describe('The base ', () => {
     it('when the Delete() method is called.', async () => {
       try {
         const container = new ResourceContainer();
-        const simpleResource = new Order(container);
+        const simpleResource = new Order(container, ResourceObjectMode.ExistingDocument);
         await container.Delete(simpleResource);
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {

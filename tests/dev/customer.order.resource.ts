@@ -1,21 +1,26 @@
 // eslint-disable-next-line max-classes-per-file
 import { IRestClient } from '@apigames/rest-client';
-import { hasProperty, isArray, isDefined } from '@apigames/json';
 import {
+  hasProperty, isArray, isDefined, isDefinedAndNotNull, isUndefined,
+} from '@apigames/json';
+import {
+  GeospatialPoint,
   IResourceContainer,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
-  GeospatialPoint,
   ResourceContainer,
   ResourceFilterType,
   ResourceFilterValue,
   ResourceObject,
   ResourceObjectAttributeBase,
+  ResourceObjectAttributesLoadType,
   ResourceObjectRelationshipBase,
   ResourceObjectRelationshipKey,
   ResourceObjectRelationshipKeys,
+  ResourceObjectRelationshipsLoadType,
   SDKConfig,
 } from '../../src';
+import { ResourceObjectMode } from '../../src/classes/resource.object';
 
 // eslint-disable-next-line no-shadow
 export enum OrderFilter {
@@ -32,30 +37,21 @@ export enum OrderInclude {
   Customer = 'customer',
 }
 
-export class OrderProductUsageDetailsHome extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
-  family?: string;
-
-  LoadData(data: any): void {
-    this.family = data.family;
-  }
-}
-
-export class OrderProductUsageDetailsWork extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
-  companyName?: string;
-
-  LoadData(data: any): void {
-    this.companyName = data.companyName;
-  }
-}
-
 export class OrderProductFeature extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
   name?: string;
 
   userRating?: number;
 
-  LoadData(data: any): void {
-    this.name = data.name;
-    this.userRating = data.userRating;
+  private clearData() {
+    this.name = undefined;
+    this.userRating = undefined;
+  }
+
+  LoadData(data: any, action: ResourceObjectAttributesLoadType): void {
+    if (action === ResourceObjectAttributesLoadType.Replace) this.clearData();
+
+    if (hasProperty(data, 'name')) this.name = data.name;
+    if (hasProperty(data, 'userRating')) this.userRating = data.userRating;
   }
 }
 
@@ -66,7 +62,6 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
     description?: string[];
     releaseDate?: Date,
     releaseLocation?: GeospatialPoint,
-    usageDetails?: OrderProductUsageDetailsHome | OrderProductUsageDetailsWork,
     features?: OrderProductFeature[]
   };
 
@@ -87,38 +82,14 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
     return values;
   }
 
-  private static isOrderProductUsageDetailsHome(data: any): data is OrderProductUsageDetailsHome {
-    return isDefined(data) && (hasProperty(data, 'family'));
-  }
-
-  private static isOrderProductUsageDetailsWork(data: any): data is OrderProductUsageDetailsHome {
-    return isDefined(data) && (hasProperty(data, 'companyName'));
-  }
-
-  private static LoadProductUsageDetails(data: any): OrderProductUsageDetailsHome | OrderProductUsageDetailsWork {
-    if (OrderAttributes.isOrderProductUsageDetailsHome(data)) {
-      const productUsageDetails = new OrderProductUsageDetailsHome();
-      productUsageDetails.LoadData(data);
-      return productUsageDetails;
-    }
-
-    if (OrderAttributes.isOrderProductUsageDetailsWork(data)) {
-      const productUsageDetails = new OrderProductUsageDetailsWork();
-      productUsageDetails.LoadData(data);
-      return productUsageDetails;
-    }
-
-    return undefined;
-  }
-
-  private static LoadProductFeatures(data: any): OrderProductFeature[] {
+  private static LoadProductFeatures(data: any, action: ResourceObjectAttributesLoadType): OrderProductFeature[] {
     const values: OrderProductFeature[] = [];
 
     if (isArray(data)) {
       // eslint-disable-next-line no-restricted-syntax
       for (const value of data) {
         const productFeature = new OrderProductFeature();
-        productFeature.LoadData(value);
+        productFeature.LoadData(value, action);
         values.push(productFeature);
       }
     }
@@ -126,19 +97,35 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
     return values;
   }
 
-  LoadData(data: any): void {
-    this.product = {
-      code: data.product?.code,
-      name: data.product?.name,
-      description: OrderAttributes.LoadProductDescription(data.product?.description),
-      releaseDate: OrderAttributes.LoadDateTime(data.product?.releaseDate),
-      releaseLocation: OrderAttributes.LoadGeospatialPoint(data.product?.releaseLocation),
-      usageDetails: OrderAttributes.LoadProductUsageDetails(data.product?.usageDetails),
-      features: OrderAttributes.LoadProductFeatures(data.product?.features),
-    };
+  private clearData() {
+    this.product = undefined;
+    this.qty = undefined;
+    this.price = undefined;
+  }
 
-    this.qty = data.qty;
-    this.price = data.price;
+  LoadData(data: any, action: ResourceObjectAttributesLoadType): void {
+    if (action === ResourceObjectAttributesLoadType.Replace) this.clearData();
+
+    if (hasProperty(data, 'product')) {
+      if (isUndefined(this.product)) this.product = {};
+      if (hasProperty(data.product, 'code')) this.product.code = data.product?.code;
+      if (hasProperty(data.product, 'name')) this.product.name = data.product?.name;
+      if (hasProperty(data.product, 'description')) {
+        this.product.description = OrderAttributes.LoadProductDescription(data.product?.description);
+      }
+      if (hasProperty(data.product, 'releaseDate')) {
+        this.product.releaseDate = OrderAttributes.LoadDateTime(data.product?.releaseDate);
+      }
+      if (hasProperty(data.product, 'releaseLocation')) {
+        this.product.releaseLocation = OrderAttributes.LoadGeospatialPoint(data.product?.releaseLocation);
+      }
+      if (hasProperty(data.product, 'features')) {
+        this.product.features = OrderAttributes.LoadProductFeatures(data.product?.features, action);
+      }
+    }
+
+    if (hasProperty(data, 'qty')) this.qty = data.qty;
+    if (hasProperty(data, 'price')) this.price = data.price;
   }
 }
 
@@ -153,11 +140,23 @@ export class OrderRelationships extends ResourceObjectRelationshipBase implement
 
   target3?: ResourceObjectRelationshipKey | ResourceObjectRelationshipKeys;
 
-  LoadData(data: any): void {
-    this.customer = OrderRelationships.LoadRelationshipKey(
-      OrderRelationships.RelationshipType('customer'),
-      data.customer,
-    );
+  private clearData() {
+    this.customer = undefined;
+    this.target = undefined;
+    this.target1 = undefined;
+    this.target2 = undefined;
+    this.target3 = undefined;
+  }
+
+  LoadData(data: any, action: ResourceObjectRelationshipsLoadType): void {
+    if (action === ResourceObjectRelationshipsLoadType.Replace) this.clearData();
+
+    if (hasProperty(data, 'customer')) {
+      this.customer = OrderRelationships.LoadRelationshipKey(
+        OrderRelationships.RelationshipType('customer'),
+        data.customer,
+      );
+    }
   }
 
   static RelationshipType(relationshipName: string): string {
@@ -191,8 +190,8 @@ export class Order extends ResourceObject {
     relationships: OrderRelationships;
   };
 
-  constructor(container: IResourceContainer) {
-    super(container);
+  constructor(container: IResourceContainer, mode: ResourceObjectMode) {
+    super(container, mode);
     this.current = {
       attributes: new OrderAttributes(),
       relationships: new OrderRelationships(),
@@ -204,13 +203,21 @@ export class Order extends ResourceObject {
   }
 
   protected LoadAttributes(data: any) {
-    this.current.attributes.LoadData(data);
-    this.shadow.attributes.LoadData(data);
+    this.current.attributes.LoadData(data, ResourceObjectAttributesLoadType.Replace);
+    this.shadow.attributes.LoadData(data, ResourceObjectAttributesLoadType.Replace);
+  }
+
+  public UpdateAttributes(data: any) {
+    this.current.attributes.LoadData(data, ResourceObjectAttributesLoadType.Update);
   }
 
   protected LoadRelationships(data: any) {
-    this.current.relationships.LoadData(data);
-    this.shadow.relationships.LoadData(data);
+    this.current.relationships.LoadData(data, ResourceObjectRelationshipsLoadType.Replace);
+    this.shadow.relationships.LoadData(data, ResourceObjectRelationshipsLoadType.Replace);
+  }
+
+  public UpdateRelationships(data: any) {
+    this.current.relationships.LoadData(data, ResourceObjectRelationshipsLoadType.Update);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -253,6 +260,12 @@ export class Order extends ResourceObject {
   }
 }
 
+export function isOrderResourceObject(value: any): value is Order {
+  return isDefinedAndNotNull(value)
+      && (value instanceof Order)
+      && (value.type === 'Order');
+}
+
 export class CustomerOrders extends ResourceContainer {
   constructor(customerId: string, restClient?: IRestClient) {
     super(restClient);
@@ -272,7 +285,8 @@ export class CustomerOrders extends ResourceContainer {
   }
 
   Add(): Order {
-    const obj = new Order(this);
+    const obj = new Order(this, ResourceObjectMode.NewDocument);
+    obj.relationships.customer = this.pathParams.customerId;
     this.AddResourceToMemoryStructure(obj);
     return obj;
   }

@@ -10,8 +10,14 @@ import {
 export type ResourceObjectType = string;
 export type ResourceObjectIdentifier = string;
 
+// eslint-disable-next-line no-shadow
+export enum ResourceObjectAttributesLoadType {
+    Replace,
+    Update,
+}
+
 export interface IResourceObjectAttributes {
-    LoadData(data: any): void;
+    LoadData(data: any, action: ResourceObjectAttributesLoadType): void;
 }
 
 export type ResourceObjectRelationshipLinkObject = {
@@ -31,8 +37,14 @@ export type ResourceObjectRelationshipKey = string;
 
 export type ResourceObjectRelationshipKeys = ResourceObjectRelationshipKey[];
 
+// eslint-disable-next-line no-shadow
+export enum ResourceObjectRelationshipsLoadType {
+    Replace,
+    Update,
+}
+
 export interface IResourceObjectRelationships {
-    LoadData(data: any): void;
+    LoadData(data: any, action: ResourceObjectRelationshipsLoadType): void;
 }
 
 export type ResourceObjectUri = string;

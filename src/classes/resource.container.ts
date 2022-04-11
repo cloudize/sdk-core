@@ -26,6 +26,7 @@ import {
   SDKConfig,
   SDKException,
 } from '..';
+import { ResourceObjectMode } from './resource.object';
 
 const hash = require('object-hash');
 
@@ -159,7 +160,7 @@ export default class ResourceContainer implements IResourceContainer {
     if (hasProperty(resourceData, 'type') && isString(resourceData.type)) {
       if (hasProperty(resourceData, 'id') && isString(resourceData.id)) {
         const ResourceClass: ResourceObjectClass = SDKConfig().ResourceClass(resourceData.type);
-        return new ResourceClass(this).LoadData(resourceData);
+        return new ResourceClass(this, ResourceObjectMode.ExistingDocument).LoadData(resourceData);
       }
 
       throw new SDKException('INVALID-RESOURCE-ID', 'The resource being loaded doesn\'t have the required resource id.');

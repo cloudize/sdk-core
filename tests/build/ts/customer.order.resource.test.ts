@@ -11,10 +11,10 @@ import dateUtils from 'date-and-time';
 import { ResourceFilterType, SDKException } from '../../../lib';
 import {
   CustomerOrders,
+  isOrderResourceObject,
   Order,
   OrderFilter,
   OrderInclude,
-  OrderProductFeature,
   OrderSort,
 } from './customer.order.resource';
 
@@ -711,7 +711,6 @@ describe('The customer orders resource ', () => {
             'programs and device drivers while offering a more stable and better performing system. ',
             'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
           ],
-          features: [] as OrderProductFeature[],
         },
         qty: 1,
         price: 1.95,
@@ -878,7 +877,6 @@ describe('The customer orders resource ', () => {
             'programs and device drivers while offering a more stable and better performing system. ',
             'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
           ],
-          features: [] as OrderProductFeature[],
         },
         price: 1.95,
       };
@@ -892,7 +890,6 @@ describe('The customer orders resource ', () => {
             'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
             'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
           ],
-          features: [] as OrderProductFeature[],
         },
         price: 1.98,
         qty: 1,
@@ -1351,7 +1348,6 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = 'customer-id';
 
       expect(order.id).toBeUndefined();
       await order.Save();
@@ -1377,7 +1373,7 @@ describe('The customer orders resource ', () => {
             customer: {
               data: {
                 type: 'Customer',
-                id: 'customer-id',
+                id: '9a383573-801f-4466-80b2-96f4fb93c384',
               },
             },
           },
@@ -1394,6 +1390,132 @@ describe('The customer orders resource ', () => {
       expect(order.id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
       expect((order as Order).uri)
         .toBe('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+    });
+
+    it('should correctly PATCH an existing resource when some fields are modified.', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      jest.spyOn(mockClient, 'Patch');
+
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                code: 'WIN95',
+                name: 'Windows 95',
+                description: [
+                  'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                  'programs and device drivers while offering a more stable and better performing system. ',
+                  'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                ],
+                features: [
+                  {
+                    name: 'Out of the box performance',
+                    userRating: 7.1,
+                  },
+                  {
+                    name: 'Ease of use',
+                    userRating: 8.7,
+                  },
+                ],
+              },
+              qty: 1,
+              price: 1.99,
+            },
+            relationships: {
+              customer: {
+                data: {
+                  type: 'Customer',
+                  id: '9a383573-801f-4466-80b2-96f4fb93c384',
+                },
+              },
+            },
+            links: {
+              self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            },
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      });
+
+      mockClient.MockResolve({
+        statusCode: 204,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+      if (isOrderResourceObject(customerOrders.data)) {
+        const order: Order = customerOrders.data;
+        order.UpdateAttributes({
+          product: {
+            name: 'Product Name',
+            features: [
+              {
+                name: 'Propensity to get viruses',
+                userRating: 9.9,
+              },
+            ],
+          },
+        });
+        order.attributes.qty = 15;
+        order.relationships.customer = 'new-id';
+        await order.Save();
+
+        const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
+        const queryHeaders = {
+          Accept: 'application/vnd.api+json',
+          'Content-Type': 'application/vnd.api+json',
+        };
+        const queryOptions: RestClientOptions = {};
+        const queryPayload = {
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                name: 'Product Name',
+                features: [
+                  {
+                    name: 'Propensity to get viruses',
+                    userRating: 9.9,
+                  },
+                ],
+              },
+              qty: 15,
+            },
+            relationships: {
+              customer: {
+                data: {
+                  type: 'Customer',
+                  id: 'new-id',
+                },
+              },
+            },
+          },
+        };
+
+        expect(mockClient.Patch).toHaveBeenCalledTimes(1);
+        expect(mockClient.Patch).toHaveBeenCalledWith(queryUri, queryPayload, queryHeaders, queryOptions);
+      } else {
+        expect(true).toBe('The resource was expected to be an order, but it wasn\'t.');
+      }
     });
   });
 

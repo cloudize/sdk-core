@@ -1,6 +1,14 @@
 import {
   areEqual,
-  hasProperty, isArray, isArrayOfStrings, isDefined, isNumber, isObject, isString, isUndefined, redactUndefinedValues,
+  hasProperty,
+  isArray,
+  isArrayOfStrings,
+  isDefined, isDefinedAndNotNull,
+  isNumber,
+  isObject,
+  isString,
+  isUndefined, isUndefinedOrNull,
+  redactUndefinedValues,
 } from '@apigames/json';
 import { RestClientOptions, RestClientResponseHeaders } from '@apigames/rest-client';
 import {
@@ -8,7 +16,10 @@ import {
   IResourceObject,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
-  ResourceObjectUri, SDKConfig,
+  ResourceObjectAttributesLoadType,
+  ResourceObjectRelationshipsLoadType,
+  ResourceObjectUri,
+  SDKConfig,
   SDKException,
 } from '..';
 
@@ -27,8 +38,9 @@ export default class ResourceObject implements IResourceObject {
 
   private _uri: ResourceObjectUri;
 
-  constructor(container: IResourceContainer) {
+  constructor(container: IResourceContainer, mode: ResourceObjectMode) {
     this._container = container;
+    this._mode = mode;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -86,6 +98,7 @@ export default class ResourceObject implements IResourceObject {
   protected SerializeAttributesPayload(shadow: any, data: any): any {
     if (areEqual(shadow, data)) return undefined;
     if (isUndefined(data) && isUndefined(shadow)) return undefined;
+    if (isUndefined(shadow)) return data;
 
     if (isArray(data)) return data;
 
@@ -109,7 +122,7 @@ export default class ResourceObject implements IResourceObject {
         // eslint-disable-next-line no-restricted-syntax
         for (const fieldName in shadow) {
           if (hasProperty(shadow, fieldName)) {
-            if (isUndefined(data[fieldName])) payload[fieldName] = null;
+            if (isDefinedAndNotNull(shadow[fieldName]) && isUndefinedOrNull(data[fieldName])) payload[fieldName] = null;
           }
         }
       }
@@ -130,28 +143,30 @@ export default class ResourceObject implements IResourceObject {
       // eslint-disable-next-line no-restricted-syntax
       for (const fieldName in data) {
         if (hasProperty(data, fieldName)) {
-          if (isArrayOfStrings(data[fieldName])) {
-            payload[fieldName] = {
-              data: [],
-            };
-
-            // eslint-disable-next-line no-restricted-syntax
-            for (const key of data[fieldName]) {
-              payload[fieldName].data.push(
-                {
-                  type: this.RelationshipType(fieldName),
-                  id: key,
-                },
-              );
-            }
-          } else if (isString(data[fieldName])) {
-            if (isUndefined(shadow) || !areEqual(shadow[fieldName], data[fieldName])) {
+          if (isDefinedAndNotNull(data[fieldName])) {
+            if (isArrayOfStrings(data[fieldName])) {
               payload[fieldName] = {
-                data: {
-                  type: this.RelationshipType(fieldName),
-                  id: data[fieldName],
-                },
+                data: [],
               };
+
+              // eslint-disable-next-line no-restricted-syntax
+              for (const key of data[fieldName]) {
+                payload[fieldName].data.push(
+                  {
+                    type: this.RelationshipType(fieldName),
+                    id: key,
+                  },
+                );
+              }
+            } else if (isString(data[fieldName])) {
+              if (isUndefined(shadow) || !areEqual(shadow[fieldName], data[fieldName])) {
+                payload[fieldName] = {
+                  data: {
+                    type: this.RelationshipType(fieldName),
+                    id: data[fieldName],
+                  },
+                };
+              }
             }
           }
         }
@@ -161,7 +176,7 @@ export default class ResourceObject implements IResourceObject {
         // eslint-disable-next-line no-restricted-syntax
         for (const fieldName in shadow) {
           if (hasProperty(shadow, fieldName)) {
-            if (isUndefined(data[fieldName])) payload[fieldName] = null;
+            if (isDefinedAndNotNull(shadow[fieldName]) && isUndefinedOrNull(data[fieldName])) payload[fieldName] = null;
           }
         }
       }
@@ -289,7 +304,7 @@ export default class ResourceObject implements IResourceObject {
     const queryUri: string = this.uri;
     const queryHeaders = this.GetHeaders();
     const queryOptions: RestClientOptions = {};
-    const payload: any = this.GetInsertPayload();
+    const payload: any = this.GetUpdatePayload();
 
     await this._container.restClient.Patch(queryUri, payload, queryHeaders, queryOptions);
   }
@@ -303,11 +318,11 @@ export default class ResourceObject implements IResourceObject {
     }
 
     if (isDefined(this.attributes)) {
-      this.shadowAttributes.LoadData(this.attributes);
+      this.shadowAttributes.LoadData(this.attributes, ResourceObjectAttributesLoadType.Replace);
     }
 
     if (isDefined(this.relationships)) {
-      this.shadowRelationships.LoadData(this.relationships);
+      this.shadowRelationships.LoadData(this.relationships, ResourceObjectRelationshipsLoadType.Replace);
     }
   }
 

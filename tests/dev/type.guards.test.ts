@@ -1,5 +1,6 @@
 import { isResourceContainer, isResourceObject } from '../../src';
 import { CustomerOrders, Order } from './customer.order.resource';
+import {ResourceObjectMode} from "../../src/classes/resource.object";
 
 describe('The resource object type guard ', () => {
   it('should return false for an undefined value', () => {
@@ -18,8 +19,8 @@ describe('The resource object type guard ', () => {
     expect(isResourceObject(new CustomerOrders('test'))).toBe(false);
   });
 
-  it('should return true for an invalid object', () => {
-    expect(isResourceObject(new Order(new CustomerOrders('test')))).toBe(true);
+  it('should return true for a valid object', () => {
+    expect(isResourceObject(new Order(new CustomerOrders('test'), ResourceObjectMode.NewDocument))).toBe(true);
   });
 });
 
@@ -37,10 +38,10 @@ describe('The resource container type guard ', () => {
   });
 
   it('should return false for an invalid object', () => {
-    expect(isResourceContainer(new Order(new CustomerOrders('test')))).toBe(false);
+    expect(isResourceContainer(new Order(new CustomerOrders('test'), ResourceObjectMode.NewDocument))).toBe(false);
   });
 
-  it('should return true for an invalid object', () => {
+  it('should return true for a valid object', () => {
     expect(isResourceContainer(new CustomerOrders('test'))).toBe(true);
   });
 });
