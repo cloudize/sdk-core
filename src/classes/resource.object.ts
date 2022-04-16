@@ -2,7 +2,7 @@ import {
   areEqual,
   hasProperty,
   isArray,
-  isArrayOfStrings, isDate,
+  isArrayOfStrings,
   isDefined, isDefinedAndNotNull,
   isNumber,
   isObject,
@@ -11,7 +11,6 @@ import {
   redactUndefinedValues,
 } from '@apigames/json';
 import { RestClientOptions, RestClientResponseHeaders } from '@apigames/rest-client';
-import dateUtils from 'date-and-time';
 import {
   IResourceContainer,
   IResourceObject,
@@ -102,11 +101,6 @@ export default class ResourceObject implements IResourceObject {
     if (isUndefined(shadow)) return data;
 
     if (isArray(data)) return data;
-
-    if (isDate(data)) {
-      if (data.getTime() === 0) return dateUtils.format(data, 'YYYY-MM-DD', false);
-      return data.toISOString();
-    }
 
     if (isObject(data)) {
       if ((Object.keys(data).length === 2)
