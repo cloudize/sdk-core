@@ -3,7 +3,9 @@ import {
   hasProperty,
   isArray,
   isArrayOfStrings,
-  isDefined, isDefinedAndNotNull,
+  isDate,
+  isDefined,
+  isDefinedAndNotNull,
   isNumber,
   isObject,
   isString,
@@ -99,7 +101,7 @@ export default class ResourceObject implements IResourceObject {
     if (areEqual(shadow, data)) return undefined;
     if (isUndefined(data) && isUndefined(shadow)) return undefined;
     if (isUndefined(shadow)) return data;
-
+    if (isDate(data)) return data;
     if (isArray(data)) return data;
 
     if (isObject(data)) {
