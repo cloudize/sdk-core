@@ -11,6 +11,7 @@ import {
   redactUndefinedValues,
 } from '@apigames/json';
 import { RestClientOptions, RestClientResponseHeaders } from '@apigames/rest-client';
+import dateUtils from 'date-and-time';
 import {
   IResourceContainer,
   IResourceObject,
@@ -22,7 +23,6 @@ import {
   SDKConfig,
   SDKException,
 } from '..';
-import dateUtils from "date-and-time";
 
 // eslint-disable-next-line no-shadow
 export enum ResourceObjectMode {
