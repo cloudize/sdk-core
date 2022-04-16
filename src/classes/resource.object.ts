@@ -2,7 +2,7 @@ import {
   areEqual,
   hasProperty,
   isArray,
-  isArrayOfStrings,
+  isArrayOfStrings, isDate,
   isDefined, isDefinedAndNotNull,
   isNumber,
   isObject,
@@ -22,6 +22,7 @@ import {
   SDKConfig,
   SDKException,
 } from '..';
+import dateUtils from "date-and-time";
 
 // eslint-disable-next-line no-shadow
 export enum ResourceObjectMode {
@@ -101,6 +102,11 @@ export default class ResourceObject implements IResourceObject {
     if (isUndefined(shadow)) return data;
 
     if (isArray(data)) return data;
+
+    if (isDate(data)) {
+      if (data.getTime() === 0) return dateUtils.format(data, 'YYYY-MM-DD', false);
+      return data.toISOString();
+    }
 
     if (isObject(data)) {
       if ((Object.keys(data).length === 2)
