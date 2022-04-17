@@ -1,7 +1,7 @@
 import { MockRestClient, RestClient } from '@apigames/rest-client';
 import { redactUndefinedValues } from '@apigames/json';
 import {
-  ResourceContainer, ResourceObject, ResourceObjectMode,
+  ResourceContainer, ResourceObject, ResourceObjectMode, ResourceObjectRelationship,
 } from '../../../lib';
 import { Order } from './customer.order.resource';
 
@@ -179,7 +179,7 @@ describe('The base ', () => {
         const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const current = {
-          target: 'abc',
+          target: new ResourceObjectRelationship(container.includes, 'Target', 'abc'),
         };
 
         const payload = resource.SerializeRelationshipsPayload(undefined, current);
@@ -199,7 +199,7 @@ describe('The base ', () => {
         const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const shadow = {
-          target: 'abc',
+          target: new ResourceObjectRelationship(container.includes, 'Target', 'abc'),
         };
 
         const payload = resource.SerializeRelationshipsPayload(shadow, undefined);
@@ -211,11 +211,11 @@ describe('The base ', () => {
         const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const shadow = {
-          target: 'abc',
+          target: new ResourceObjectRelationship(container.includes, 'Target', 'abc'),
         };
 
         const current = {
-          target: 'abc',
+          target: new ResourceObjectRelationship(container.includes, 'Target', 'abc'),
         };
 
         const payload = resource.SerializeRelationshipsPayload(shadow, current);
@@ -227,15 +227,15 @@ describe('The base ', () => {
         const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const shadow = {
-          target1: 'abc1',
-          target2: 'abc2',
-          target3: 'abc3',
+          target1: new ResourceObjectRelationship(container.includes, 'Target1', 'abc1'),
+          target2: new ResourceObjectRelationship(container.includes, 'Target2', 'abc2'),
+          target3: new ResourceObjectRelationship(container.includes, 'Target3', 'abc3'),
         };
 
         const current = {
-          target1: 'abc1',
-          target2: 'abc22',
-          target3: 'abc3',
+          target1: new ResourceObjectRelationship(container.includes, 'Target1', 'abc1'),
+          target2: new ResourceObjectRelationship(container.includes, 'Target2', 'abc22'),
+          target3: new ResourceObjectRelationship(container.includes, 'Target3', 'abc3'),
         };
 
         const payload = resource.SerializeRelationshipsPayload(shadow, current);
@@ -254,15 +254,21 @@ describe('The base ', () => {
         const resource = new Order(container, ResourceObjectMode.ExistingDocument);
 
         const shadow = {
-          target1: ['abc1', 'abc2', 'abc3'],
-          target2: 'abc2',
-          target3: 'abc3',
+          target1: [
+            new ResourceObjectRelationship(container.includes, 'Target1', 'abc1'),
+            new ResourceObjectRelationship(container.includes, 'Target1', 'abc2'),
+            new ResourceObjectRelationship(container.includes, 'Target1', 'abc3'),
+          ],
+          target2: new ResourceObjectRelationship(container.includes, 'Target2', 'abc2'),
+          target3: new ResourceObjectRelationship(container.includes, 'Target3', 'abc3'),
         };
 
         const current = {
-          target1: ['abc3'],
-          target2: 'abc2',
-          target3: 'abc3',
+          target1: [
+            new ResourceObjectRelationship(container.includes, 'Target1', 'abc3'),
+          ],
+          target2: new ResourceObjectRelationship(container.includes, 'Target2', 'abc2'),
+          target3: new ResourceObjectRelationship(container.includes, 'Target3', 'abc3'),
         };
 
         const payload = resource.SerializeRelationshipsPayload(shadow, current);
@@ -282,17 +288,23 @@ describe('The base ', () => {
         const container = new ResourceContainer();
         const resource = new Order(container, ResourceObjectMode.ExistingDocument);
         const shadow = {
-          target1: ['abc1', 'abc2', 'abc3'],
-          target2: 'abc2',
-          target3: 'abc3',
-          target4: 'abc4',
+          target1: [
+            new ResourceObjectRelationship(container.includes, 'Target1', 'abc1'),
+            new ResourceObjectRelationship(container.includes, 'Target1', 'abc2'),
+            new ResourceObjectRelationship(container.includes, 'Target1', 'abc3'),
+          ],
+          target2: new ResourceObjectRelationship(container.includes, 'Target2', 'abc2'),
+          target3: new ResourceObjectRelationship(container.includes, 'Target3', 'abc3'),
+          target4: new ResourceObjectRelationship(container.includes, 'Target4', 'abc4'),
         };
 
         const current = {
-          target1: ['abc4'],
-          target2: 'abc22',
-          target3: 'abc3',
-          target4: 'abc4',
+          target1: [
+            new ResourceObjectRelationship(container.includes, 'Target1', 'abc4'),
+          ],
+          target2: new ResourceObjectRelationship(container.includes, 'Target2', 'abc22'),
+          target3: new ResourceObjectRelationship(container.includes, 'Target3', 'abc3'),
+          target4: new ResourceObjectRelationship(container.includes, 'Target4', 'abc4'),
         };
 
         const payload = resource.SerializeRelationshipsPayload(shadow, current);

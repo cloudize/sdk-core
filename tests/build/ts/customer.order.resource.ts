@@ -10,15 +10,15 @@ import {
   GeospatialPoint,
   ResourceContainer,
   ResourceFilterType,
-  ResourceFilterValue,
   ResourceObject,
   ResourceObjectAttributeBase,
   ResourceObjectAttributesLoadType,
   ResourceObjectMode,
+  ResourceObjectRelationship,
+  ResourceObjectRelationships,
   ResourceObjectRelationshipBase,
-  ResourceObjectRelationshipKey,
-  ResourceObjectRelationshipKeys,
   ResourceObjectRelationshipsLoadType,
+  ResourceQueryFilterValue,
   SDKConfig,
 } from '../../../lib';
 
@@ -130,15 +130,15 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
 }
 
 export class OrderRelationships extends ResourceObjectRelationshipBase implements IResourceObjectRelationships {
-  customer?: ResourceObjectRelationshipKey;
+  customer?: ResourceObjectRelationship;
 
-  target?: ResourceObjectRelationshipKey;
+  target?: ResourceObjectRelationship;
 
-  target1?: ResourceObjectRelationshipKey | ResourceObjectRelationshipKeys;
+  target1?: ResourceObjectRelationship | ResourceObjectRelationships;
 
-  target2?: ResourceObjectRelationshipKey | ResourceObjectRelationshipKeys;
+  target2?: ResourceObjectRelationship | ResourceObjectRelationships;
 
-  target3?: ResourceObjectRelationshipKey | ResourceObjectRelationshipKeys;
+  target3?: ResourceObjectRelationship | ResourceObjectRelationships;
 
   private clearData() {
     this.customer = undefined;
@@ -152,7 +152,7 @@ export class OrderRelationships extends ResourceObjectRelationshipBase implement
     if (action === ResourceObjectRelationshipsLoadType.Replace) this.clearData();
 
     if (hasProperty(data, 'customer')) {
-      this.customer = OrderRelationships.LoadRelationshipKey(
+      this.customer = this.LoadRelationshipData(
         OrderRelationships.RelationshipType('customer'),
         data.customer,
       );
@@ -194,11 +194,11 @@ export class Order extends ResourceObject {
     super(container, mode);
     this.current = {
       attributes: new OrderAttributes(),
-      relationships: new OrderRelationships(),
+      relationships: new OrderRelationships(container.includes),
     };
     this.shadow = {
       attributes: new OrderAttributes(),
-      relationships: new OrderRelationships(),
+      relationships: new OrderRelationships(container.includes),
     };
   }
 
@@ -286,13 +286,13 @@ export class CustomerOrders extends ResourceContainer {
 
   Add(): Order {
     const obj = new Order(this, ResourceObjectMode.NewDocument);
-    obj.relationships.customer = this.pathParams.customerId;
+    obj.relationships.customer = new ResourceObjectRelationship(this.includes, 'Customer', this.pathParams.customerId);
     this.AddResourceToMemoryStructure(obj);
     return obj;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Filter(filter: OrderFilter, selector: ResourceFilterType, value: ResourceFilterValue): IResourceContainer {
+  Filter(filter: OrderFilter, selector: ResourceFilterType, value: ResourceQueryFilterValue): IResourceContainer {
     return super.Filter(OrderFilter.ProductCode, selector, value);
   }
 

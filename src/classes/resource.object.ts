@@ -2,7 +2,6 @@ import {
   areEqual,
   hasProperty,
   isArray,
-  isArrayOfStrings,
   isDate,
   isDefined,
   isDefinedAndNotNull,
@@ -18,6 +17,8 @@ import {
   IResourceObject,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
+  isResourceObjectRelationship,
+  isResourceObjectRelationships,
   ResourceObjectAttributesLoadType,
   ResourceObjectRelationshipsLoadType,
   ResourceObjectUri,
@@ -146,26 +147,26 @@ export default class ResourceObject implements IResourceObject {
       for (const fieldName in data) {
         if (hasProperty(data, fieldName)) {
           if (isDefinedAndNotNull(data[fieldName])) {
-            if (isArrayOfStrings(data[fieldName])) {
+            if (isResourceObjectRelationships(data[fieldName])) {
               payload[fieldName] = {
                 data: [],
               };
 
               // eslint-disable-next-line no-restricted-syntax
-              for (const key of data[fieldName]) {
+              for (const relationship of data[fieldName]) {
                 payload[fieldName].data.push(
                   {
-                    type: this.RelationshipType(fieldName),
-                    id: key,
+                    type: relationship.type,
+                    id: relationship.id,
                   },
                 );
               }
-            } else if (isString(data[fieldName])) {
+            } else if (isResourceObjectRelationship(data[fieldName])) {
               if (isUndefined(shadow) || !areEqual(shadow[fieldName], data[fieldName])) {
                 payload[fieldName] = {
                   data: {
-                    type: this.RelationshipType(fieldName),
-                    id: data[fieldName],
+                    type: data[fieldName].type,
+                    id: data[fieldName].id,
                   },
                 };
               }

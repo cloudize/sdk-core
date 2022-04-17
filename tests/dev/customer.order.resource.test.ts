@@ -8,7 +8,7 @@ import {
   RestClientOptions,
 } from '@apigames/rest-client';
 import dateUtils from 'date-and-time';
-import { ResourceFilterType, SDKException } from '../../src';
+import { ResourceFilterType, ResourceObjectRelationship, SDKException } from '../../src';
 import {
   CustomerOrders,
   isOrderResourceObject,
@@ -426,10 +426,6 @@ describe('The customer orders resource ', () => {
         price: 1.99,
       };
 
-      const orderRelationships = {
-        customer: 'customer-id',
-      };
-
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
       expect(mockClient.Get).toHaveBeenCalledWith(queryUri, queryHeaders, queryOptions);
       expect(customerOrders.data).toBeDefined();
@@ -438,7 +434,8 @@ describe('The customer orders resource ', () => {
         expect(customerOrders.data.type).toBe('Order');
         expect(customerOrders.data.id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(customerOrders.data.attributes).toEqual(orderAttributes);
-        expect(customerOrders.data.relationships).toEqual(orderRelationships);
+        expect(customerOrders.data.relationships.customer.id).toBe('customer-id');
+        expect(customerOrders.data.relationships.customer.type).toBe('Customer');
         expect(customerOrders.data.uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
       }
     });
@@ -745,10 +742,6 @@ describe('The customer orders resource ', () => {
         price: 1.98,
       };
 
-      const orderRelationships = {
-        customer: 'customer-id',
-      };
-
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
       expect(mockClient.Get).toHaveBeenCalledWith(queryUri, queryHeaders, queryOptions);
       expect(customerOrders.data).toBeDefined();
@@ -757,13 +750,15 @@ describe('The customer orders resource ', () => {
         expect(customerOrders.data[0].type).toBe('Order');
         expect(customerOrders.data[0].id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(customerOrders.data[0].attributes).toEqual(windows95Attributes);
-        expect(customerOrders.data[0].relationships).toEqual(orderRelationships);
+        expect(customerOrders.data[0].relationships.customer.id).toBe('customer-id');
+        expect(customerOrders.data[0].relationships.customer.type).toBe('Customer');
         expect(customerOrders.data[0].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(customerOrders.data[1]).toBeInstanceOf(Order);
         expect(customerOrders.data[1].type).toBe('Order');
         expect(customerOrders.data[1].id).toBe('45801d5d-313e-4d40-be4f-c666b6f713c5');
         expect(customerOrders.data[1].attributes).toEqual(windows98Attributes);
-        expect(customerOrders.data[1].relationships).toEqual(orderRelationships);
+        expect(customerOrders.data[1].relationships.customer.id).toBe('customer-id');
+        expect(customerOrders.data[1].relationships.customer.type).toBe('Customer');
         expect(customerOrders.data[1].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5');
       }
     });
@@ -895,10 +890,6 @@ describe('The customer orders resource ', () => {
         qty: 1,
       };
 
-      const orderRelationships = {
-        customer: 'customer-id',
-      };
-
       expect(mockClient.Get).toHaveBeenCalledTimes(1);
       expect(mockClient.Get).toHaveBeenCalledWith(queryUri, queryHeaders, queryOptions);
       expect(customerOrders.data).toBeDefined();
@@ -907,13 +898,15 @@ describe('The customer orders resource ', () => {
         expect(customerOrders.data[0].type).toBe('Order');
         expect(customerOrders.data[0].id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(customerOrders.data[0].attributes).toEqual(windows95Attributes);
-        expect(customerOrders.data[0].relationships).toEqual(orderRelationships);
+        expect(customerOrders.data[0].relationships.customer.id).toBe('customer-id');
+        expect(customerOrders.data[0].relationships.customer.type).toBe('Customer');
         expect(customerOrders.data[0].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(customerOrders.data[1]).toBeInstanceOf(Order);
         expect(customerOrders.data[1].type).toBe('Order');
         expect(customerOrders.data[1].id).toBe('45801d5d-313e-4d40-be4f-c666b6f713c5');
         expect(customerOrders.data[1].attributes).toEqual(windows98Attributes);
-        expect(customerOrders.data[1].relationships).toEqual(orderRelationships);
+        expect(customerOrders.data[1].relationships.customer.id).toBe('customer-id');
+        expect(customerOrders.data[1].relationships.customer.type).toBe('Customer');
         expect(customerOrders.data[1].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5');
       }
     });
@@ -1194,7 +1187,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = 'customer-id';
+      order.relationships.customer = new ResourceObjectRelationship(customerOrders.includes, 'Customer', 'customer-id');
 
       try {
         expect(order.id).toBeUndefined();
@@ -1240,7 +1233,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = 'customer-id';
+      order.relationships.customer = new ResourceObjectRelationship(customerOrders.includes, 'Customer', 'customer-id');
 
       try {
         expect(order.id).toBeUndefined();
@@ -1277,7 +1270,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = 'customer-id';
+      order.relationships.customer = new ResourceObjectRelationship(customerOrders.includes, 'Customer', 'customer-id');
 
       expect(order.id).toBeUndefined();
       try {
@@ -1312,7 +1305,7 @@ describe('The customer orders resource ', () => {
       };
       order.attributes.qty = 5;
       order.attributes.price = 12.98;
-      order.relationships.customer = 'customer-id';
+      order.relationships.customer = new ResourceObjectRelationship(customerOrders.includes, 'Customer', 'customer-id');
 
       expect(order.id).toBeUndefined();
       try {
@@ -1475,7 +1468,7 @@ describe('The customer orders resource ', () => {
           },
         });
         order.attributes.qty = 15;
-        order.relationships.customer = 'new-id';
+        order.relationships.customer = new ResourceObjectRelationship(customerOrders.includes, 'Customer', 'new-id');
         await order.Save();
 
         const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';

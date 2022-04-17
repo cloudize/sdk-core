@@ -17,12 +17,13 @@ import {
 import {
   IResourceContainer,
   IResourceObject,
-  ResourceFilterName,
-  ResourceFilterValue,
-  ResourceIncludeOption,
+  ResourceContainerIncludedResourceTypes,
   ResourceObjectClass,
   ResourcePathParams,
-  ResourceSortOption,
+  ResourceQueryFilterName,
+  ResourceQueryFilterValue,
+  ResourceQueryIncludeOption,
+  ResourceQuerySortOption,
   SDKConfig,
   SDKException,
 } from '..';
@@ -64,6 +65,8 @@ export default class ResourceContainer implements IResourceContainer {
 
   protected _data: IResourceObject | IResourceObject[];
 
+  protected _includes: ResourceContainerIncludedResourceTypes;
+
   private _queryParams: ResourceContainerQueryParams;
 
   private readonly _restClient: IRestClient;
@@ -72,6 +75,7 @@ export default class ResourceContainer implements IResourceContainer {
 
   constructor(restClient?: IRestClient) {
     this._data = undefined;
+    this._includes = {};
     this._restClient = isDefined(restClient) ? restClient : new RestClient();
     this.pathParams = {};
     this._queryParams = {
@@ -85,6 +89,10 @@ export default class ResourceContainer implements IResourceContainer {
   // eslint-disable-next-line class-methods-use-this
   get data(): IResourceObject | IResourceObject[] {
     throw new Error('Method or Property not implemented.');
+  }
+
+  get includes(): ResourceContainerIncludedResourceTypes {
+    return this._includes;
   }
 
   get restClient(): IRestClient {
@@ -126,6 +134,7 @@ export default class ResourceContainer implements IResourceContainer {
 
   protected ClearData() {
     this._data = undefined;
+    this._includes = {};
   }
 
   protected AddResourceToMemoryStructure(obj: IResourceObject) {
@@ -176,11 +185,21 @@ export default class ResourceContainer implements IResourceContainer {
       if (isArray(response.data.data)) {
         this._data = [];
         // eslint-disable-next-line no-restricted-syntax
-        for (const resource of response.data.data) {
-          this.AddResourceToMemoryStructure(this.LoadResourceData(resource));
+        for (const resourceData of response.data.data) {
+          this.AddResourceToMemoryStructure(this.LoadResourceData(resourceData));
         }
       } else if (isObject(response.data.data)) {
         this.AddResourceToMemoryStructure(this.LoadResourceData(response.data.data));
+      }
+    }
+
+    if (hasProperty(response.data, 'included')) {
+      if (isArray(response.data.included)) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const resourceData of response.data.included) {
+          const resourceObject = this.LoadResourceData(resourceData);
+          this._includes[resourceObject.type][resourceObject.id] = resourceObject;
+        }
       }
     }
   }
@@ -352,19 +371,19 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Filter(filter: ResourceFilterName, selector: ResourceFilterType, value: ResourceFilterValue): IResourceContainer {
+  Filter(filter: ResourceQueryFilterName, selector: ResourceFilterType, value: ResourceQueryFilterValue): IResourceContainer {
     this._queryParams.filters[`${selector}:${filter}`] = value;
     return this;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Sort(option: ResourceSortOption): IResourceContainer {
+  Sort(option: ResourceQuerySortOption): IResourceContainer {
     this._queryParams.sort = option;
     return this;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Include(include: ResourceIncludeOption): IResourceContainer {
+  Include(include: ResourceQueryIncludeOption): IResourceContainer {
     this._queryParams.includes[include] = true;
     return this;
   }

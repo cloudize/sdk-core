@@ -8,13 +8,11 @@ export {
 // eslint-disable-next-line import/no-cycle
 export {
   IResourceContainer,
-  ResourceFilterName,
-  ResourceFilterValue,
-  ResourceSortOption,
-  ResourceIncludeOption,
-} from './resource.container';
-
-export {
+  ResourceContainerIncludedResourceTypes,
+  ResourceQueryFilterName,
+  ResourceQueryFilterValue,
+  ResourceQuerySortOption,
+  ResourceQueryIncludeOption,
   IResourceObject,
   IResourceObjectAttributes,
   IResourceObjectRelationships,
@@ -22,11 +20,11 @@ export {
   ResourceObjectAttributeBase,
   ResourceObjectAttributesLoadType,
   ResourceObjectRelationshipLinkObject,
+  ResourceObjectRelationshipLink,
+  ResourceObjectRelationshipsLinks,
+  ResourceObjectRelationshipsLoadType,
   ResourceObjectRelationship,
   ResourceObjectRelationships,
-  ResourceObjectRelationshipsLoadType,
-  ResourceObjectRelationshipKey,
-  ResourceObjectRelationshipKeys,
   ResourceObjectUri,
   ResourceObjectRelationshipBase,
-} from './resource.object';
+} from './resource.interfaces';
