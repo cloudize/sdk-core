@@ -7,7 +7,7 @@ import {
   LoadDateTime as LoadDateTimeHelper,
   LoadGeospatialPoint as LoadGeospatialPointHelper,
 } from '../helpers';
-import { ResourceFilterType } from '../classes';
+import { ResourceQueryFilterType } from '../classes';
 
 export type ResourceObjectType = string;
 export type ResourceObjectIdentifier = string;
@@ -149,7 +149,7 @@ export interface IResourceContainer {
     includes: ResourceContainerIncludedResourceTypes;
     restClient: IRestClient;
     uri: string;
-    Filter(filter: ResourceQueryFilterName, selector: ResourceFilterType, value: ResourceQueryFilterValue): IResourceContainer;
+    Filter(filter: ResourceQueryFilterName, selector: ResourceQueryFilterType, value: ResourceQueryFilterValue): IResourceContainer;
     Sort(option: ResourceQuerySortOption): IResourceContainer;
     Include(include: ResourceQueryIncludeOption): IResourceContainer;
     PageOffset(pageOffset: number, pageSize: number): IResourceContainer;

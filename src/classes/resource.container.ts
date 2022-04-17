@@ -47,7 +47,7 @@ type ResourceContainerQueryParams = {
 }
 
 // eslint-disable-next-line no-shadow
-export enum ResourceFilterType {
+export enum ResourceQueryFilterType {
   Equal = 'equal',
   NotEqual = '!equal',
   From = 'from',
@@ -371,7 +371,7 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Filter(filter: ResourceQueryFilterName, selector: ResourceFilterType, value: ResourceQueryFilterValue): IResourceContainer {
+  Filter(filter: ResourceQueryFilterName, selector: ResourceQueryFilterType, value: ResourceQueryFilterValue): IResourceContainer {
     this._queryParams.filters[`${selector}:${filter}`] = value;
     return this;
   }
