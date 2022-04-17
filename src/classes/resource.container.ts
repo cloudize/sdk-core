@@ -371,7 +371,11 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Filter(filter: ResourceQueryFilterName, selector: ResourceQueryFilterType, value: ResourceQueryFilterValue): IResourceContainer {
+  Filter(
+    filter: ResourceQueryFilterName,
+    selector: ResourceQueryFilterType,
+    value: ResourceQueryFilterValue,
+  ): IResourceContainer {
     this._queryParams.filters[`${selector}:${filter}`] = value;
     return this;
   }

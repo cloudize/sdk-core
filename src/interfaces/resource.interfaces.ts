@@ -149,7 +149,11 @@ export interface IResourceContainer {
     includes: ResourceContainerIncludedResourceTypes;
     restClient: IRestClient;
     uri: string;
-    Filter(filter: ResourceQueryFilterName, selector: ResourceQueryFilterType, value: ResourceQueryFilterValue): IResourceContainer;
+    Filter(
+      filter: ResourceQueryFilterName,
+      selector: ResourceQueryFilterType,
+      value: ResourceQueryFilterValue,
+    ): IResourceContainer;
     Sort(option: ResourceQuerySortOption): IResourceContainer;
     Include(include: ResourceQueryIncludeOption): IResourceContainer;
     PageOffset(pageOffset: number, pageSize: number): IResourceContainer;
