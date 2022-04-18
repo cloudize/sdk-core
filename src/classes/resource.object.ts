@@ -162,7 +162,11 @@ export default class ResourceObject implements IResourceObject {
                 );
               }
             } else if (isResourceObjectRelationship(data[fieldName])) {
-              if (isUndefined(shadow) || !areEqual(shadow[fieldName], data[fieldName])) {
+              if (
+                isUndefined(shadow)
+                  || isUndefined(shadow[fieldName])
+                  || ((shadow[fieldName].type !== data[fieldName].type) || (shadow[fieldName].id !== data[fieldName].id))
+              ) {
                 payload[fieldName] = {
                   data: {
                     type: data[fieldName].type,
