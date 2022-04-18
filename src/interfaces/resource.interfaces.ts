@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import {
-  hasProperty, isDefined, isObject, isString,
+  hasProperty, isArray, isDefined, isObject, isString,
 } from '@apigames/json';
 import { IRestClient } from '@apigames/rest-client';
 import {
@@ -110,12 +110,54 @@ export class ResourceObjectRelationshipBase {
     this._includes = includes;
   }
 
-  protected LoadRelationshipData(expectedType: string, value: any): ResourceObjectRelationship {
-    if (isDefined(value) && (hasProperty(value, 'data') && isObject(value.data)
-        && hasProperty(value.data, 'type') && isString(value.data.type)
-        && (value.data.type === expectedType)
-        && hasProperty(value.data, 'id') && isString(value.data.id)
-    )) return new ResourceObjectRelationship(this._includes, value.data.type, value.data.id);
+  protected LoadRelationship(expectedType: string, value: any): ResourceObjectRelationship {
+    if (isObject(value)) {
+      if (hasProperty(value, 'data') && isObject(value.data) && (Object.keys(value.data).length === 2)
+            && hasProperty(value.data, 'type') && isString(value.data.type)
+            && (value.data.type === expectedType)
+            && hasProperty(value.data, 'id') && isString(value.data.id)) {
+        return new ResourceObjectRelationship(this._includes, value.data.type, value.data.id);
+      }
+      if ((Object.keys(value).length === 1) && hasProperty(value, 'id') && isString(value.id)) {
+        return new ResourceObjectRelationship(this._includes, expectedType, value.id);
+      }
+    }
+
+    return undefined;
+  }
+
+  protected LoadRelationships(expectedType: string, value: any): ResourceObjectRelationships {
+    if (isObject(value)) {
+      if (hasProperty(value, 'data') && isArray(value.data)) {
+        const relationships: ResourceObjectRelationships = [];
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const relationship of value.data) {
+          if (isObject(relationship) && (Object.keys(relationship).length === 2)
+            && hasProperty(relationship, 'type') && isString(relationship.type)
+            && (relationship.type === expectedType)
+            && hasProperty(relationship, 'id') && isString(relationship.id)
+          ) {
+            relationships.push(new ResourceObjectRelationship(this._includes, relationship.type, relationship.id));
+          }
+        }
+
+        return relationships;
+      }
+    } else if (isArray(value)) {
+      const relationships: ResourceObjectRelationships = [];
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const relationship of value) {
+        if (isObject(relationship) && (Object.keys(relationship).length === 1)
+          && hasProperty(relationship, 'id') && isString(relationship.id)
+        ) {
+          relationships.push(new ResourceObjectRelationship(this._includes, expectedType, relationship.id));
+        }
+      }
+
+      return relationships;
+    }
 
     return undefined;
   }

@@ -152,7 +152,7 @@ export class OrderRelationships extends ResourceObjectRelationshipBase implement
     if (action === ResourceObjectRelationshipsLoadType.Replace) this.clearData();
 
     if (hasProperty(data, 'customer')) {
-      this.customer = this.LoadRelationshipData(
+      this.customer = this.LoadRelationship(
         OrderRelationships.RelationshipType('customer'),
         data.customer,
       );
