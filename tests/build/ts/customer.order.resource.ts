@@ -117,7 +117,10 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
         this.product.releaseDate = OrderAttributes.LoadDateTime(data.product?.releaseDate);
       }
       if (hasProperty(data.product, 'releaseLocation')) {
-        this.product.releaseLocation = OrderAttributes.LoadGeospatialPoint(data.product?.releaseLocation);
+        this.product.releaseLocation = OrderAttributes.LoadGeospatialPoint(
+          this.product.releaseLocation,
+          data.product?.releaseLocation,
+        );
       }
       if (hasProperty(data.product, 'features')) {
         this.product.features = OrderAttributes.LoadProductFeatures(data.product?.features, action);

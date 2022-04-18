@@ -1,4 +1,6 @@
-import { hasProperty, isDefined, isNumber } from '@apigames/json';
+import {
+  hasProperty, isDefined, isNumber, isObject, isUndefinedOrNull,
+} from '@apigames/json';
 import { GeospatialPoint } from '../interfaces';
 
 export function LoadDateTime(value: string): Date {
@@ -7,11 +9,22 @@ export function LoadDateTime(value: string): Date {
 }
 
 // eslint-disable-next-line no-use-before-define
-export function LoadGeospatialPoint(value: any): GeospatialPoint {
-  if (isDefined(value) && hasProperty(value, 'longitude') && isNumber(value.longitude)
-        && hasProperty(value, 'latitude') && isNumber(value.latitude)) {
+export function LoadGeospatialPoint(geospatialPoint: GeospatialPoint, value: any): GeospatialPoint {
+  if (isUndefinedOrNull(geospatialPoint)) {
+    if (isDefined(value) && isObject(value) && (Object.keys(value).length === 2)
+      && hasProperty(value, 'longitude') && isNumber(value.longitude)
+      && hasProperty(value, 'latitude') && isNumber(value.latitude)) {
+      // eslint-disable-next-line no-use-before-define
+      const result = new GeospatialPoint();
+      result.LoadData(value);
+      return result;
+    }
+  } else if (isDefined(value) && isObject(value) && (Object.keys(value).length <= 2)
+    && (
+      (hasProperty(value, 'longitude') && isNumber(value.longitude))
+        || (hasProperty(value, 'latitude') && isNumber(value.latitude))
+    )) {
     // eslint-disable-next-line no-use-before-define
-    const geospatialPoint = new GeospatialPoint();
     geospatialPoint.LoadData(value);
     return geospatialPoint;
   }

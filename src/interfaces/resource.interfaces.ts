@@ -87,8 +87,8 @@ export class ResourceObjectAttributeBase {
   }
 
   // eslint-disable-next-line no-use-before-define
-  protected static LoadGeospatialPoint(value: any): GeospatialPoint {
-    return LoadGeospatialPointHelper(value);
+  protected static LoadGeospatialPoint(geospatialPoint: GeospatialPoint, value: any): GeospatialPoint {
+    return LoadGeospatialPointHelper(geospatialPoint, value);
   }
 }
 
@@ -98,8 +98,8 @@ export class GeospatialPoint extends ResourceObjectAttributeBase implements IRes
   latitude: number;
 
   LoadData(data: any) {
-    this.longitude = data.longitude;
-    this.latitude = data.latitude;
+    if (hasProperty(data, 'longitude')) this.longitude = data.longitude;
+    if (hasProperty(data, 'latitude')) this.latitude = data.latitude;
   }
 }
 
@@ -113,9 +113,9 @@ export class ResourceObjectRelationshipBase {
   protected LoadRelationship(expectedType: string, value: any): ResourceObjectRelationship {
     if (isObject(value)) {
       if (hasProperty(value, 'data') && isObject(value.data) && (Object.keys(value.data).length === 2)
-            && hasProperty(value.data, 'type') && isString(value.data.type)
-            && (value.data.type === expectedType)
-            && hasProperty(value.data, 'id') && isString(value.data.id)) {
+        && hasProperty(value.data, 'type') && isString(value.data.type)
+        && (value.data.type === expectedType)
+        && hasProperty(value.data, 'id') && isString(value.data.id)) {
         return new ResourceObjectRelationship(this._includes, value.data.type, value.data.id);
       }
       if ((Object.keys(value).length === 1) && hasProperty(value, 'id') && isString(value.id)) {
