@@ -7,7 +7,7 @@ import {
   isEmpty,
   isNumber,
   isObject,
-  isString,
+  isString, isUndefined,
   isUndefinedOrNull,
   redactUndefinedValues,
 } from '@apigames/json';
@@ -198,6 +198,7 @@ export default class ResourceContainer implements IResourceContainer {
         // eslint-disable-next-line no-restricted-syntax
         for (const resourceData of response.data.included) {
           const resourceObject = this.LoadResourceData(resourceData);
+          if (isUndefined(this._includes[resourceObject.type])) this._includes[resourceObject.type] = {};
           this._includes[resourceObject.type][resourceObject.id] = resourceObject;
         }
       }
