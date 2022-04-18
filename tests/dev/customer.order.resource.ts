@@ -9,8 +9,8 @@ import {
   IResourceObjectAttributes,
   IResourceObjectRelationships,
   ResourceContainer,
-  ResourceQueryFilterType,
-  ResourceQueryFilterValue,
+  ResourceFilterType,
+  ResourceFilterValue,
   ResourceObject,
   ResourceObjectAttributeBase,
   ResourceObjectAttributesLoadType,
@@ -292,7 +292,7 @@ export class CustomerOrders extends ResourceContainer {
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Filter(filter: OrderFilter, selector: ResourceQueryFilterType, value: ResourceQueryFilterValue): IResourceContainer {
+  Filter(filter: OrderFilter, selector: ResourceFilterType, value: ResourceFilterValue): IResourceContainer {
     return super.Filter(OrderFilter.ProductCode, selector, value);
   }
 

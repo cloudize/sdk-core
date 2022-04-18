@@ -8,7 +8,7 @@ import {
   RestClientOptions,
 } from '@apigames/rest-client';
 import dateUtils from 'date-and-time';
-import { ResourceQueryFilterType, ResourceObjectRelationship, SDKException } from '../../src';
+import { ResourceFilterType, ResourceObjectRelationship, SDKException } from '../../src';
 import {
   CustomerOrders,
   isOrderResourceObject,
@@ -82,7 +82,7 @@ describe('The customer orders resource ', () => {
       });
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
-      const count = await customerOrders.Filter(OrderFilter.ProductCode, ResourceQueryFilterType.Equal, 'abc')
+      const count = await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
         .PageNumber(2, 10)
@@ -130,13 +130,13 @@ describe('The customer orders resource ', () => {
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
 
-      const firstCount = await customerOrders.Filter(OrderFilter.ProductCode, ResourceQueryFilterType.Equal, 'abc')
+      const firstCount = await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
         .PageNumber(2, 10)
         .Count();
 
-      const secondCount = await customerOrders.Filter(OrderFilter.ProductCode, ResourceQueryFilterType.Equal, 'abc')
+      const secondCount = await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
         .PageNumber(2, 10)
@@ -677,7 +677,7 @@ describe('The customer orders resource ', () => {
       });
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
-      await customerOrders.Filter(OrderFilter.ProductCode, ResourceQueryFilterType.Equal, 'abc')
+      await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
         .PageNumber(2, 10)
@@ -841,7 +841,7 @@ describe('The customer orders resource ', () => {
       });
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
-      await customerOrders.Filter(OrderFilter.ProductCode, ResourceQueryFilterType.Equal, 'abc')
+      await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
         .PageOffset(2, 20)

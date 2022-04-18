@@ -20,10 +20,10 @@ import {
   ResourceContainerIncludedResourceTypes,
   ResourceObjectClass,
   ResourcePathParams,
-  ResourceQueryFilterName,
-  ResourceQueryFilterValue,
-  ResourceQueryIncludeOption,
-  ResourceQuerySortOption,
+  ResourceFilterName,
+  ResourceFilterValue,
+  ResourceIncludeOption,
+  ResourceSortOption,
   SDKConfig,
   SDKException,
 } from '..';
@@ -47,7 +47,7 @@ type ResourceContainerQueryParams = {
 }
 
 // eslint-disable-next-line no-shadow
-export enum ResourceQueryFilterType {
+export enum ResourceFilterType {
   Equal = 'equal',
   NotEqual = '!equal',
   From = 'from',
@@ -373,22 +373,22 @@ export default class ResourceContainer implements IResourceContainer {
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   Filter(
-    filter: ResourceQueryFilterName,
-    selector: ResourceQueryFilterType,
-    value: ResourceQueryFilterValue,
+    filter: ResourceFilterName,
+    selector: ResourceFilterType,
+    value: ResourceFilterValue,
   ): IResourceContainer {
     this._queryParams.filters[`${selector}:${filter}`] = value;
     return this;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Sort(option: ResourceQuerySortOption): IResourceContainer {
+  Sort(option: ResourceSortOption): IResourceContainer {
     this._queryParams.sort = option;
     return this;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
-  Include(include: ResourceQueryIncludeOption): IResourceContainer {
+  Include(include: ResourceIncludeOption): IResourceContainer {
     this._queryParams.includes[include] = true;
     return this;
   }
