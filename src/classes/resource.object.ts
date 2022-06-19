@@ -240,12 +240,12 @@ export default class ResourceObject implements IResourceObject {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private GetHeaderValue(headers: RestClientResponseHeaders, targetHeader: string): string {
+  private GetHeaderValue(headers: RestClientResponseHeaders, key: string): string {
     let value: string;
 
     // eslint-disable-next-line no-restricted-syntax
     for (const headerName in headers) {
-      if (headerName.toLowerCase() === targetHeader.toLowerCase()) {
+      if (headerName.toLowerCase() === key.toLowerCase()) {
         value = headers[headerName];
       }
     }
@@ -253,30 +253,13 @@ export default class ResourceObject implements IResourceObject {
     return value;
   }
 
-  private GetHeaders(): any {
-    const headers: any = {
-      Accept: this.EndpointContentType(),
-      'Content-Type': this.EndpointContentType(),
-    };
-
-    if (isDefined(SDKConfig().apiKey)) {
-      headers['x-api-key'] = SDKConfig().apiKey;
-    }
-
-    if (isDefined(SDKConfig().accessToken)) {
-      headers.Authorization = `Bearer ${SDKConfig().accessToken}`;
-    }
-
-    return headers;
-  }
-
   // eslint-disable-next-line class-methods-use-this
-  private HasHeader(headers: RestClientResponseHeaders, targetHeader: string): boolean {
+  private HasHeader(headers: RestClientResponseHeaders, key: string): boolean {
     let hasHeader = false;
 
     // eslint-disable-next-line no-restricted-syntax
     for (const headerName in headers) {
-      if (headerName.toLowerCase() === targetHeader.toLowerCase()) {
+      if (headerName.toLowerCase() === key.toLowerCase()) {
         hasHeader = true;
       }
     }
@@ -286,7 +269,7 @@ export default class ResourceObject implements IResourceObject {
 
   private async InsertResource() {
     const queryUri: string = this._container.uri;
-    const queryHeaders = this.GetHeaders();
+    const queryHeaders = this._container.GetHeaders('INSERT');
     const queryOptions: RestClientOptions = {};
     const payload: any = this.GetInsertPayload();
 
@@ -309,7 +292,7 @@ export default class ResourceObject implements IResourceObject {
 
   private async UpdateResource() {
     const queryUri: string = this.uri;
-    const queryHeaders = this.GetHeaders();
+    const queryHeaders = this._container.GetHeaders('UPDATE');
     const queryOptions: RestClientOptions = {};
     const payload: any = this.GetUpdatePayload();
 

@@ -18,6 +18,7 @@ import {
   IResourceContainer,
   IResourceObject,
   ResourceContainerIncludedResourceTypes,
+  ResourceHeaderParams,
   ResourceObjectClass,
   ResourcePathParams,
   ResourceFilterName,
@@ -71,12 +72,15 @@ export default class ResourceContainer implements IResourceContainer {
 
   private readonly _restClient: IRestClient;
 
+  protected headerParams: ResourceHeaderParams;
+
   protected pathParams: ResourcePathParams;
 
   constructor(restClient?: IRestClient) {
     this._data = undefined;
     this._includes = {};
     this._restClient = isDefined(restClient) ? restClient : new RestClient();
+    this.headerParams = {};
     this.pathParams = {};
     this._queryParams = {
       includes: {},
@@ -310,8 +314,23 @@ export default class ResourceContainer implements IResourceContainer {
     };
   }
 
-  private GetHeaders(action: string): any {
-    const headers: any = {};
+  private InitializeDefaultHeaderParams(): ResourceHeaderParams {
+    const headers: ResourceHeaderParams = {};
+
+    if (isDefined(this.headerParams)) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const headerParamName in this.headerParams) {
+        if (hasProperty(this.headerParams, headerParamName)) {
+          headers[headerParamName] = this.headerParams[headerParamName];
+        }
+      }
+    }
+
+    return headers;
+  }
+
+  GetHeaders(action: string): ResourceHeaderParams {
+    const headers: ResourceHeaderParams = this.InitializeDefaultHeaderParams();
 
     switch (action) {
       case 'GET':
