@@ -7,7 +7,7 @@ import {
   LoadDateTime as LoadDateTimeHelper,
   LoadGeospatialPoint as LoadGeospatialPointHelper,
 } from '../helpers';
-import {ResourceFilterType, ResourceHeaderParams} from '../classes';
+import { ResourceFilterType, ResourceHeaderParams } from '../classes';
 
 export type ResourceObjectType = string;
 export type ResourceObjectIdentifier = string;
