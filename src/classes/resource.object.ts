@@ -22,7 +22,6 @@ import {
   ResourceObjectAttributesLoadType,
   ResourceObjectRelationshipsLoadType,
   ResourceObjectUri,
-  SDKConfig,
   SDKException,
 } from '..';
 
