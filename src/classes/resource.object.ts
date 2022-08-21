@@ -10,8 +10,8 @@ import {
   isString,
   isUndefined, isUndefinedOrNull,
   redactUndefinedValues,
-} from '@apigames/json';
-import { RestClientOptions, RestClientResponseHeaders } from '@apigames/rest-client';
+} from '@cloudize/json';
+import { RestClientOptions, RestClientResponseHeaders } from '@cloudize/rest-client';
 import {
   IResourceContainer,
   IResourceObject,

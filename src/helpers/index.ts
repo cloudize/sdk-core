@@ -1,6 +1,6 @@
 import {
   hasProperty, isDefined, isNumber, isObject, isUndefinedOrNull,
-} from '@apigames/json';
+} from '@cloudize/json';
 import { GeospatialPoint } from '../interfaces';
 
 export function LoadDateTime(value: string): Date {
