@@ -1,8 +1,8 @@
 // eslint-disable-next-line max-classes-per-file
-import { IRestClient } from '@apigames/rest-client';
+import { IRestClient } from '@cloudize/rest-client';
 import {
   hasProperty, isArray, isDefined, isDefinedAndNotNull, isUndefined,
-} from '@apigames/json';
+} from '@cloudize/json';
 import {
   IResourceContainer,
   IResourceObjectAttributes,

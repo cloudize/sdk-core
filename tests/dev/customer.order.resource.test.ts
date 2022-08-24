@@ -6,7 +6,7 @@ import {
   Error503ServiceUnavailable,
   MockRestClient,
   RestClientOptions,
-} from '@apigames/rest-client';
+} from '@cloudize/rest-client';
 import dateUtils from 'date-and-time';
 import { ResourceFilterType, ResourceObjectRelationship, SDKException } from '../../src';
 import {

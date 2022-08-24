@@ -1,5 +1,5 @@
 {
-  "name": "@apigames/sdk-core",
+  "name": "@cloudize/sdk-core",
   "author": {
     "name" : "API Games Limited",
     "email" : "hello@api.games",
@@ -11,7 +11,7 @@
       "email" : "erich.kuba@api.games"
     }
   ],
-  "description": "API Games SDK Core",
+  "description": "Cloudize SDK Core",
   "license": "MIT",
   "version": "22.1.32",
   "main": "lib/index.js",
@@ -33,8 +33,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@apigames/json": "22.1.12",
-    "@apigames/rest-client": "22.1.12",
+    "@cloudize/json": "22.1.12",
+    "@cloudize/rest-client": "22.1.12",
     "object-hash": "3.0.0"
   },
   "devDependencies": {
@@ -57,10 +57,10 @@
   "eslintConfig": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/apigames-core/sdk-core.git"
+    "url": "git+https://github.com/cloudize/sdk-core.git"
   },
   "bugs": {
-    "url": "https://github.com/apigames-core/sdk-core/issues"
+    "url": "https://github.com/cloudize/sdk-core/issues"
   },
-  "homepage": "https://github.com/apigames-core/sdk-core#readme"
+  "homepage": "https://github.com/cloudize/sdk-core#readme"
 }
