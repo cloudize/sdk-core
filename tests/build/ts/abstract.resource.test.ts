@@ -423,7 +423,7 @@ describe('The base ', () => {
 
     it('return an injected rest client if supplied to the constructor.', () => {
       const restClient = new MockRestClient();
-      const container = new ResourceContainer(restClient);
+      const container = new ResourceContainer({ restClient });
       expect(container.restClient).toBe(restClient);
       expect(container.restClient).toBeInstanceOf(MockRestClient);
     });

@@ -1,5 +1,4 @@
 // eslint-disable-next-line max-classes-per-file
-import { IRestClient } from '@apigames/rest-client';
 import {
   hasProperty, isArray, isDefined, isDefinedAndNotNull, isUndefined,
 } from '@apigames/json';
@@ -9,6 +8,7 @@ import {
   IResourceObjectRelationships,
   GeospatialPoint,
   ResourceContainer,
+  ResourceContainerParams,
   ResourceObject,
   ResourceObjectAttributeBase,
   ResourceObjectAttributesLoadType,
@@ -270,8 +270,8 @@ export function isOrderResourceObject(value: any): value is Order {
 }
 
 export class CustomerOrders extends ResourceContainer {
-  constructor(customerId: string, restClient?: IRestClient) {
-    super(restClient);
+  constructor(customerId: string, params?: ResourceContainerParams) {
+    super(params);
     this.pathParams.customerId = customerId;
   }
 
