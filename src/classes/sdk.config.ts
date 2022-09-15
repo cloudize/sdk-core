@@ -1,4 +1,4 @@
-import { isUndefined } from '@apigames/json';
+import { isUndefined } from '@cloudize/json';
 import { ResourceObjectClass } from './resource.object';
 
 export type SDKResourceMap = {

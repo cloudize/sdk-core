@@ -1,5 +1,5 @@
-import { MockRestClient, RestClient } from '@apigames/rest-client';
-import { redactUndefinedValues } from '@apigames/json';
+import { MockRestClient, RestClient } from '@cloudize/rest-client';
+import { redactUndefinedValues } from '@cloudize/json';
 import {
   ResourceContainer, ResourceObject, ResourceObjectMode, ResourceObjectRelationship,
 } from '../../../lib';

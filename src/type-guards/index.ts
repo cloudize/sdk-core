@@ -1,4 +1,4 @@
-import { isArray, isDefinedAndNotNull } from '@apigames/json';
+import { isArray, isDefinedAndNotNull } from '@cloudize/json';
 import { ResourceContainer, ResourceObject } from '../classes';
 import { ResourceObjectRelationship, ResourceObjectRelationships } from '../interfaces';
 

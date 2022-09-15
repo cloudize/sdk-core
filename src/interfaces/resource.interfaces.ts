@@ -1,8 +1,8 @@
 // eslint-disable-next-line max-classes-per-file
 import {
   hasProperty, isArray, isDefined, isObject, isString,
-} from '@apigames/json';
-import { IRestClient } from '@apigames/rest-client';
+} from '@cloudize/json';
+import { IRestClient } from '@cloudize/rest-client';
 import {
   LoadDateTime as LoadDateTimeHelper,
   LoadGeospatialPoint as LoadGeospatialPointHelper,
