@@ -47,7 +47,7 @@ describe('The customer orders resource ', () => {
       });
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Count();
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -81,7 +81,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       const count = await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
@@ -128,7 +128,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
 
       const firstCount = await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
@@ -192,7 +192,7 @@ describe('The customer orders resource ', () => {
       });
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -232,7 +232,7 @@ describe('The customer orders resource ', () => {
       });
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -267,7 +267,7 @@ describe('The customer orders resource ', () => {
       }));
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -314,7 +314,7 @@ describe('The customer orders resource ', () => {
       }));
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -390,7 +390,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
 
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/'
@@ -471,7 +471,7 @@ describe('The customer orders resource ', () => {
       });
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Find();
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -511,7 +511,7 @@ describe('The customer orders resource ', () => {
       });
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Find();
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -560,7 +560,7 @@ describe('The customer orders resource ', () => {
       }));
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Find();
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
       } catch (error) {
@@ -676,7 +676,10 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders(
+        '9a383573-801f-4466-80b2-96f4fb93c384',
+        { restClient: mockClient },
+      );
       await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
@@ -840,7 +843,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
@@ -986,7 +989,7 @@ describe('The customer orders resource ', () => {
       }));
 
       try {
-        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+        const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
         await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
         if (customerOrders.isResourceObject(customerOrders.data)) await customerOrders.Delete(customerOrders.data);
         expect(true).toBe('Expected the object to throw an error, but none was thrown.');
@@ -1056,7 +1059,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
 
       expect(customerOrders.data).toBeDefined();
@@ -1154,7 +1157,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       await customerOrders.Find();
 
       expect(customerOrders.data).toBeDefined();
@@ -1179,7 +1182,7 @@ describe('The customer orders resource ', () => {
         },
       }));
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       const order = customerOrders.Add();
       order.attributes.product = {
         code: 'PRODUCT-CODE',
@@ -1225,7 +1228,7 @@ describe('The customer orders resource ', () => {
         },
       }));
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       const order = customerOrders.Add();
       order.attributes.product = {
         code: 'PRODUCT-CODE',
@@ -1262,7 +1265,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       const order = customerOrders.Add();
       order.attributes.product = {
         code: 'PRODUCT-CODE',
@@ -1297,7 +1300,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       const order = customerOrders.Add();
       order.attributes.product = {
         code: 'PRODUCT-CODE',
@@ -1333,7 +1336,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       const order = customerOrders.Add();
       order.attributes.product = {
         code: 'PRODUCT-CODE',
@@ -1452,7 +1455,7 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', mockClient);
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
       await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
       if (isOrderResourceObject(customerOrders.data)) {
         const order: Order = customerOrders.data;

@@ -1,5 +1,4 @@
 // eslint-disable-next-line max-classes-per-file
-import { IRestClient } from '@cloudize/rest-client';
 import {
   hasProperty, isArray, isDefined, isDefinedAndNotNull, isUndefined,
 } from '@cloudize/json';
@@ -9,6 +8,7 @@ import {
   IResourceObjectAttributes,
   IResourceObjectRelationships,
   ResourceContainer,
+  ResourceContainerParams,
   ResourceFilterType,
   ResourceFilterValue,
   ResourceObject,
@@ -270,8 +270,8 @@ export function isOrderResourceObject(value: any): value is Order {
 }
 
 export class CustomerOrders extends ResourceContainer {
-  constructor(customerId: string, restClient?: IRestClient) {
-    super(restClient);
+  constructor(customerId: string, params?: ResourceContainerParams) {
+    super(params);
     this.pathParams.customerId = customerId;
   }
 

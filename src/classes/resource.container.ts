@@ -27,6 +27,7 @@ import {
   ResourceSortOption,
   SDKConfig,
   SDKException,
+  SDKConfiguration,
 } from '..';
 import { ResourceObjectMode } from './resource.object';
 
@@ -59,6 +60,11 @@ export enum ResourceFilterType {
   Exists = 'exists',
 }
 
+export type ResourceContainerParams = {
+  restClient?: IRestClient;
+  sdkConfig?: SDKConfiguration;
+}
+
 export default class ResourceContainer implements IResourceContainer {
   private _count: number;
 
@@ -72,14 +78,17 @@ export default class ResourceContainer implements IResourceContainer {
 
   private readonly _restClient: IRestClient;
 
+  private readonly _sdkConfig: SDKConfiguration;
+
   protected headerParams: ResourceHeaderParams;
 
   protected pathParams: ResourcePathParams;
 
-  constructor(restClient?: IRestClient) {
+  constructor(params?: ResourceContainerParams) {
     this._data = undefined;
     this._includes = {};
-    this._restClient = isDefined(restClient) ? restClient : new RestClient();
+    this._restClient = isDefined(params?.restClient) ? params?.restClient : new RestClient();
+    this._sdkConfig = isDefined(params?.sdkConfig) ? params?.sdkConfig : SDKConfig();
     this.headerParams = {};
     this.pathParams = {};
     this._queryParams = {
@@ -101,6 +110,10 @@ export default class ResourceContainer implements IResourceContainer {
 
   get restClient(): IRestClient {
     return this._restClient;
+  }
+
+  get sdkConfig(): SDKConfiguration {
+    return this._sdkConfig;
   }
 
   get uri(): string {
@@ -172,7 +185,7 @@ export default class ResourceContainer implements IResourceContainer {
   protected LoadResourceData(resourceData: any): IResourceObject {
     if (hasProperty(resourceData, 'type') && isString(resourceData.type)) {
       if (hasProperty(resourceData, 'id') && isString(resourceData.id)) {
-        const ResourceClass: ResourceObjectClass = SDKConfig().ResourceClass(resourceData.type);
+        const ResourceClass: ResourceObjectClass = this.sdkConfig.ResourceClass(resourceData.type);
         return new ResourceClass(this, ResourceObjectMode.ExistingDocument).LoadData(resourceData);
       }
 
@@ -344,12 +357,12 @@ export default class ResourceContainer implements IResourceContainer {
         break;
     }
 
-    if (isDefined(SDKConfig().apiKey)) {
-      headers['x-api-key'] = SDKConfig().apiKey;
+    if (isDefined(this.sdkConfig.apiKey)) {
+      headers['x-api-key'] = this.sdkConfig.apiKey;
     }
 
-    if (isDefined(SDKConfig().accessToken)) {
-      headers.Authorization = `Bearer ${SDKConfig().accessToken}`;
+    if (isDefined(this.sdkConfig.accessToken)) {
+      headers.Authorization = `Bearer ${this.sdkConfig.accessToken}`;
     }
 
     return headers;
