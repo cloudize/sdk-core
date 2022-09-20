@@ -40,7 +40,7 @@ export enum OrderInclude {
 export class OrderProductFeature extends ResourceObjectAttributeBase implements IResourceObjectAttributes {
   name?: string;
 
-  userRating?: number;
+  userRating?: number | null;
 
   private clearData() {
     this.name = undefined;
