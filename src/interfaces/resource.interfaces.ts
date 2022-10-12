@@ -47,14 +47,18 @@ export type ResourceContainerIncludedResourceTypes = {
 export class ResourceObjectRelationship {
   private _includes: ResourceContainerIncludedResourceTypes;
 
-  type: ResourceObjectType;
+  readonly type: ResourceObjectType;
 
-  id: ResourceObjectIdentifier;
+  id: ResourceObjectIdentifier | null;
 
   constructor(includes: ResourceContainerIncludedResourceTypes, type: ResourceObjectType, id?: ResourceObjectIdentifier) {
     this._includes = includes;
     this.type = type;
     if (id) this.id = id;
+  }
+
+  clear() {
+    this.id = null;
   }
 
   // eslint-disable-next-line no-use-before-define

@@ -166,12 +166,16 @@ export default class ResourceObject implements IResourceObject {
                   || isUndefined(shadow[fieldName])
                   || ((shadow[fieldName].type !== data[fieldName].type) || (shadow[fieldName].id !== data[fieldName].id))
               ) {
-                payload[fieldName] = {
-                  data: {
-                    type: data[fieldName].type,
-                    id: data[fieldName].id,
-                  },
-                };
+                if (data[fieldName].id === null) {
+                  payload[fieldName] = { data: null };
+                } else {
+                  payload[fieldName] = {
+                    data: {
+                      type: data[fieldName].type,
+                      id: data[fieldName].id,
+                    },
+                  };
+                }
               }
             }
           }

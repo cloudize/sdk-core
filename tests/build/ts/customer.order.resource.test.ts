@@ -676,7 +676,10 @@ describe('The customer orders resource ', () => {
         },
       });
 
-      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
+      const customerOrders = new CustomerOrders(
+        '9a383573-801f-4466-80b2-96f4fb93c384',
+        { restClient: mockClient },
+      );
       await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
@@ -1499,6 +1502,381 @@ describe('The customer orders resource ', () => {
                   type: 'Customer',
                   id: 'new-id',
                 },
+              },
+            },
+          },
+        };
+
+        expect(mockClient.Patch).toHaveBeenCalledTimes(1);
+        expect(mockClient.Patch).toHaveBeenCalledWith(queryUri, queryPayload, queryHeaders, queryOptions);
+      } else {
+        expect(true).toBe('The resource was expected to be an order, but it wasn\'t.');
+      }
+    });
+
+    it('should correctly PATCH an existing resource when some fields are modified (including attributes being '
+        + 'set to null).', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      jest.spyOn(mockClient, 'Patch');
+
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                code: 'WIN95',
+                name: 'Windows 95',
+                description: [
+                  'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                  'programs and device drivers while offering a more stable and better performing system. ',
+                  'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                ],
+                features: [
+                  {
+                    name: 'Out of the box performance',
+                    userRating: 7.1,
+                  },
+                  {
+                    name: 'Ease of use',
+                    userRating: 8.7,
+                  },
+                ],
+              },
+              qty: 1,
+              price: 1.99,
+            },
+            relationships: {
+              customer: {
+                data: {
+                  type: 'Customer',
+                  id: '9a383573-801f-4466-80b2-96f4fb93c384',
+                },
+              },
+            },
+            links: {
+              self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            },
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      });
+
+      mockClient.MockResolve({
+        statusCode: 204,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
+      await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+      if (isOrderResourceObject(customerOrders.data)) {
+        const order: Order = customerOrders.data;
+        order.UpdateAttributes({
+          product: {
+            name: 'Product Name',
+            features: [
+              {
+                name: 'Propensity to get viruses',
+                userRating: null,
+              },
+            ],
+          },
+        });
+        order.attributes.qty = 15;
+        order.relationships.customer = new ResourceObjectRelationship(customerOrders.includes, 'Customer', 'new-id');
+        await order.Save();
+
+        const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
+        const queryHeaders = {
+          Accept: 'application/vnd.api+json',
+          'Content-Type': 'application/vnd.api+json',
+        };
+        const queryOptions: RestClientOptions = {};
+        const queryPayload = {
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                name: 'Product Name',
+                features: [
+                  {
+                    name: 'Propensity to get viruses',
+                    userRating: null as number,
+                  },
+                ],
+              },
+              qty: 15,
+            },
+            relationships: {
+              customer: {
+                data: {
+                  type: 'Customer',
+                  id: 'new-id',
+                },
+              },
+            },
+          },
+        };
+
+        expect(mockClient.Patch).toHaveBeenCalledTimes(1);
+        expect(mockClient.Patch).toHaveBeenCalledWith(queryUri, queryPayload, queryHeaders, queryOptions);
+      } else {
+        expect(true).toBe('The resource was expected to be an order, but it wasn\'t.');
+      }
+    });
+
+    it('should correctly PATCH an existing resource when some fields are modified (including relationships '
+        + 'being set to null by setting the id property to null).', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      jest.spyOn(mockClient, 'Patch');
+
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                code: 'WIN95',
+                name: 'Windows 95',
+                description: [
+                  'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                  'programs and device drivers while offering a more stable and better performing system. ',
+                  'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                ],
+                features: [
+                  {
+                    name: 'Out of the box performance',
+                    userRating: 7.1,
+                  },
+                  {
+                    name: 'Ease of use',
+                    userRating: 8.7,
+                  },
+                ],
+              },
+              qty: 1,
+              price: 1.99,
+            },
+            relationships: {
+              customer: {
+                data: {
+                  type: 'Customer',
+                  id: '9a383573-801f-4466-80b2-96f4fb93c384',
+                },
+              },
+            },
+            links: {
+              self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            },
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      });
+
+      mockClient.MockResolve({
+        statusCode: 204,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
+      await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+      if (isOrderResourceObject(customerOrders.data)) {
+        const order: Order = customerOrders.data;
+        order.UpdateAttributes({
+          product: {
+            name: 'Product Name',
+            features: [
+              {
+                name: 'Propensity to get viruses',
+                userRating: null,
+              },
+            ],
+          },
+        });
+        order.attributes.qty = 15;
+        order.relationships.customer.id = null;
+        await order.Save();
+
+        const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
+        const queryHeaders = {
+          Accept: 'application/vnd.api+json',
+          'Content-Type': 'application/vnd.api+json',
+        };
+        const queryOptions: RestClientOptions = {};
+        const queryPayload = {
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                name: 'Product Name',
+                features: [
+                  {
+                    name: 'Propensity to get viruses',
+                    userRating: null as number,
+                  },
+                ],
+              },
+              qty: 15,
+            },
+            relationships: {
+              customer: {
+                data: null as object,
+              },
+            },
+          },
+        };
+
+        expect(mockClient.Patch).toHaveBeenCalledTimes(1);
+        expect(mockClient.Patch).toHaveBeenCalledWith(queryUri, queryPayload, queryHeaders, queryOptions);
+      } else {
+        expect(true).toBe('The resource was expected to be an order, but it wasn\'t.');
+      }
+    });
+
+    it('should correctly PATCH an existing resource when some fields are modified (including relationships '
+        + 'being set by calling the clear method).', async () => {
+      const mockClient = new MockRestClient();
+      jest.spyOn(mockClient, 'Get');
+      jest.spyOn(mockClient, 'Patch');
+
+      mockClient.MockResolve({
+        statusCode: 200,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+        data: {
+          jsonapi: {
+            version: '1.0',
+          },
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                code: 'WIN95',
+                name: 'Windows 95',
+                description: [
+                  'Windows 95 was designed to be maximally compatible with existing MS-DOS and 16-bit Windows ',
+                  'programs and device drivers while offering a more stable and better performing system. ',
+                  'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
+                ],
+                features: [
+                  {
+                    name: 'Out of the box performance',
+                    userRating: 7.1,
+                  },
+                  {
+                    name: 'Ease of use',
+                    userRating: 8.7,
+                  },
+                ],
+              },
+              qty: 1,
+              price: 1.99,
+            },
+            relationships: {
+              customer: {
+                data: {
+                  type: 'Customer',
+                  id: '9a383573-801f-4466-80b2-96f4fb93c384',
+                },
+              },
+            },
+            links: {
+              self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            },
+          },
+          links: {
+            self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+          },
+        },
+      });
+
+      mockClient.MockResolve({
+        statusCode: 204,
+        statusText: 'OK',
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+        },
+      });
+
+      const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
+      await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+      if (isOrderResourceObject(customerOrders.data)) {
+        const order: Order = customerOrders.data;
+        order.UpdateAttributes({
+          product: {
+            name: 'Product Name',
+            features: [
+              {
+                name: 'Propensity to get viruses',
+                userRating: null,
+              },
+            ],
+          },
+        });
+        order.attributes.qty = 15;
+        order.relationships.customer.clear();
+        await order.Save();
+
+        const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
+        const queryHeaders = {
+          Accept: 'application/vnd.api+json',
+          'Content-Type': 'application/vnd.api+json',
+        };
+        const queryOptions: RestClientOptions = {};
+        const queryPayload = {
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                name: 'Product Name',
+                features: [
+                  {
+                    name: 'Propensity to get viruses',
+                    userRating: null as number,
+                  },
+                ],
+              },
+              qty: 15,
+            },
+            relationships: {
+              customer: {
+                data: null as object,
               },
             },
           },
