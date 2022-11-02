@@ -16,7 +16,7 @@ $ npm i @cloudize/sdk-core
 
 ## Authors or Acknowledgments
 
-*   API Games Limited
+*   Cloudize Limited
 
 ## License
 
