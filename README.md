@@ -16,7 +16,7 @@ $ npm i @apigames/sdk-core
 
 ## Authors or Acknowledgments
 
-*   API Games Limited
+*   Cloudize Limited
 
 ## License
 

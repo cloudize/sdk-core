@@ -1,19 +1,19 @@
 {
   "name": "@apigames/sdk-core",
   "author": {
-    "name" : "API Games Limited",
-    "email" : "hello@apigames.io",
-    "url" : "https://apigames.io"
+    "name" : "Cloudize Limited",
+    "email" : "hello@cloudize.net",
+    "url" : "https://cloudize.net"
   },
   "contributors": [
     {
       "name" : "Erich Kuba",
-      "email" : "erich.kuba@apigames.io"
+      "email" : "erich.kuba@cloudize.net"
     }
   ],
   "description": "API Games SDK Core",
   "license": "MIT",
-  "version": "22.2.4",
+  "version": "22.2.5",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -33,18 +33,18 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@apigames/json": "22.2.3",
-    "@apigames/rest-client": "22.2.3",
+    "@apigames/json": "22.2.4",
+    "@apigames/rest-client": "22.2.4",
     "object-hash": "3.0.0"
   },
   "devDependencies": {
     "date-and-time": "^2.4.1",
     "@types/date-and-time": "^0.13.0",
     "@types/jest": "28.1.8",
-    "@types/node": "16.11.66",
-    "@typescript-eslint/eslint-plugin": "5.40.0",
-    "@typescript-eslint/parser": "5.40.0",
-    "eslint": "8.25.0",
+    "@types/node": "16.18.3",
+    "@typescript-eslint/eslint-plugin": "5.42.0",
+    "@typescript-eslint/parser": "5.42.0",
+    "eslint": "8.26.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jsx-a11y": "6.6.1",
