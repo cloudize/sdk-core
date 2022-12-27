@@ -13,7 +13,7 @@
   ],
   "description": "API Games SDK Core",
   "license": "MIT",
-  "version": "23.1.0",
+  "version": "23.1.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -33,18 +33,18 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@apigames/json": "23.1.0",
-    "@apigames/rest-client": "23.1.0",
+    "@apigames/json": "23.1.1",
+    "@apigames/rest-client": "23.1.1",
     "object-hash": "3.0.0"
   },
   "devDependencies": {
     "date-and-time": "^2.4.1",
     "@types/date-and-time": "^0.13.0",
     "@types/jest": "28.1.8",
-    "@types/node": "16.18.8",
-    "@typescript-eslint/eslint-plugin": "5.46.0",
-    "@typescript-eslint/parser": "5.46.0",
-    "eslint": "8.29.0",
+    "@types/node": "16.18.11",
+    "@typescript-eslint/eslint-plugin": "5.47.1",
+    "@typescript-eslint/parser": "5.47.1",
+    "eslint": "8.30.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-plugin-import": "2.26.0",
     "eslint-plugin-jsx-a11y": "6.6.1",
