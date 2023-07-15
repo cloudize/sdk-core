@@ -13,7 +13,7 @@
   ],
   "description": "Cloudize SDK Core",
   "license": "MIT",
-  "version": "23.2.5",
+  "version": "23.2.6",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
