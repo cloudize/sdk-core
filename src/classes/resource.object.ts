@@ -322,8 +322,23 @@ export default class ResourceObject implements IResourceObject {
   }
 
   toJSON(): any {
-    const payload = this.GetInsertPayload();
-    return payload.data;
+    const obj: any = {
+      type: this.type,
+    };
+
+    if (isDefined(this.id)) obj.id = this.id;
+
+    if (isDefined(this.attributes)) {
+      obj.attributes = this.SerializeAttributesPayload(undefined, this.attributes);
+    }
+
+    if (isDefined(this.relationships)) {
+      obj.data.relationships = this.SerializeRelationshipsPayload(undefined, this.relationships);
+    }
+
+    redactUndefinedValues(obj);
+
+    return obj;
   }
 
   // eslint-disable-next-line class-methods-use-this
