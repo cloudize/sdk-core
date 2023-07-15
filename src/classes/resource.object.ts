@@ -8,10 +8,12 @@ import {
   isNumber,
   isObject,
   isString,
-  isUndefined, isUndefinedOrNull,
+  isUndefined,
+  isUndefinedOrNull,
   redactUndefinedValues,
 } from '@cloudize/json';
 import { RestClientOptions, RestClientResponseHeaders } from '@cloudize/rest-client';
+// eslint-disable-next-line import/no-cycle
 import {
   IResourceContainer,
   IResourceObject,
@@ -317,6 +319,11 @@ export default class ResourceObject implements IResourceObject {
     if (isDefined(this.relationships)) {
       this.shadowRelationships.LoadData(this.relationships, ResourceObjectRelationshipsLoadType.Replace);
     }
+  }
+
+  toJSON(): any {
+    const payload = this.GetInsertPayload();
+    return payload.data;
   }
 
   // eslint-disable-next-line class-methods-use-this

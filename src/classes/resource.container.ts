@@ -2,12 +2,14 @@ import {
   extractAndRedact,
   hasProperty,
   isArray,
+  isArrayOfObjects,
   isDefined,
   isDefinedAndNotNull,
   isEmpty,
   isNumber,
   isObject,
-  isString, isUndefined,
+  isString,
+  isUndefined,
   isUndefinedOrNull,
   redactUndefinedValues,
 } from '@cloudize/json';
@@ -27,7 +29,7 @@ import {
   ResourceSortOption,
   SDKConfig,
   SDKException,
-  SDKConfiguration,
+  SDKConfiguration, isResourceObject,
 } from '..';
 import { ResourceObjectMode } from './resource.object';
 
@@ -437,5 +439,24 @@ export default class ResourceContainer implements IResourceContainer {
     this._queryParams.pagination.page = pageNumber;
     this._queryParams.pagination.size = pageSize;
     return this;
+  }
+
+  toJSON(): any {
+    if (isDefined(this.data)) {
+      if (isResourceObject(this.data)) return this.data.toJSON();
+
+      if (isArrayOfObjects(this.data)) {
+        const payload = [];
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const resource of this.data) {
+          if (isResourceObject(resource)) payload.push(resource.toJSON);
+        }
+
+        return payload;
+      }
+    }
+
+    return undefined;
   }
 }
