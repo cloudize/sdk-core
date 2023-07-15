@@ -338,7 +338,7 @@ export default class ResourceObject implements IResourceObject {
 
     redactUndefinedValues(obj);
 
-    return obj;
+    return JSON.parse(JSON.stringify(obj));
   }
 
   // eslint-disable-next-line class-methods-use-this
