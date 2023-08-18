@@ -21,11 +21,8 @@
     "target": "ES6",
     "typeRoots": [ "node_modules/@types" ]
   },
-  "exclude": [
-    "node_modules",
+  "include": [
+    "src",
     "tests"
-  ],
-  "files": [
-    "./src/index.ts"
   ]
 }
