@@ -36,11 +36,6 @@ export class SDKConfiguration {
     return path.startsWith('/') ? `${url}${path}` : `${url}/${path}`;
   }
 
-  RewriteUri(uri: string): string {
-    if (isDefined(this._uriRewriter)) return this._uriRewriter(uri);
-    return uri;
-  }
-
   get accessToken(): string {
     return this._accessToken;
   }
@@ -63,6 +58,14 @@ export class SDKConfiguration {
 
   set hostName(value: string) {
     this._hostName = value;
+  }
+
+  get uriRewriter(): UriRewriter {
+    return this._uriRewriter;
+  }
+
+  set uriRewriter(value: UriRewriter) {
+    this._uriRewriter = value;
   }
 }
 

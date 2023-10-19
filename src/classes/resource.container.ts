@@ -444,7 +444,8 @@ export default class ResourceContainer implements IResourceContainer {
   }
 
   RewriteUri(uri: string): string {
-    return this.sdkConfig.RewriteUri(uri);
+    if (isDefined(this.sdkConfig.uriRewriter)) return this.sdkConfig.uriRewriter(uri);
+    return uri;
   }
 
   toJSON(): any {
