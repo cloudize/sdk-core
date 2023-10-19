@@ -16,6 +16,7 @@ import {
 import {
   IRestClient, RestClient, RestClientOptions, RestClientResponse,
 } from '@apigames/rest-client';
+// eslint-disable-next-line import/no-cycle
 import {
   IResourceContainer,
   IResourceObject,
@@ -29,7 +30,8 @@ import {
   ResourceSortOption,
   SDKConfig,
   SDKException,
-  SDKConfiguration, isResourceObject,
+  SDKConfiguration,
+  isResourceObject,
 } from '..';
 import { ResourceObjectMode } from './resource.object';
 
@@ -128,7 +130,7 @@ export default class ResourceContainer implements IResourceContainer {
       }
     }
 
-    return uriPath;
+    return this.RewriteUri(uriPath);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -439,6 +441,10 @@ export default class ResourceContainer implements IResourceContainer {
     this._queryParams.pagination.page = pageNumber;
     this._queryParams.pagination.size = pageSize;
     return this;
+  }
+
+  RewriteUri(uri: string): string {
+    return this.sdkConfig.RewriteUri(uri);
   }
 
   toJSON(): any {

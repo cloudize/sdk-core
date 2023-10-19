@@ -3,4 +3,4 @@ export { default as ResourceContainer, ResourceContainerParams, ResourceFilterTy
 export { default as ResourceObject, ResourceObjectClass, ResourceObjectMode } from './resource.object';
 export { ResourceHeaderParams } from './resource.header.params';
 export { ResourcePathParams } from './resource.path.params';
-export { SDKConfiguration, SDKConfig } from './sdk.config';
+export { SDKConfiguration, SDKConfig, UriRewriter } from './sdk.config';

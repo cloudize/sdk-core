@@ -375,7 +375,7 @@ export default class ResourceObject implements IResourceObject {
   }
 
   get uri(): ResourceObjectUri {
-    return this._uri;
+    return this._container.RewriteUri(this._uri);
   }
 }
 
