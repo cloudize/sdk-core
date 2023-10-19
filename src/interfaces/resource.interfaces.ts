@@ -211,4 +211,5 @@ export interface IResourceContainer {
     Find(): Promise<void>
     Get(id: string): Promise<void>
     IncludedObject(type: ResourceObjectType, id: ResourceObjectIdentifier): IResourceObject;
+    RewriteUri(uri: string): string;
 }

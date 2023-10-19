@@ -1,9 +1,11 @@
-import { isUndefined } from '@cloudize/json';
+import { isDefined, isUndefined } from '@cloudize/json';
 import { ResourceObjectClass } from './resource.object';
 
 export type SDKResourceMap = {
   [index: string] :ResourceObjectClass;
 }
+
+export type UriRewriter = (uri: string) => string;
 
 export class SDKConfiguration {
   private _accessToken: string;
@@ -13,6 +15,8 @@ export class SDKConfiguration {
   private _hostName: string;
 
   private _resourceMap: SDKResourceMap;
+
+  private _uriRewriter: UriRewriter;
 
   constructor() {
     this._resourceMap = {};
@@ -30,6 +34,11 @@ export class SDKConfiguration {
     let url = this.hostName;
     url = url.endsWith('/') ? url.slice(0, -1) : url;
     return path.startsWith('/') ? `${url}${path}` : `${url}/${path}`;
+  }
+
+  RewriteUri(uri: string): string {
+    if (isDefined(this._uriRewriter)) return this._uriRewriter(uri);
+    return uri;
   }
 
   get accessToken(): string {
