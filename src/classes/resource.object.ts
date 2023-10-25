@@ -333,7 +333,7 @@ export default class ResourceObject implements IResourceObject {
     }
 
     if (isDefined(this.relationships)) {
-      obj.data.relationships = this.SerializeRelationshipsPayload(undefined, this.relationships);
+      obj.relationships = this.SerializeRelationshipsPayload(undefined, this.relationships);
     }
 
     redactUndefinedValues(obj);
