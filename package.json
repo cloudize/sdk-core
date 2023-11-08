@@ -13,7 +13,7 @@
   ],
   "description": "API Games SDK Core",
   "license": "MIT",
-  "version": "23.3.7",
+  "version": "23.3.8",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@apigames/json": "23.3.5",
-    "@apigames/rest-client": "23.3.4",
+    "@apigames/rest-client": "23.3.5",
     "object-hash": "3.0.0"
   },
   "devDependencies": {
