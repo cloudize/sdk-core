@@ -670,6 +670,23 @@ describe('The customer orders resource ', () => {
               },
             },
           ],
+          meta: {
+            facets: {
+              colors: {
+                Blue: 1,
+                Red: 3,
+              },
+              sizes: {
+                'US 8': 1,
+                'US 9': 2,
+                'US 10': 3,
+                'US 11': 4,
+                'US 12': 5,
+              },
+            },
+            copyright: '© 2024 Cloudize Limited. All rights reserved.',
+            designedBy: 'Designed and built by the Cloudize team.',
+          },
           links: {
             self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders',
           },
@@ -681,6 +698,9 @@ describe('The customer orders resource ', () => {
         { restClient: mockClient },
       );
       await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
+        .Facet(['colors', 'sizes'])
+        .Fields('Order', ['product', 'qty', 'price', 'extraField', 'customer'])
+        .Sort(OrderSort.OrderDate)
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
         .PageNumber(2, 10)
@@ -694,6 +714,8 @@ describe('The customer orders resource ', () => {
 
       const queryOptions: RestClientOptions = {
         queryParams: {
+          facets: 'colors,sizes',
+          'fields[Order]': 'product,qty,price,extraField,customer',
           'filter[equal:product.code]': 'abc',
           sort: 'orderDate',
           include: 'customer',
@@ -764,6 +786,16 @@ describe('The customer orders resource ', () => {
         expect(customerOrders.data[1].relationships.customer.type).toBe('Customer');
         expect(customerOrders.data[1].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5');
       }
+      expect(customerOrders.facets).toBeDefined();
+      expect(customerOrders.facets.colors).toBeDefined();
+      expect(customerOrders.facets.colors.Blue).toBe(1);
+      expect(customerOrders.facets.colors.Red).toBe(3);
+      expect(customerOrders.facets.sizes).toBeDefined();
+      expect(customerOrders.facets.sizes['US 8']).toBe(1);
+      expect(customerOrders.facets.sizes['US 9']).toBe(2);
+      expect(customerOrders.facets.sizes['US 10']).toBe(3);
+      expect(customerOrders.facets.sizes['US 11']).toBe(4);
+      expect(customerOrders.facets.sizes['US 12']).toBe(5);
     });
 
     it('should clear the internal structures, get the resource (by page offset) and repopulate the internal data '

@@ -35,6 +35,14 @@ export type ResourceObjectRelationshipsLinks = {
     data: ResourceObjectRelationshipLinkObject[];
 };
 
+export type ResourceContainerFacetValue = {
+  [value: string]: number;
+}
+
+export type ResourceContainerFacets = {
+  [fieldName: string]: ResourceContainerFacetValue;
+}
+
 export type ResourceContainerIncludedResources = {
     // eslint-disable-next-line no-use-before-define
     [id: string]: IResourceObject;
@@ -185,6 +193,8 @@ export interface IResourceObject {
     UpdateRelationships(value: any): void;
 }
 
+export type ResourceFacetField = string;
+export type ResourceFieldName = string;
 export type ResourceFilterName = string;
 export type ResourceFilterValue = string;
 export type ResourceSortOption = string;
@@ -192,9 +202,12 @@ export type ResourceIncludeOption = string;
 
 export interface IResourceContainer {
     data: IResourceObject | IResourceObject[];
+    facets: ResourceContainerFacets;
     includes: ResourceContainerIncludedResourceTypes;
     restClient: IRestClient;
     uri: string;
+    Facet(fields: ResourceFacetField[]): IResourceContainer;
+    Fields(resource: ResourceObjectType, fields: ResourceFieldName[]): IResourceContainer;
     Filter(
       filter: ResourceFilterName,
       selector: ResourceFilterType,
