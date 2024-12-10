@@ -8,9 +8,14 @@ export {
 // eslint-disable-next-line import/no-cycle
 export {
   IResourceContainer,
+  ResourceContainerFacetValue,
+  ResourceContainerFacets,
   ResourceContainerIncludedResourceTypes,
+  ResourceFacetField,
+  ResourceFieldName,
   ResourceFilterName,
   ResourceFilterValue,
+  ResourceObjectType,
   ResourceSortOption,
   ResourceIncludeOption,
   IResourceObject,

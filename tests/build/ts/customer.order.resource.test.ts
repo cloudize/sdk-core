@@ -55,7 +55,7 @@ describe('The customer orders resource ', () => {
         expect(error).toBeInstanceOf(SDKException);
         expect((error as SDKException).code).toBe('COUNT-FAILED');
         expect((error as SDKException).message).toBe('The request to count the number of resources related '
-            + 'to this query was unsuccessful.');
+          + 'to this query was unsuccessful.');
       }
     });
 
@@ -332,7 +332,7 @@ describe('The customer orders resource ', () => {
     });
 
     it('should clear the internal structures, get the resource and repopulate the internal data structures '
-        + '(ignoring extra fields).', async () => {
+      + '(ignoring extra fields).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -394,7 +394,7 @@ describe('The customer orders resource ', () => {
       await customerOrders.Get('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
 
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/'
-          + '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
+        + '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
 
       const queryHeaders = {
         Accept: 'application/vnd.api+json',
@@ -575,14 +575,14 @@ describe('The customer orders resource ', () => {
         expect((error as Error400BadRequest).errors[1].title).toBe('The requested resource was still not found.');
         expect((error as Error400BadRequest).errors[1].status).toBe(404);
         expect((error as Error400BadRequest).errors[1].detail).toBe('After an extensive look around the '
-            + 'database, nothing resembling the desired resource was found.');
+          + 'database, nothing resembling the desired resource was found.');
         expect((error as Error400BadRequest).errors[1].source)
           .toEqual({ database: { collections: 'all of them really' } });
       }
     });
 
     it('should clear the internal structures, get the resource (by page number) and repopulate the internal data '
-        + 'structures (ignoring extra fields).', async () => {
+      + 'structures (ignoring extra fields).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -670,6 +670,23 @@ describe('The customer orders resource ', () => {
               },
             },
           ],
+          meta: {
+            facets: {
+              colors: {
+                Blue: 1,
+                Red: 3,
+              },
+              sizes: {
+                'US 8': 1,
+                'US 9': 2,
+                'US 10': 3,
+                'US 11': 4,
+                'US 12': 5,
+              },
+            },
+            copyright: '© 2024 Cloudize Limited. All rights reserved.',
+            designedBy: 'Designed and built by the Cloudize team.',
+          },
           links: {
             self: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders',
           },
@@ -681,6 +698,9 @@ describe('The customer orders resource ', () => {
         { restClient: mockClient },
       );
       await customerOrders.Filter(OrderFilter.ProductCode, ResourceFilterType.Equal, 'abc')
+        .Facet(['colors', 'sizes'])
+        .Fields('Order', ['product', 'qty', 'price', 'extraField', 'customer'])
+        .Sort(OrderSort.OrderDate)
         .Sort(OrderSort.OrderDate)
         .Include(OrderInclude.Customer)
         .PageNumber(2, 10)
@@ -694,6 +714,8 @@ describe('The customer orders resource ', () => {
 
       const queryOptions: RestClientOptions = {
         queryParams: {
+          facets: 'colors,sizes',
+          'fields[Order]': 'product,qty,price,extraField,customer',
           'filter[equal:product.code]': 'abc',
           sort: 'orderDate',
           include: 'customer',
@@ -764,10 +786,20 @@ describe('The customer orders resource ', () => {
         expect(customerOrders.data[1].relationships.customer.type).toBe('Customer');
         expect(customerOrders.data[1].uri).toEqual('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/45801d5d-313e-4d40-be4f-c666b6f713c5');
       }
+      expect(customerOrders.facets).toBeDefined();
+      expect(customerOrders.facets.colors).toBeDefined();
+      expect(customerOrders.facets.colors.Blue).toBe(1);
+      expect(customerOrders.facets.colors.Red).toBe(3);
+      expect(customerOrders.facets.sizes).toBeDefined();
+      expect(customerOrders.facets.sizes['US 8']).toBe(1);
+      expect(customerOrders.facets.sizes['US 9']).toBe(2);
+      expect(customerOrders.facets.sizes['US 10']).toBe(3);
+      expect(customerOrders.facets.sizes['US 11']).toBe(4);
+      expect(customerOrders.facets.sizes['US 12']).toBe(5);
     });
 
     it('should clear the internal structures, get the resource (by page offset) and repopulate the internal data '
-        + 'structures.', async () => {
+      + 'structures.', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       mockClient.MockResolve({
@@ -1284,7 +1316,7 @@ describe('The customer orders resource ', () => {
         expect(error).toBeInstanceOf(SDKException);
         expect((error as SDKException).code).toBe('INVALID-LOCATION');
         expect((error as SDKException).message).toBe('The save operation was unable to retrieve the location of '
-            + 'the resource created by the API.');
+          + 'the resource created by the API.');
       }
     });
 
@@ -1319,7 +1351,7 @@ describe('The customer orders resource ', () => {
         expect(error).toBeInstanceOf(SDKException);
         expect((error as SDKException).code).toBe('INVALID-RESOURCE-ID');
         expect((error as SDKException).message).toBe('The save operation was unable to retrieve the identifier of '
-            + 'the resource created by the API.');
+          + 'the resource created by the API.');
       }
     });
 
@@ -1515,7 +1547,7 @@ describe('The customer orders resource ', () => {
     });
 
     it('should correctly PATCH an existing resource when some fields are modified (including attributes being '
-        + 'set to null).', async () => {
+      + 'set to null).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       jest.spyOn(mockClient, 'Patch');
@@ -1642,7 +1674,7 @@ describe('The customer orders resource ', () => {
     });
 
     it('should correctly PATCH an existing resource when some fields are modified (including relationships '
-        + 'being set to null by setting the id property to null).', async () => {
+      + 'being set to null by setting the id property to null).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       jest.spyOn(mockClient, 'Patch');
@@ -1766,7 +1798,7 @@ describe('The customer orders resource ', () => {
     });
 
     it('should correctly PATCH an existing resource when some fields are modified (including relationships '
-        + 'being set by calling the clear method).', async () => {
+      + 'being set by calling the clear method).', async () => {
       const mockClient = new MockRestClient();
       jest.spyOn(mockClient, 'Get');
       jest.spyOn(mockClient, 'Patch');

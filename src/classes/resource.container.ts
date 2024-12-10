@@ -20,9 +20,13 @@ import {
 import {
   IResourceContainer,
   IResourceObject,
+  ResourceContainerFacets,
   ResourceContainerIncludedResourceTypes,
+  ResourceFacetField,
+  ResourceFieldName,
   ResourceHeaderParams,
   ResourceObjectClass,
+  ResourceObjectType,
   ResourcePathParams,
   ResourceFilterName,
   ResourceFilterValue,
@@ -40,6 +44,10 @@ const hash = require('object-hash');
 type ResourceContainerQueryParams = {
   includes: {
     [index: string]: boolean;
+  };
+  facets?: string;
+  fields: {
+    [resourceType: string]: string;
   };
   filters: {
     [index: string]: string;
@@ -76,6 +84,8 @@ export default class ResourceContainer implements IResourceContainer {
 
   protected _data: IResourceObject | IResourceObject[];
 
+  protected _facets: ResourceContainerFacets;
+
   protected _includes: ResourceContainerIncludedResourceTypes;
 
   private _queryParams: ResourceContainerQueryParams;
@@ -90,6 +100,7 @@ export default class ResourceContainer implements IResourceContainer {
 
   constructor(params?: ResourceContainerParams) {
     this._data = undefined;
+    this._facets = undefined;
     this._includes = {};
     this._restClient = isDefined(params?.restClient) ? params?.restClient : new RestClient();
     this._sdkConfig = isDefined(params?.sdkConfig) ? params?.sdkConfig : SDKConfig();
@@ -97,6 +108,7 @@ export default class ResourceContainer implements IResourceContainer {
     this.pathParams = {};
     this._queryParams = {
       includes: {},
+      fields: {},
       filters: {},
       sort: undefined,
       pagination: {},
@@ -106,6 +118,10 @@ export default class ResourceContainer implements IResourceContainer {
   // eslint-disable-next-line class-methods-use-this
   get data(): IResourceObject | IResourceObject[] {
     throw new Error('Method or Property not implemented.');
+  }
+
+  get facets(): ResourceContainerFacets {
+    return this._facets;
   }
 
   get includes(): ResourceContainerIncludedResourceTypes {
@@ -155,6 +171,7 @@ export default class ResourceContainer implements IResourceContainer {
 
   protected ClearData() {
     this._data = undefined;
+    this._facets = undefined;
     this._includes = {};
   }
 
@@ -221,6 +238,30 @@ export default class ResourceContainer implements IResourceContainer {
           const resourceObject = this.LoadResourceData(resourceData);
           if (isUndefined(this._includes[resourceObject.type])) this._includes[resourceObject.type] = {};
           this._includes[resourceObject.type][resourceObject.id] = resourceObject;
+        }
+      }
+    }
+
+    if (hasProperty(response.data, 'meta') && isObject(response.data.meta)) {
+      if (hasProperty(response.data.meta, 'facets') && isObject(response.data.meta.facets)) {
+        this._facets = {};
+        // eslint-disable-next-line no-restricted-syntax
+        for (const facetFieldName in response.data.meta.facets) {
+          if (hasProperty(response.data.meta.facets, facetFieldName)) {
+            this._facets[facetFieldName] = {};
+
+            // eslint-disable-next-line no-restricted-syntax
+            for (const facetValue in response.data.meta.facets[facetFieldName]) {
+              if (hasProperty(response.data.meta.facets[facetFieldName], facetValue)) {
+                if (
+                  isDefinedAndNotNull(response.data.meta.facets[facetFieldName][facetValue])
+                    && isNumber(response.data.meta.facets[facetFieldName][facetValue])
+                ) {
+                  this._facets[facetFieldName][facetValue] = response.data.meta.facets[facetFieldName][facetValue];
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -325,6 +366,7 @@ export default class ResourceContainer implements IResourceContainer {
   public InitParams() {
     this._queryParams = {
       includes: {},
+      fields: {},
       filters: {},
       sort: undefined,
       pagination: {},
@@ -391,6 +433,17 @@ export default class ResourceContainer implements IResourceContainer {
     }
     if (includeList.length > 0) queryParams.include = includeList.join(',');
 
+    if (hasProperty(this._queryParams, 'facets') && isDefined(this._queryParams.facets)) {
+      queryParams.facets = this._queryParams.facets;
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const resourceType in this._queryParams.fields) {
+      if (hasProperty(this._queryParams.fields, resourceType)) {
+        queryParams[`fields[${resourceType}]`] = this._queryParams.fields[resourceType];
+      }
+    }
+
     if (hasProperty(this._queryParams.pagination, 'offset')) queryParams['page[offset]'] = this._queryParams.pagination.offset;
     if (hasProperty(this._queryParams.pagination, 'page')) queryParams['page[number]'] = this._queryParams.pagination.page;
     if (hasProperty(this._queryParams.pagination, 'size')) queryParams['page[size]'] = this._queryParams.pagination.size;
@@ -405,6 +458,16 @@ export default class ResourceContainer implements IResourceContainer {
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   IncludedObject(type: string, id: string): IResourceObject {
     throw new Error('Method or Property not implemented.');
+  }
+
+  Facet(fields: ResourceFacetField[]): IResourceContainer {
+    this._queryParams.facets = fields.join(',');
+    return this;
+  }
+
+  Fields(resourceType: ResourceObjectType, fields: ResourceFieldName[]): IResourceContainer {
+    this._queryParams.fields[resourceType] = fields.join(',');
+    return this;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
