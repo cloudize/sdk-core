@@ -684,7 +684,7 @@ describe('The customer orders resource ', () => {
                 'US 12': 5,
               },
             },
-            copyright: '© 2024 Cloudize Limited. All rights reserved.',
+            copyright: '© 2025 Cloudize Limited. All rights reserved.',
             designedBy: 'Designed and built by the Cloudize team.',
           },
           links: {
