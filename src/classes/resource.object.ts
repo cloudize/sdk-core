@@ -5,6 +5,7 @@ import {
   isDate,
   isDefined,
   isDefinedAndNotNull,
+  isFalse,
   isNumber,
   isObject,
   isString,
@@ -117,8 +118,18 @@ export default class ResourceObject implements IResourceObject {
       // eslint-disable-next-line no-restricted-syntax
       for (const fieldName in data) {
         if (hasProperty(data, fieldName)) {
-          if (isDefined(shadow)) payload[fieldName] = this.SerializeAttributesPayload(shadow[fieldName], data[fieldName]);
-          else payload[fieldName] = this.SerializeAttributesPayload(undefined, data[fieldName]);
+          if (
+            isObject(data[fieldName])
+              && hasProperty(data[fieldName], 'BranchType')
+              && isDefinedAndNotNull(data[fieldName].BranchType)
+              && isString(data[fieldName].BranchType)
+          ) {
+            if (isFalse(areEqual(shadow[fieldName], data[fieldName]))) payload[fieldName] = data[fieldName];
+          } else {
+            // eslint-disable-next-line no-lonely-if
+            if (isDefined(shadow)) payload[fieldName] = this.SerializeAttributesPayload(shadow[fieldName], data[fieldName]);
+            else payload[fieldName] = this.SerializeAttributesPayload(undefined, data[fieldName]);
+          }
         }
       }
 
