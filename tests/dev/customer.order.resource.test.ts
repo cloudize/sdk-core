@@ -1447,6 +1447,7 @@ describe('The customer orders resource ', () => {
                   'programs and device drivers while offering a more stable and better performing system. ',
                   'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
                 ],
+                market: { BranchType: 'Enterprise', channel: 'Public', partner: 'Soft Sell Inc' },
                 features: [
                   {
                     name: 'Out of the box performance',
@@ -1502,6 +1503,7 @@ describe('The customer orders resource ', () => {
             ],
           },
         });
+        order.attributes.product.market.channel = 'Private';
         order.attributes.qty = 15;
         order.relationships.customer = new ResourceObjectRelationship(customerOrders.includes, 'Customer', 'new-id');
         await order.Save();
@@ -1519,6 +1521,7 @@ describe('The customer orders resource ', () => {
             attributes: {
               product: {
                 name: 'Product Name',
+                market: { BranchType: 'Enterprise', channel: 'Private', partner: 'Soft Sell Inc' },
                 features: [
                   {
                     name: 'Propensity to get viruses',
@@ -1574,6 +1577,7 @@ describe('The customer orders resource ', () => {
                   'programs and device drivers while offering a more stable and better performing system. ',
                   'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
                 ],
+                market: { BranchType: 'Enterprise', channel: 'Public', partner: 'Soft Sell Inc' },
                 features: [
                   {
                     name: 'Out of the box performance',
@@ -1701,6 +1705,7 @@ describe('The customer orders resource ', () => {
                   'programs and device drivers while offering a more stable and better performing system. ',
                   'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
                 ],
+                market: { BranchType: 'Enterprise', channel: 'Public', partner: 'Soft Sell Inc' },
                 features: [
                   {
                     name: 'Out of the box performance',
@@ -1756,6 +1761,7 @@ describe('The customer orders resource ', () => {
             ],
           },
         });
+        order.attributes.product.market.channel = 'Private';
         order.attributes.qty = 15;
         order.relationships.customer.id = null;
         await order.Save();
@@ -1773,6 +1779,7 @@ describe('The customer orders resource ', () => {
             attributes: {
               product: {
                 name: 'Product Name',
+                market: { BranchType: 'Enterprise', channel: 'Private', partner: 'Soft Sell Inc' },
                 features: [
                   {
                     name: 'Propensity to get viruses',
@@ -1825,6 +1832,7 @@ describe('The customer orders resource ', () => {
                   'programs and device drivers while offering a more stable and better performing system. ',
                   'The Windows 95 architecture is an evolution of Windows for Workgroups\' 386 enhanced mode.',
                 ],
+                market: { BranchType: 'Enterprise', channel: 'Public', partner: 'Soft Sell Inc' },
                 features: [
                   {
                     name: 'Out of the box performance',
@@ -1880,6 +1888,7 @@ describe('The customer orders resource ', () => {
             ],
           },
         });
+        order.attributes.product.market.channel = 'Private';
         order.attributes.qty = 15;
         order.relationships.customer.clear();
         await order.Save();
@@ -1897,6 +1906,7 @@ describe('The customer orders resource ', () => {
             attributes: {
               product: {
                 name: 'Product Name',
+                market: { BranchType: 'Enterprise', channel: 'Private', partner: 'Soft Sell Inc' },
                 features: [
                   {
                     name: 'Propensity to get viruses',

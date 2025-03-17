@@ -1,5 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import {
+  clone,
   hasProperty, isArray, isDefined, isDefinedAndNotNull, isUndefined,
 } from '@apigames/json';
 import {
@@ -62,6 +63,7 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
     description?: string[];
     releaseDate?: Date,
     releaseLocation?: GeospatialPoint,
+    market?: any;
     features?: OrderProductFeature[]
   };
 
@@ -122,6 +124,9 @@ export class OrderAttributes extends ResourceObjectAttributeBase implements IRes
           data.product?.releaseLocation,
         );
       }
+
+      if (hasProperty(data.product, 'market')) this.product.market = clone(data.product?.market);
+
       if (hasProperty(data.product, 'features')) {
         this.product.features = OrderAttributes.LoadProductFeatures(data.product?.features, action);
       }
