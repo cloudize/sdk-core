@@ -395,11 +395,11 @@ export default class ResourceContainer implements IResourceContainer {
       case 'GET':
       case 'COUNT':
       case 'FIND':
-        headers.Accept = this.EndpointContentType();
+        headers.accept = this.EndpointContentType();
         break;
       default:
-        headers.Accept = this.EndpointContentType();
-        headers['Content-Type'] = this.EndpointContentType();
+        headers.accept = this.EndpointContentType();
+        headers['content-type'] = this.EndpointContentType();
         break;
     }
 
