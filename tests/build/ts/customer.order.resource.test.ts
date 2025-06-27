@@ -37,7 +37,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -66,7 +66,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -91,7 +91,7 @@ describe('The customer orders resource ', () => {
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
 
       const queryHeaders = {
-        Accept: 'application/vnd.api+json',
+        accept: 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {
@@ -113,7 +113,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -145,7 +145,7 @@ describe('The customer orders resource ', () => {
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
 
       const queryHeaders = {
-        Accept: 'application/vnd.api+json',
+        accept: 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {
@@ -170,7 +170,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -210,7 +210,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -249,7 +249,7 @@ describe('The customer orders resource ', () => {
       mockClient.MockReject(CreateException({
         statusCode: 503,
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: { version: '1.0' },
@@ -289,7 +289,7 @@ describe('The customer orders resource ', () => {
         statusCode: 404,
         statusText: 'NOT FOUND',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -339,7 +339,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -397,7 +397,7 @@ describe('The customer orders resource ', () => {
         + '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
 
       const queryHeaders = {
-        Accept: 'application/vnd.api+json',
+        accept: 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {};
@@ -449,7 +449,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -489,7 +489,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -529,7 +529,7 @@ describe('The customer orders resource ', () => {
         statusCode: 400,
         statusText: 'NOT FOUND',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -589,7 +589,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -709,7 +709,7 @@ describe('The customer orders resource ', () => {
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
 
       const queryHeaders = {
-        Accept: 'application/vnd.api+json',
+        accept: 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {
@@ -806,7 +806,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -885,7 +885,7 @@ describe('The customer orders resource ', () => {
       const queryUri: string = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
 
       const queryHeaders = {
-        Accept: 'application/vnd.api+json',
+        accept: 'application/vnd.api+json',
       };
 
       const queryOptions: RestClientOptions = {
@@ -957,7 +957,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1001,7 +1001,7 @@ describe('The customer orders resource ', () => {
         statusCode: 404,
         statusText: 'NOT FOUND',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1044,7 +1044,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1087,7 +1087,7 @@ describe('The customer orders resource ', () => {
         statusCode: 204,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
       });
 
@@ -1111,7 +1111,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1185,7 +1185,7 @@ describe('The customer orders resource ', () => {
         statusCode: 204,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
       });
 
@@ -1210,7 +1210,7 @@ describe('The customer orders resource ', () => {
       mockClient.MockReject(CreateException({
         statusCode: 503,
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
       }));
 
@@ -1241,7 +1241,7 @@ describe('The customer orders resource ', () => {
         statusCode: 409,
         statusText: 'Conflict',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1292,7 +1292,7 @@ describe('The customer orders resource ', () => {
         statusCode: 201,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
           'x-api-resource-id': '2ef963ae-f5ef-42d5-bee1-2b76e63b8f25',
         },
       });
@@ -1327,7 +1327,7 @@ describe('The customer orders resource ', () => {
         statusCode: 201,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
           Location: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/2ef963ae-f5ef-42d5-bee1-2b76e63b8f25',
         },
       });
@@ -1362,7 +1362,7 @@ describe('The customer orders resource ', () => {
         statusCode: 201,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
           location: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
           'x-api-resource-id': '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
         },
@@ -1382,8 +1382,8 @@ describe('The customer orders resource ', () => {
 
       const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders';
       const queryHeaders = {
-        Accept: 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json',
+        accept: 'application/vnd.api+json',
+        'content-type': 'application/vnd.api+json',
       };
       const queryOptions: RestClientOptions = {};
       const queryPayload = {
@@ -1429,7 +1429,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1483,7 +1483,7 @@ describe('The customer orders resource ', () => {
         statusCode: 204,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
       });
 
@@ -1508,8 +1508,8 @@ describe('The customer orders resource ', () => {
 
         const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
         const queryHeaders = {
-          Accept: 'application/vnd.api+json',
-          'Content-Type': 'application/vnd.api+json',
+          accept: 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         };
         const queryOptions: RestClientOptions = {};
         const queryPayload = {
@@ -1556,7 +1556,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1610,7 +1610,7 @@ describe('The customer orders resource ', () => {
         statusCode: 204,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
       });
 
@@ -1635,8 +1635,8 @@ describe('The customer orders resource ', () => {
 
         const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
         const queryHeaders = {
-          Accept: 'application/vnd.api+json',
-          'Content-Type': 'application/vnd.api+json',
+          accept: 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         };
         const queryOptions: RestClientOptions = {};
         const queryPayload = {
@@ -1683,7 +1683,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1737,7 +1737,7 @@ describe('The customer orders resource ', () => {
         statusCode: 204,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
       });
 
@@ -1762,8 +1762,8 @@ describe('The customer orders resource ', () => {
 
         const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
         const queryHeaders = {
-          Accept: 'application/vnd.api+json',
-          'Content-Type': 'application/vnd.api+json',
+          accept: 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         };
         const queryOptions: RestClientOptions = {};
         const queryPayload = {
@@ -1807,7 +1807,7 @@ describe('The customer orders resource ', () => {
         statusCode: 200,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
         data: {
           jsonapi: {
@@ -1861,7 +1861,7 @@ describe('The customer orders resource ', () => {
         statusCode: 204,
         statusText: 'OK',
         headers: {
-          'Content-Type': 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         },
       });
 
@@ -1886,8 +1886,8 @@ describe('The customer orders resource ', () => {
 
         const queryUri = 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9';
         const queryHeaders = {
-          Accept: 'application/vnd.api+json',
-          'Content-Type': 'application/vnd.api+json',
+          accept: 'application/vnd.api+json',
+          'content-type': 'application/vnd.api+json',
         };
         const queryOptions: RestClientOptions = {};
         const queryPayload = {

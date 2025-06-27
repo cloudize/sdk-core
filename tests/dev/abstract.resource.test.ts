@@ -125,6 +125,7 @@ describe('The base ', () => {
         };
 
         const current = {
+          name: null as string,
           count: 99,
           active: false,
           address: {
