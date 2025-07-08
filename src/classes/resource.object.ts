@@ -34,10 +34,21 @@ export enum ResourceObjectMode {
     ExistingDocument
 }
 
+export type ResourceObjectMetadata = {
+  insertedAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
+  version?: Date;
+  searchScore?: number;
+  distance?: number;
+}
+
 export default class ResourceObject implements IResourceObject {
   private _container: IResourceContainer;
 
   private _id: string;
+
+  private _meta: ResourceObjectMetadata = {};
 
   private _mode: ResourceObjectMode = ResourceObjectMode.NewDocument;
 
@@ -56,6 +67,28 @@ export default class ResourceObject implements IResourceObject {
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
   protected LoadAttributes(value: any) {
     throw new Error('Method or Property not implemented.');
+  }
+
+  protected LoadMetadata(value: any) {
+    this._meta = {};
+
+    if (isDefinedAndNotNull(value) && hasProperty(value, 'insertedAt')
+      && isString(value.insertedAt)) this._meta.insertedAt = new Date(value.insertedAt);
+
+    if (isDefinedAndNotNull(value) && hasProperty(value, 'updatedAt')
+      && isString(value.updatedAt)) this._meta.updatedAt = new Date(value.updatedAt);
+
+    if (isDefinedAndNotNull(value) && hasProperty(value, 'deletedAt')
+      && isString(value.deletedAt)) this._meta.deletedAt = new Date(value.deletedAt);
+
+    if (isDefinedAndNotNull(value) && hasProperty(value, 'version')
+      && isString(value.version)) this._meta.version = new Date(value.version);
+
+    if (isDefinedAndNotNull(value) && hasProperty(value, 'searchScore')
+      && isNumber(value.searchScore)) this._meta.searchScore = value.searchScore;
+
+    if (isDefinedAndNotNull(value) && hasProperty(value, 'distance')
+      && isNumber(value.distance)) this._meta.distance = value.distance;
   }
 
   // eslint-disable-next-line class-methods-use-this,no-unused-vars
@@ -94,6 +127,8 @@ export default class ResourceObject implements IResourceObject {
         && isString(value.links.self)) {
       this._uri = value.links.self;
     }
+
+    if (hasProperty(value, 'meta')) this.LoadMetadata(value.meta);
 
     this._mode = ResourceObjectMode.ExistingDocument;
 
@@ -373,6 +408,10 @@ export default class ResourceObject implements IResourceObject {
   // eslint-disable-next-line class-methods-use-this
   get relationships(): IResourceObjectRelationships {
     throw new Error('Method or Property not implemented.');
+  }
+
+  get meta(): ResourceObjectMetadata {
+    return this._meta;
   }
 
   // eslint-disable-next-line class-methods-use-this
