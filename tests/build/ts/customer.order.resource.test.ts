@@ -747,7 +747,7 @@ describe('The customer orders resource ', () => {
             'Microsoft Windows operating systems. It is the successor to Windows 95, and was released to ',
             'manufacturing on May 15, 1998, and generally to retail on June 25, 1998.',
           ],
-          releaseDate: new Date('1995-04-28T00:19:39.182Z'),
+          releaseDate: dateUtils.parse('1995-04-28T00:19:39.182', 'YYYY-MM-DDTHH:mm:ss.SSS', true),
           releaseLocation: {
             longitude: -124.283728,
             latitude: 25.298189,
