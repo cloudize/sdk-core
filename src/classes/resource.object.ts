@@ -338,6 +338,19 @@ export default class ResourceObject implements IResourceObject {
 
     this.id = this.GetHeaderValue(response.headers, 'x-api-resource-id');
     this._uri = this.GetHeaderValue(response.headers, 'location');
+
+    if (isDefined(response.data) && isObject(response.data)) {
+      if (hasProperty(response.data, 'data')) {
+        if (isObject(response.data.data)) {
+          const resourceData = response.data.data;
+          if (hasProperty(resourceData, 'type') && isString(resourceData.type) && resourceData.type === this.type
+            && hasProperty(resourceData, 'id') && isString(resourceData.id) && resourceData.id === this.id) {
+            this.LoadData(resourceData);
+          }
+        }
+      }
+    }
+
     this._mode = ResourceObjectMode.ExistingDocument;
   }
 

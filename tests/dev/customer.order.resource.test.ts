@@ -1366,6 +1366,29 @@ describe('The customer orders resource ', () => {
           location: 'https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
           'x-api-resource-id': '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
         },
+        data: {
+          data: {
+            type: 'Order',
+            id: '69a56960-17d4-4f2f-bb2f-a671a6aa0fd9',
+            attributes: {
+              product: {
+                code: 'PRODUCT-CODE',
+                name: 'PRODUCT-NAME',
+                market: 'THIS IS A VALUE FROM THE API AFTER THE RESOURCE WAS ADDED',
+              },
+              qty: 5,
+              price: 12.98,
+            },
+            relationships: {
+              customer: {
+                data: {
+                  type: 'Customer',
+                  id: '9a383573-801f-4466-80b2-96f4fb93c384',
+                },
+              },
+            },
+          },
+        }
       });
 
       const customerOrders = new CustomerOrders('9a383573-801f-4466-80b2-96f4fb93c384', { restClient: mockClient });
@@ -1416,6 +1439,7 @@ describe('The customer orders resource ', () => {
       expect(customerOrders.data).toBe(order);
       expect(order.id).toBeDefined();
       expect(order.id).toBe('69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
+      expect(order.attributes.product.market).toBe('THIS IS A VALUE FROM THE API AFTER THE RESOURCE WAS ADDED');
       expect((order as Order).uri)
         .toBe('https://api.example.com/customers/9a383573-801f-4466-80b2-96f4fb93c384/orders/69a56960-17d4-4f2f-bb2f-a671a6aa0fd9');
     });
