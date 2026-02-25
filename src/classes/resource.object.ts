@@ -1,30 +1,12 @@
 import {
-  areEqual,
-  hasProperty,
-  isArray,
-  isDate,
-  isDefined,
-  isDefinedAndNotNull,
-  isFalse,
-  isNumber,
-  isObject,
-  isString,
-  isUndefined,
-  isUndefinedOrNull,
-  redactUndefinedValues,
+  areEqual, hasProperty, isArray, isDate, isDefined, isDefinedAndNotNull, isFalse, isNumber, isObject, isString,
+  isUndefined, isUndefinedOrNull, redactUndefinedValues,
 } from '@apigames/json';
 import { RestClientOptions, RestClientResponseHeaders } from '@apigames/rest-client';
 // eslint-disable-next-line import/no-cycle
 import {
-  IResourceContainer,
-  IResourceObject,
-  IResourceObjectAttributes,
-  IResourceObjectRelationships,
-  isResourceObjectRelationship,
-  isResourceObjectRelationships,
-  ResourceObjectAttributesLoadType,
-  ResourceObjectRelationshipsLoadType,
-  ResourceObjectUri,
+  IResourceContainer, IResourceObject, IResourceObjectAttributes, IResourceObjectRelationships, isResourceObjectRelationship,
+  isResourceObjectRelationships, ResourceObjectAttributesLoadType, ResourceObjectRelationshipsLoadType, ResourceObjectUri,
   SDKException,
 } from '..';
 
@@ -41,6 +23,11 @@ export type ResourceObjectMetadata = {
   version?: Date;
   searchScore?: number;
   distance?: number;
+}
+
+export type ResourceObjectSaveOptions = {
+  onRewritePostPayload?: (payload: any) => any;
+  onRewritePatchPayload?: (payload: any) => any;
 }
 
 export default class ResourceObject implements IResourceObject {
@@ -318,11 +305,15 @@ export default class ResourceObject implements IResourceObject {
     return hasHeader;
   }
 
-  private async InsertResource() {
+  private async InsertResource(options?: ResourceObjectSaveOptions) {
     const queryUri: string = this._container.uri;
     const queryHeaders = this._container.GetHeaders('INSERT');
     const queryOptions: RestClientOptions = {};
-    const payload: any = this.GetInsertPayload();
+
+    let payload: any = this.GetInsertPayload();
+    if (options?.onRewritePostPayload && isDefinedAndNotNull(options.onRewritePostPayload) && options.onRewritePostPayload instanceof Function) {
+      payload = options?.onRewritePostPayload(payload);
+    }
 
     const response = await this._container.restClient.Post(queryUri, payload, queryHeaders, queryOptions);
 
@@ -354,21 +345,25 @@ export default class ResourceObject implements IResourceObject {
     this._mode = ResourceObjectMode.ExistingDocument;
   }
 
-  private async UpdateResource() {
+  private async UpdateResource(options?: ResourceObjectSaveOptions) {
     const queryUri: string = this.uri;
     const queryHeaders = this._container.GetHeaders('UPDATE');
     const queryOptions: RestClientOptions = {};
-    const payload: any = this.GetUpdatePayload();
+
+    let payload: any = this.GetUpdatePayload();
+    if (options?.onRewritePatchPayload && isDefinedAndNotNull(options.onRewritePatchPayload) && options.onRewritePatchPayload instanceof Function) {
+      payload = options?.onRewritePatchPayload(payload);
+    }
 
     await this._container.restClient.Patch(queryUri, payload, queryHeaders, queryOptions);
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async Save() {
+  async Save(options?: ResourceObjectSaveOptions) {
     if (this._mode === ResourceObjectMode.NewDocument) {
-      await this.InsertResource();
+      await this.InsertResource(options);
     } else {
-      await this.UpdateResource();
+      await this.UpdateResource(options);
     }
 
     if (isDefined(this.attributes)) {
