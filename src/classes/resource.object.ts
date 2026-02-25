@@ -5,9 +5,9 @@ import {
 import { RestClientOptions, RestClientResponseHeaders } from '@apigames/rest-client';
 // eslint-disable-next-line import/no-cycle
 import {
-  IResourceContainer, IResourceObject, IResourceObjectAttributes, IResourceObjectRelationships, isResourceObjectRelationship,
-  isResourceObjectRelationships, ResourceObjectAttributesLoadType, ResourceObjectRelationshipsLoadType, ResourceObjectUri,
-  SDKException,
+  IResourceContainer, IResourceObject, IResourceObjectAttributes, IResourceObjectRelationships,
+  isResourceObjectRelationship, isResourceObjectRelationships, ResourceObjectAttributesLoadType,
+  ResourceObjectRelationshipsLoadType, ResourceObjectSaveOptions, ResourceObjectUri, SDKException,
 } from '..';
 
 // eslint-disable-next-line no-shadow
@@ -23,11 +23,6 @@ export type ResourceObjectMetadata = {
   version?: Date;
   searchScore?: number;
   distance?: number;
-}
-
-export type ResourceObjectSaveOptions = {
-  onRewritePostPayload?: (payload: any) => any;
-  onRewritePatchPayload?: (payload: any) => any;
 }
 
 export default class ResourceObject implements IResourceObject {

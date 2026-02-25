@@ -180,6 +180,11 @@ export class ResourceObjectRelationshipBase {
   }
 }
 
+export type ResourceObjectSaveOptions = {
+  onRewritePostPayload?: (payload: any) => any;
+  onRewritePatchPayload?: (payload: any) => any;
+}
+
 export interface IResourceObject {
     type: ResourceObjectType;
     id?: ResourceObjectIdentifier;
@@ -188,7 +193,7 @@ export interface IResourceObject {
     uri: ResourceObjectUri;
     LoadData(value: any): IResourceObject;
     Delete(): Promise<void>;
-    Save(): Promise<void>;
+    Save(options?: ResourceObjectSaveOptions): Promise<void>;
     UpdateAttributes(value: any): void;
     UpdateRelationships(value: any): void;
 }
