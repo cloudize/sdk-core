@@ -1,6 +1,6 @@
 import {
-  areEqual, hasProperty, isArray, isDate, isDefined, isDefinedAndNotNull, isFalse, isNumber, isObject, isString,
-  isUndefined, isUndefinedOrNull, redactUndefinedValues,
+  areEqual, hasProperty, isArray, isDate, isDefined, isDefinedAndNotNull, isEmpty, isFalse, isNumber, isObject,
+  isString, isUndefined, isUndefinedOrNull, redactUndefinedValues,
 } from '@cloudize/json';
 import { RestClientOptions, RestClientResponseHeaders } from '@cloudize/rest-client';
 // eslint-disable-next-line import/no-cycle
@@ -236,11 +236,11 @@ export default class ResourceObject implements IResourceObject {
 
     if (isDefined(this.id)) payload.data.id = this.id;
 
-    if (isDefined(this.attributes)) {
+    if (isDefined(this.attributes) && isFalse(isEmpty(this.attributes))) {
       payload.data.attributes = this.SerializeAttributesPayload(this.shadowAttributes, this.attributes);
     }
 
-    if (isDefined(this.relationships)) {
+    if (isDefined(this.relationships) && isFalse(isEmpty(this.relationships))) {
       payload.data.relationships = this.SerializeRelationshipsPayload(this.shadowRelationships, this.relationships);
     }
 
@@ -256,11 +256,11 @@ export default class ResourceObject implements IResourceObject {
       },
     };
 
-    if (isDefined(this.attributes)) {
+    if (isDefined(this.attributes) && isFalse(isEmpty(this.attributes))) {
       payload.data.attributes = this.SerializeAttributesPayload(this.shadowAttributes, this.attributes);
     }
 
-    if (isDefined(this.relationships)) {
+    if (isDefined(this.relationships) && isFalse(isEmpty(this.relationships))) {
       payload.data.relationships = this.SerializeRelationshipsPayload(this.shadowRelationships, this.relationships);
     }
 
