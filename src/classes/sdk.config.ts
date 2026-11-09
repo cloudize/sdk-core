@@ -1,4 +1,5 @@
-import { isDefined, isUndefined } from '@cloudize/json';
+/* eslint-disable import/no-cycle */
+import { isUndefined } from '@cloudize/json';
 import { ResourceObjectClass } from './resource.object';
 
 export type SDKResourceMap = {
